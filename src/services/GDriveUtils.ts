@@ -1,5 +1,7 @@
+import { Entry } from "@/types";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { GDrive, MimeTypes } from "@robinbobin/react-native-google-drive-api-wrapper";
+import { SQLiteDatabase } from "expo-sqlite";
 
 export const initializeGdrive = async (accessToken: string) => {
   const gdrive = new GDrive();
@@ -8,16 +10,14 @@ export const initializeGdrive = async (accessToken: string) => {
   return gdrive;
 };
 
-export const signinGoogle = async ()=>{
+export const signinGoogle = async () => {
   try {
     await GoogleSignin.configure({
       scopes: ["https://www.googleapis.com/auth/drive.file"],
       iosClientId: "110368176913-u7anooc46iggk9n2ksi81pii7e5uqaas.apps.googleusercontent.com",
     });
-    console.log("configure");
     const userInfo = await GoogleSignin.signIn();
-    console.log(userInfo);
-    if (userInfo.type === 'cancelled') {
+    if (userInfo.type === "cancelled") {
       return;
     }
     const tokens = await GoogleSignin.getTokens();
@@ -28,10 +28,10 @@ export const signinGoogle = async ()=>{
   } catch (e) {
     console.error(e);
   }
-}
+};
 
-export const uploadFileToGoogleDrive = async (gdrive: GDrive, data: object) => {
-  const jsonData = JSON.stringify(data);
+export const uploadFileToGoogleDrive = async (gdrive: GDrive, dataList: object) => {
+  const jsonData = JSON.stringify(dataList);
   const formattedDate = new Date()
     .toLocaleString("ja-JP")
     .replace(/\//g, "-")
@@ -72,18 +72,17 @@ export const listFilesInDrive = async (gdrive: GDrive) => {
 export const handleFileSelect = async (fileId: string) => {
   const gdrive = await signinGoogle();
   if (gdrive) {
-    const data = await downloadFileFromGoogleDrive(gdrive, fileId);
-    console.log(data);
+    const dataList = await downloadFileFromGoogleDrive(gdrive, fileId);
+    return dataList;
   }
 };
 
-export const ExportGDrive = async () => {
+export const ExportGDrive = async (db: SQLiteDatabase) => {
   try {
     const gdrive = await signinGoogle();
     if (gdrive) {
-      console.log("gdrive");
-      const data = { entries: [{ date: "2024-09-21", text: "Backup Memo" }] };
-      await uploadFileToGoogleDrive(gdrive, data);
+      const dataList: Entry[] = await db.getAllAsync("SELECT * FROM entries ORDER BY created_at DESC");
+      await uploadFileToGoogleDrive(gdrive, dataList);
     }
   } catch (e) {
     console.error(e);

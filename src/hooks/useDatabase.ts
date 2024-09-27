@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+
 import { useEffect, useState } from "react";
 
 export const useDatabase = () => {

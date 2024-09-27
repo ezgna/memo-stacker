@@ -7,8 +7,6 @@ import CancelEditButton from "./components/CancelEditButton";
 import { useDataContext } from "./components/DataContext";
 import { FlashListCompo } from "./components/FlashListCompo";
 import SaveButton from "./components/SaveButton";
-import BackupButton from "../services/ExportGDrive";
-import RestoreButton from "../services/InportGDrive";
 
 export default function index() {
   const db = useDatabase();
@@ -19,6 +17,7 @@ export default function index() {
   const createTable = async () => {
     if (!db) return;
     try {
+      // changes to id INTEGER PRIMARY KEY,
       await db.execAsync(`
         CREATE TABLE IF NOT EXISTS entries (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +41,7 @@ export default function index() {
       return;
     }
     const currentDate = new Date()
-      .toLocaleString("ja-JP", {
+      .toLocaleString("ja-JP", { //changes to toLocaleDateString()
         year: "numeric",
         month: "2-digit",
         day: "2-digit",

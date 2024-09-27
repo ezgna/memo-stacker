@@ -37,7 +37,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
         />
       </View>
       {Platform.OS === "ios" ? (
-        <TextInput editable={false} multiline style={{ fontSize: 18, color: "raisinblack" }}>
+        <TextInput editable={false} multiline scrollEnabled={false} style={{ fontSize: 18, color: "raisinblack" }}>
           {item.text}
         </TextInput>
       ) : (
