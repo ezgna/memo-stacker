@@ -8,7 +8,6 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import { DataProvider } from "./components/DataContext";
 import SearchBox from "./components/SearchBox";
 import CustomDrawer from "./CustomDrawer";
-import { Stack } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,6 +15,8 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     Kanit: require("../assets/fonts/Kanit-Medium.ttf"),
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
+    NotoSansJP: require('../assets/fonts/NotoSansJP-Regular.ttf'),
+    RocknRollOne: require('../assets/fonts/RocknRollOne-Regular.ttf')
   });
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import { useDataContext } from "./components/DataContext";
 import { DateModal } from "./components/DateModal";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import i18n, { isJapanese } from "../utils/i18n";
 
 interface Dates {
   date: string;
@@ -172,9 +173,15 @@ export default function CustomDrawer() {
   return (
     <View style={styles.container}>
       <View style={{ borderBottomWidth: 2, marginBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 22, fontFamily: "Kanit" }}>MemoLog</Text>
+        <Text
+          style={
+            isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" }
+          }
+        >
+          {i18n.t("memolog")}
+        </Text>
         <TouchableOpacity onPress={() => router.push("./settings")}>
-          <Ionicons name="settings-outline" size={24} color="black" style={{ paddingLeft: 5 }} />
+          <Ionicons name="settings-outline" size={24} color="black" style={{ paddingLeft: 10 }} />
         </TouchableOpacity>
       </View>
       {fetchedData && fetchedData.length > 0 && (

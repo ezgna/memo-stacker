@@ -61,7 +61,7 @@ export const DateModal: FC<DateModalProps> = ({
                 <SaveButton onPress={() => updateEntry(editingText, editingId)} editingId={editingId} />
               </View>
             ) : null}
-            <FlashListCompo data={selectedEntries} onDelete={onDelete} onUpdate={handleEdit} />
+            <FlashListCompo data={selectedEntries} onDelete={onDelete} onUpdate={handleEdit} editingId={editingId} />
           </View>
         </View>
       </ActionSheetProvider>

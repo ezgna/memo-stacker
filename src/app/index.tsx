@@ -17,10 +17,9 @@ export default function index() {
   const createTable = async () => {
     if (!db) return;
     try {
-      // changes to id INTEGER PRIMARY KEY,
       await db.execAsync(`
         CREATE TABLE IF NOT EXISTS entries (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY,
           created_at TEXT,
           date TEXT,
           text TEXT,
@@ -41,13 +40,10 @@ export default function index() {
       return;
     }
     const currentDate = new Date()
-      .toLocaleString("ja-JP", { //changes to toLocaleDateString()
+      .toLocaleDateString("ja-JP", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
       })
       .replace(/\//g, "-")
       .split(" ")[0];
@@ -62,7 +58,7 @@ export default function index() {
       }),
       date: currentDate,
       text: text.trim(),
-      user_id: "user_id",
+      user_id: "free",
     };
     try {
       await db.withTransactionAsync(async () => {
@@ -164,7 +160,7 @@ export default function index() {
           />
         </View>
       </View>
-      <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} />
+      <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
     </View>
   );
 }

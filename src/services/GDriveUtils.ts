@@ -38,11 +38,12 @@ export const uploadFileToGoogleDrive = async (gdrive: GDrive, dataList: object) 
     .replace(/:/g, "-")
     .replace(" ", "_");
   try {
-    await gdrive.files
+    const response = await gdrive.files
       .newMultipartUploader()
       .setData(jsonData, MimeTypes.JSON)
       .setRequestBody({ name: `ExportedMemoLog_${formattedDate}` })
       .execute();
+      return response.name
   } catch (e) {
     console.error("Upload error", e);
   }
@@ -82,7 +83,8 @@ export const ExportGDrive = async (db: SQLiteDatabase) => {
     const gdrive = await signinGoogle();
     if (gdrive) {
       const dataList: Entry[] = await db.getAllAsync("SELECT * FROM entries ORDER BY created_at DESC");
-      await uploadFileToGoogleDrive(gdrive, dataList);
+      const fileName = await uploadFileToGoogleDrive(gdrive, dataList);
+      return fileName;
     }
   } catch (e) {
     console.error(e);

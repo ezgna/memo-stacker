@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useDataContext } from "./DataContext";
+import i18n, { isJapanese } from "@/src/utils/i18n";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
@@ -11,9 +12,9 @@ export default function SearchBox() {
       <View style={styles.inputContainer}>
         <FontAwesome name="search" size={16} color="grey" />
         <TextInput
-          style={styles.textInput}
-          placeholder="Search your logs"
-          placeholderTextColor='silver'
+          style={isJapanese ? [styles.textInput, { fontFamily: "NotoSansJP" }] : styles.textInput}
+          placeholder={i18n.t("search")}
+          placeholderTextColor="silver"
           onChangeText={setSearchQuery}
           value={searchQuery}
         />
