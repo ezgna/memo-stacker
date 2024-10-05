@@ -1,13 +1,15 @@
+import { useAuthContext } from "@/src/contexts/AuthContext";
 import { useDatabase } from "@/src/hooks/useDatabase";
-import { ExportGDrive, handleFileSelect, InportGDrive } from "@/src/services/GDriveUtils";
+import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/services/GDriveUtils";
+import i18n, { isJapanese } from "@/src/utils/i18n";
 import { Entry } from "@/types";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
+import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useDataContext } from "../components/DataContext";
-import i18n, { isJapanese } from "@/src/utils/i18n";
+import { useDataContext } from "../../contexts/DataContext";
 
 interface SettingsListType {
   id: number;
@@ -23,29 +25,47 @@ const SettingsScreen = () => {
   const db = useDatabase();
   const [files, setFiles] = useState<Files[] | null>(null);
   const { dataUpdated, setDataUpdated } = useDataContext();
+  const { session } = useAuthContext();
 
   const data = [
-    { id: 1, label: `${i18n.t("export")}` },
-    { id: 2, label: `${i18n.t("inport")}` },
+    { id: 1, label: `${i18n.t("account")}` },
+    { id: 2, label: `${i18n.t("export")}` },
+    { id: 3, label: `${i18n.t("import")}` },
   ];
 
+  // Hide export and import button for paid user
   const handlePress = async (id: number) => {
     switch (id) {
       case 1:
+        router.push("/settings/account");
+        break;
+      case 2:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
-          const exportedFileName = await ExportGDrive(db);
-          Alert.alert(
-            `A file "${exportedFileName}" was successfully created on your own google drive. Please import it on your new device.`
-          );
+          if (!session) {
+            Alert.alert("You have to signup to export");
+            router.push("/settings/(auth)/register");
+          } else {
+            const exportedFileName = await ExportGDrive(db);
+            if (exportedFileName) {
+              Alert.alert(
+                `A file "${exportedFileName}" was successfully created on your own google drive. Please import it on your new device.`
+              );
+            }
+          }
         }
         break;
-      case 2:
-        const importedFiles = await InportGDrive();
-        setFiles(importedFiles);
-        break;
-      default:
+      case 3:
+        if (!session) {
+          Alert.alert("You have to login to import");
+          router.push("/settings/(auth)/login");
+        } else {
+          const importedFiles = await ImportGDrive();
+          if (importedFiles) {
+            setFiles(importedFiles);
+          }
+        }
         break;
     }
   };
@@ -58,7 +78,7 @@ const SettingsScreen = () => {
         const placeholders = dataList.map(() => "(?,?,?,?)").join(",");
         const values = dataList.reduce(
           (acc, data) => acc.concat([data.created_at, data.date, data.text, data.user_id]),
-          [] as string[]
+          [] as (string | null)[]
         );
         await db.withTransactionAsync(async () => {
           await db.runAsync(
@@ -76,8 +96,10 @@ const SettingsScreen = () => {
 
   const handleFileSelectWithClear = async (id: string, name: string) => {
     const importedDataList = await handleFileSelect(id);
-    restoreDatabase(importedDataList);
-    Alert.alert(`A file "${name}" was successfully imported to this device!`);
+    if (importedDataList) {
+      restoreDatabase(importedDataList);
+      Alert.alert(`A file "${name}" was successfully imported to this device!`);
+    }
   };
 
   const renderItem = useCallback(
@@ -114,6 +136,12 @@ const SettingsScreen = () => {
       )
     );
   };
+
+  useEffect(() => {
+    if (!session) {
+      setFiles(null);
+    }
+  }, [session]);
 
   return (
     <View style={{ flex: 1 }}>

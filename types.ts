@@ -1,7 +1,8 @@
 export interface Entry {
+  id: number;
   created_at: string;
   date: string;
   text: string;
-  id: number;
-  user_id: string;
+  user_id: string | null;
+  // synced: number;
 }

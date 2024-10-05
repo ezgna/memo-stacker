@@ -5,8 +5,9 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { DataProvider } from "./components/DataContext";
-import SearchBox from "./components/SearchBox";
+import SearchBox from "../components/SearchBox";
+import { AuthProvider } from "../contexts/AuthContext";
+import { DataProvider } from "../contexts/DataContext";
 import CustomDrawer from "./CustomDrawer";
 
 SplashScreen.preventAutoHideAsync();
@@ -15,8 +16,8 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     Kanit: require("../assets/fonts/Kanit-Medium.ttf"),
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
-    NotoSansJP: require('../assets/fonts/NotoSansJP-Regular.ttf'),
-    RocknRollOne: require('../assets/fonts/RocknRollOne-Regular.ttf')
+    NotoSansJP: require("../assets/fonts/NotoSansJP-Regular.ttf"),
+    RocknRollOne: require("../assets/fonts/RocknRollOne-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -30,24 +31,26 @@ export default function RootLayout() {
   }
 
   return (
-    <DataProvider>
-      <ActionSheetProvider>
-        <RootSiblingParent>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Drawer
-              drawerContent={() => <CustomDrawer />}
-              screenOptions={({ route }) => ({
-                headerRight: () => <SearchBox />,
-                headerShown: route.name !== "settings",
-                headerTitle: "",
-                drawerStyle: {
-                  width: "40%",
-                },
-              })}
-            />
-          </GestureHandlerRootView>
-        </RootSiblingParent>
-      </ActionSheetProvider>
-    </DataProvider>
+    <AuthProvider>
+      <DataProvider>
+        <ActionSheetProvider>
+          <RootSiblingParent>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Drawer
+                drawerContent={() => <CustomDrawer />}
+                screenOptions={({ route }) => ({
+                  headerRight: () => <SearchBox />,
+                  headerShown: !['settings', '(auth)'].includes(route.name),
+                  headerTitle: "",
+                  drawerStyle: {
+                    width: "40%",
+                  },
+                })}
+              />
+            </GestureHandlerRootView>
+          </RootSiblingParent>
+        </ActionSheetProvider>
+      </DataProvider>
+    </AuthProvider>
   );
 }

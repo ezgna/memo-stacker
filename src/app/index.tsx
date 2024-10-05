@@ -1,19 +1,24 @@
 import { Entry } from "@/types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
+import CancelEditButton from "../components/CancelEditButton";
+import { FlashListCompo } from "../components/FlashListCompo";
+import SaveButton from "../components/SaveButton";
+import { useAuthContext } from "../contexts/AuthContext";
+import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
-import CancelEditButton from "./components/CancelEditButton";
-import { useDataContext } from "./components/DataContext";
-import { FlashListCompo } from "./components/FlashListCompo";
-import SaveButton from "./components/SaveButton";
+import { supabase } from "../utils/supabase";
 
 export default function index() {
   const db = useDatabase();
   const [text, setText] = useState<string>("");
+  const { session } = useAuthContext();
+  const userId = session?.user.id || null;
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
 
+  // synced INTEGER DEFAULT 0
   const createTable = async () => {
     if (!db) return;
     try {
@@ -23,7 +28,7 @@ export default function index() {
           created_at TEXT,
           date TEXT,
           text TEXT,
-          user_id TEXT
+          user_id TEXT DEFAULT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_date ON entries (date);
       `);
@@ -31,6 +36,34 @@ export default function index() {
       console.error(e);
     }
   };
+
+  // const updateUserId = async () => {
+  //   if (!db || !userId) return;
+  //   try {
+  //     await db.runAsync(`UPDATE entries SET user_id = ? WHERE user_id IS NULL;`, [userId]);
+  //     await supabase.from('entries').update({user_id: userId}).is('user_id', null);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+
+  // const syncLocalDataWithSupabase = async () => {
+  //   if (!db) return;
+  //   const unsyncedEntries: Entry[] = await db.getAllAsync(`SELECT * FROM entries WHERE synced = 0`);
+  //   if (!unsyncedEntries.length) return
+  //   for (const entry of unsyncedEntries) {
+  //     const { error } = await supabase.from("entries").insert([entry]);
+  //     if (!error) {
+  //       await db.runAsync(`UPDATE entries SET synced = 1 WHERE id = ?`, [entry.id]);
+  //     } else {
+  //       console.error(error);
+  //     }
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   syncLocalDataWithSupabase();
+  // }, [db]);
 
   const storeEntry = async (text: string) => {
     if (!db) return;
@@ -58,7 +91,7 @@ export default function index() {
       }),
       date: currentDate,
       text: text.trim(),
-      user_id: "free",
+      user_id: userId,
     };
     try {
       await db.withTransactionAsync(async () => {
@@ -69,6 +102,7 @@ export default function index() {
           data.user_id,
         ]);
       });
+      
       setText("");
       setDataUpdated(!dataUpdated);
     } catch (e) {
@@ -115,13 +149,17 @@ export default function index() {
     createTable();
   }, [db]);
 
-  const inputRef = useRef<TextInput>(null);
+  // useEffect(() => {
+  //   updateUserId();
+  // }, [userId]);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
+  // const inputRef = useRef<TextInput>(null);
+
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (!db) return;
@@ -147,7 +185,7 @@ export default function index() {
       <View>
         <TextInput
           style={styles.input}
-          ref={inputRef}
+          // ref={inputRef}
           onChangeText={editingId ? setEditingText : setText}
           value={editingId ? editingText : text}
           multiline
@@ -160,7 +198,12 @@ export default function index() {
           />
         </View>
       </View>
-      <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
+      <FlashListCompo
+        data={fetchedEntries}
+        onDelete={deleteEntry}
+        onUpdate={handleEdit}
+        editingId={editingId}
+      />
     </View>
   );
 }

@@ -3,14 +3,7 @@ import React, { FC, useCallback } from "react";
 import { Platform, Text, TextInput, View } from "react-native";
 import { EditActionSheet } from "./EditActionSheet";
 import { isJapanese } from "@/src/utils/i18n";
-
-interface Entry {
-  created_at: string;
-  date: string;
-  text: string;
-  id: number;
-  user_id: string;
-}
+import { Entry } from "@/types";
 
 interface FlashListCompoProps {
   data: Entry[];
@@ -40,7 +33,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
           updateEntry={() => onUpdate(item.text, item.id)}
         />
       </View>
-      {Platform.OS === "ios" ? (
+      {/* {Platform.OS === "ios" ? (
         <TextInput
           editable={false}
           multiline
@@ -57,7 +50,10 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
         <Text style={{ fontSize: 18, color: "raisinblack" }} selectable={true}>
           {item.text}
         </Text>
-      )}
+      )} */}
+      <Text style={{ fontSize: 18, color: "raisinblack" }} selectable={true}>
+        {item.text}
+      </Text>
     </View>
   );
 

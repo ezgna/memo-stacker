@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Modal, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { FlashListCompo } from "./FlashListCompo";
 import { Entry } from "@/types";
-import { useDataContext } from "./DataContext";
+import { useDataContext } from "../contexts/DataContext";
 import SaveButton from "./SaveButton";
 import CancelEditButton from "./CancelEditButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";

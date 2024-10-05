@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import { SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { useDatabase } from "../hooks/useDatabase";
-import { useDataContext } from "./components/DataContext";
-import { DateModal } from "./components/DateModal";
+import { useDataContext } from "../contexts/DataContext";
+import { DateModal } from "../components/DateModal";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import i18n, { isJapanese } from "../utils/i18n";
 
 interface Dates {
@@ -27,7 +27,6 @@ interface GroupedData {
 
 export default function CustomDrawer() {
   const db = useDatabase();
-  const router = useRouter();
   const { dataUpdated, setDataUpdated } = useDataContext();
   const [fetchedData, setFetchedData] = useState<GroupedData[]>([]);
   const [collapsedItems, setCollapsedItems] = useState<Record<string, boolean>>({});
@@ -52,25 +51,27 @@ export default function CustomDrawer() {
       }, {});
 
       const groupedData = Object.keys(groupedByYear).map((year) => {
-        const months = Object.keys(groupedByYear[year]).map((month) => {
-          const entriesByDate = groupedByYear[year][month].reduce<Record<string, Entry[]>>((acc, entry) => {
-            if (!acc[entry.date]) {
-              acc[entry.date] = [];
-            }
-            acc[entry.date].push(entry);
-            return acc;
-          }, {});
-          const dates = Object.keys(entriesByDate)
-            .map((date) => ({
-              date,
-              entries: entriesByDate[date],
-            }))
-            .reverse();
-          return {
-            month,
-            dates,
-          };
-        });
+        const months = Object.keys(groupedByYear[year])
+          .sort((a, b) => parseInt(a) - parseInt(b))
+          .map((month) => {
+            const entriesByDate = groupedByYear[year][month].reduce<Record<string, Entry[]>>((acc, entry) => {
+              if (!acc[entry.date]) {
+                acc[entry.date] = [];
+              }
+              acc[entry.date].push(entry);
+              return acc;
+            }, {});
+            const dates = Object.keys(entriesByDate)
+              .map((date) => ({
+                date,
+                entries: entriesByDate[date],
+              }))
+              .reverse();
+            return {
+              month,
+              dates,
+            };
+          });
         return {
           year,
           months,
@@ -180,7 +181,7 @@ export default function CustomDrawer() {
         >
           {i18n.t("memolog")}
         </Text>
-        <TouchableOpacity onPress={() => router.push("./settings")}>
+        <TouchableOpacity onPress={() => router.navigate("/settings")}>
           <Ionicons name="settings-outline" size={24} color="black" style={{ paddingLeft: 10 }} />
         </TouchableOpacity>
       </View>

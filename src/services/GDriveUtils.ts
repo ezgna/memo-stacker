@@ -91,7 +91,7 @@ export const ExportGDrive = async (db: SQLiteDatabase) => {
   }
 };
 
-export const InportGDrive = async () => {
+export const ImportGDrive = async () => {
   try {
     const gdrive = await signinGoogle();
     if (gdrive) {
