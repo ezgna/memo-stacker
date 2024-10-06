@@ -26,6 +26,8 @@ export default function index() {
         CREATE TABLE IF NOT EXISTS entries (
           id INTEGER PRIMARY KEY,
           created_at TEXT,
+          updated_at TEXT,
+          deleted_at TEXT,
           date TEXT,
           text TEXT,
           user_id TEXT DEFAULT NULL
@@ -89,20 +91,27 @@ export default function index() {
         minute: "2-digit",
         second: "2-digit",
       }),
+      updated_at: new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+      deleted_at: null,
       date: currentDate,
       text: text.trim(),
       user_id: userId,
     };
     try {
       await db.withTransactionAsync(async () => {
-        await db.runAsync(`INSERT INTO entries (created_at, date, text, user_id) VALUES (?, ?, ?, ?)`, [
-          data.created_at,
-          data.date,
-          data.text,
-          data.user_id,
-        ]);
+        await db.runAsync(
+          `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?)`,
+          [data.created_at, data.updated_at, data.deleted_at, data.date, data.text, data.user_id]
+        );
       });
-      
+
       setText("");
       setDataUpdated(!dataUpdated);
     } catch (e) {
@@ -113,7 +122,16 @@ export default function index() {
   const deleteEntry = async (id: number) => {
     if (!db) return;
     try {
-      await db.runAsync(`DELETE FROM entries WHERE id = ?`, [id]);
+      const deletedAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      // await db.runAsync(`DELETE FROM entries WHERE id = ?`, [id]);
+      await db.runAsync("UPDATE entries SET deleted_at = ? WHERE id = ?", [deletedAt, id]);
       setDataUpdated(!dataUpdated);
     } catch (e) {
       console.error(e);
@@ -130,8 +148,25 @@ export default function index() {
 
   const updateEntry = async () => {
     if (!db) return;
+    if (!editingText.trim()) {
+      Toast.show("Content cannot be empty");
+      return;
+    }
     try {
-      await db.runAsync(`UPDATE entries SET text = ? WHERE id = ?`, [editingText, editingId]);
+      const updateAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      const trimmedEditingText = editingText.trim();
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ? WHERE id = ?`, [
+        trimmedEditingText,
+        updateAt,
+        editingId,
+      ]);
       setEditingId(null);
       setEditingText("");
       setDataUpdated(!dataUpdated);
@@ -165,11 +200,13 @@ export default function index() {
     if (!db) return;
     const fetchAllEntries = async () => {
       try {
-        const entries: Entry[] = await db.getAllAsync("SELECT * FROM entries ORDER BY created_at DESC");
+        const entries: Entry[] = await db.getAllAsync(
+          "SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC"
+        );
         setFetchedEntries(entries);
         if (searchQuery) {
           const searchedEntries = entries.filter((entry) =>
-            entry.text.toLowerCase().includes(searchQuery.toLowerCase())
+            entry.text?.toLowerCase().includes(searchQuery.toLowerCase())
           );
           setFetchedEntries(searchedEntries);
         }

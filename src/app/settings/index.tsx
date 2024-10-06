@@ -75,14 +75,22 @@ const SettingsScreen = () => {
       if (!db) {
         Alert.alert("database initialize error");
       } else {
-        const placeholders = dataList.map(() => "(?,?,?,?)").join(",");
+        const placeholders = dataList.map(() => "(?,?,?,?,?,?)").join(",");
         const values = dataList.reduce(
-          (acc, data) => acc.concat([data.created_at, data.date, data.text, data.user_id]),
+          (acc, data) =>
+            acc.concat([
+              data.created_at,
+              data.updated_at,
+              data.deleted_at,
+              data.date,
+              data.text,
+              data.user_id,
+            ]),
           [] as (string | null)[]
         );
         await db.withTransactionAsync(async () => {
           await db.runAsync(
-            `INSERT INTO entries (created_at, date, text, user_id) VALUES ${placeholders}`,
+            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES ${placeholders}`,
             values
           );
         });

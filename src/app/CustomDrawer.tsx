@@ -1,14 +1,15 @@
 import { Entry } from "@/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
-import { useDatabase } from "../hooks/useDatabase";
-import { useDataContext } from "../contexts/DataContext";
 import { DateModal } from "../components/DateModal";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router, useRouter } from "expo-router";
+import { useDataContext } from "../contexts/DataContext";
+import { useDatabase } from "../hooks/useDatabase";
 import i18n, { isJapanese } from "../utils/i18n";
+import { TrashModal } from "../components/TrashModal";
 
 interface Dates {
   date: string;
@@ -32,6 +33,7 @@ export default function CustomDrawer() {
   const [collapsedItems, setCollapsedItems] = useState<Record<string, boolean>>({});
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEntries, setSelectedEntries] = useState<Entry[]>([]);
+  const [isTrash, setIsTrash] = useState(false);
 
   useEffect(() => {
     if (!db) return;
@@ -93,6 +95,7 @@ export default function CustomDrawer() {
   const handleEntryPress = (entries: Entry[]) => {
     setModalVisible(true);
     setSelectedEntries(entries);
+    setIsTrash(false);
   };
 
   const sections = fetchedData.map((group) => ({
@@ -171,6 +174,24 @@ export default function CustomDrawer() {
     }
   };
 
+  const handleTrashPress = async () => {
+    if (!db) return;
+    const deletedEntries: Entry[] = await db.getAllAsync(
+      "SELECT * FROM entries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC"
+    );
+    await db.runAsync(`DELETE FROM entries WHERE deleted_at <= datetime('now', '-7 days')`);
+    setIsTrash(true);
+    setModalVisible(true);
+    setSelectedEntries(deletedEntries);
+  };
+
+  const restoreFromTrash = async (id: number) => {
+    if (!db) return;
+    await db.runAsync("UPDATE entries SET deleted_at = ? WHERE id = ?", [null, id]);
+    setDataUpdated(!dataUpdated);
+    setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ borderBottomWidth: 2, marginBottom: 10, flexDirection: "row", alignItems: "center" }}>
@@ -186,14 +207,40 @@ export default function CustomDrawer() {
         </TouchableOpacity>
       </View>
       {fetchedData && fetchedData.length > 0 && (
-        <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} />
+        <SectionList
+          sections={sections}
+          renderSectionHeader={renderSectionHeader}
+          renderItem={renderItem}
+          style={{ flex: 0.7 }}
+        />
       )}
+      <View
+        style={{
+          flex: 0.3,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            backgroundColor: "whitesmoke",
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => handleTrashPress()}
+        >
+          <Ionicons name="trash-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </View>
       <DateModal
         onClose={() => setModalVisible(false)}
         modalVisible={modalVisible}
         selectedEntries={selectedEntries}
         onDelete={deleteEntry}
         updateEntry={updateEntry}
+        isTrash={isTrash}
+        onRestore={restoreFromTrash}
       />
     </View>
   );

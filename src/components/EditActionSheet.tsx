@@ -6,26 +6,37 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 interface EditActionSheetProps {
   deleteEntry: () => void;
   updateEntry: () => void;
+  isTrash: boolean | undefined;
+  restoreEntry: (() => void) | undefined;
 }
 
-export const EditActionSheet: FC<EditActionSheetProps> = ({ deleteEntry, updateEntry }) => {
+export const EditActionSheet: FC<EditActionSheetProps> = ({
+  deleteEntry,
+  updateEntry,
+  isTrash,
+  restoreEntry,
+}) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onPress = () => {
-    const options = ["Edit", "Delete", "Cancel"];
-    const destructiveButtonIndex = 1;
+    const options = isTrash ? ["Restore", "Cancel"] : ["Edit", "Delete", "Cancel"];
+    const destructiveButtonIndex = isTrash ? undefined : 1;
     const cancelButtonIndex = 2;
 
     showActionSheetWithOptions(
       {
         options,
-        cancelButtonIndex,
         destructiveButtonIndex,
+        cancelButtonIndex,
       },
       (selectedIndex?: number) => {
         switch (selectedIndex) {
           case 0:
-            updateEntry();
+            if (isTrash && restoreEntry) {
+              restoreEntry();
+            } else {
+              updateEntry();
+            }
             break;
 
           case destructiveButtonIndex:

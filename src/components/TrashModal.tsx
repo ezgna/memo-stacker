@@ -7,24 +7,20 @@ import SaveButton from "./SaveButton";
 import CancelEditButton from "./CancelEditButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
-interface DateModalProps {
+interface TrashModalProps {
   onClose: () => void;
   modalVisible: boolean;
   selectedEntries: Entry[];
   onDelete: (id: number) => void;
   updateEntry: (editingText: string, editingId: number) => void;
-  isTrash: boolean;
-  onRestore: (id: number) => void;
 }
 
-export const DateModal: FC<DateModalProps> = ({
+export const TrashModal: FC<TrashModalProps> = ({
   onClose,
   modalVisible,
   selectedEntries,
   onDelete,
   updateEntry,
-  isTrash,
-  onRestore
 }) => {
   const { dataUpdated } = useDataContext();
   const [editingText, setEditingText] = useState("");
@@ -52,22 +48,20 @@ export const DateModal: FC<DateModalProps> = ({
           <TouchableWithoutFeedback onPress={onClose}>
             <View style={styles.overlay} />
           </TouchableWithoutFeedback>
-          <View style={[styles.modalContainer, isTrash && { backgroundColor: "whitesmoke" }]}>
+          <View style={styles.modalContainer}>
             {editingId ? (
               <View>
-                <TextInput style={styles.input} value={editingText} onChangeText={setEditingText} multiline />
+                <TextInput
+                  style={styles.input}
+                  value={editingText}
+                  onChangeText={setEditingText}
+                  multiline
+                />
                 <CancelEditButton onPress={() => cancelEdit()} />
                 <SaveButton onPress={() => updateEntry(editingText, editingId)} editingId={editingId} />
               </View>
             ) : null}
-            <FlashListCompo
-              data={selectedEntries}
-              onDelete={onDelete}
-              onUpdate={handleEdit}
-              editingId={editingId}
-              isTrash={isTrash}
-              onRestore={onRestore}
-            />
+            <FlashListCompo data={selectedEntries} onDelete={onDelete} onUpdate={handleEdit} editingId={editingId} />
           </View>
         </View>
       </ActionSheetProvider>

@@ -10,9 +10,18 @@ interface FlashListCompoProps {
   onDelete: (id: number) => void;
   onUpdate: (text: string, id: number) => void;
   editingId: number | null;
+  isTrash?: boolean;
+  onRestore?: (id: number) => void;
 }
 
-export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpdate, editingId }) => {
+export const FlashListCompo: FC<FlashListCompoProps> = ({
+  data,
+  onDelete,
+  onUpdate,
+  editingId,
+  isTrash,
+  onRestore,
+}) => {
   const renderItem = ({ item }: { item: Entry }) => (
     <View
       style={[
@@ -31,6 +40,8 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
         <EditActionSheet
           deleteEntry={() => onDelete(item.id)}
           updateEntry={() => onUpdate(item.text, item.id)}
+          isTrash={isTrash}
+          restoreEntry={onRestore ? () => onRestore(item.id) : undefined}
         />
       </View>
       {/* {Platform.OS === "ios" ? (
