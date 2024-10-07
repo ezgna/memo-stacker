@@ -1,17 +1,18 @@
 import { Session } from "@supabase/supabase-js";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { supabase } from "../utils/supabase";
+import NetInfo from "@react-native-community/netinfo";
 
 interface AuthContextType {
   session: Session | null;
-  setSession: (session: Session | null) => void;
+  isOnline: boolean | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [isOnline, setIsOnline] = useState<boolean | null>(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -33,7 +34,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  return <AuthContext.Provider value={{ session, setSession }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOnline(state.isConnected)
+    });
+
+    unsubscribe();
+  }, []);
+
+  const value = { session, isOnline };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuthContext = () => {

@@ -6,9 +6,83 @@ import * as SQLite from "expo-sqlite";
 export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
   if (!db || !userId) return;
   try {
-    await db.runAsync(`UPDATE entries SET user_id = ?;`, [userId]);
+    await db.runAsync(`UPDATE entries SET user_id = ? WHERE user_id IS NULL OR user_id != ?;`, [
+      userId,
+      userId,
+    ]);
   } catch (e) {
     console.error(e);
+  }
+};
+
+// when offline to online
+export const syncUnsyncedLocalDataWithSupabase = async (
+  db: SQLite.SQLiteDatabase | null,
+  userId: string | null
+) => {
+  if (!db || !userId) return;
+  const unsyncedEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE synced = 0");
+  if (unsyncedEntries.length > 0) {
+    for (const unsyncedEntry of unsyncedEntries) {
+      const { data } = await supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id);
+      if (data) {
+        data.map(async (entry) => {
+          if (new Date(entry.updated_at) < new Date(unsyncedEntry.updated_at)) {
+            await supabase.from("entries").upsert([unsyncedEntry]);
+          }
+        });
+      } else {
+        await supabase.from("entries").insert([unsyncedEntry]);
+      }
+    }
+  }
+};
+
+export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
+  if (!db || !userId) return;
+  const { data, error } = await supabase.from("entries").select("*").eq("user_id", userId);
+  if (error) {
+    console.error(error);
+    return;
+  }
+  if (data) {
+    for (const entry of data) {
+      const localEntry: Entry | null = await db.getFirstAsync(`SELECT * FROM entries WHERE id = ?`, [
+        entry.id,
+      ]);
+      if (localEntry) {
+        if (new Date(entry.updated_at) > new Date(localEntry.updated_at)) {
+          await db.runAsync(
+            `UPDATE entries SET text = ?, updated_at = ?, deleted_at = ?, synced = 1 WHERE id = ?`,
+            [entry.text, entry.updated_at, entry.deleted_at, entry.id]
+          );
+        } else if (new Date(entry.updated_at) < new Date(localEntry.updated_at)) {
+          await supabase
+            .from("entries")
+            .update({
+              text: localEntry.text,
+              updated_at: localEntry.updated_at,
+              deleted_at: localEntry.deleted_at,
+            })
+            .eq("id", localEntry.id);
+        }
+      } else {
+        await db.runAsync(
+          `INSERT INTO entries (id, text, created_at, updated_at, deleted_at, user_id, synced) VALUES (?,?,?,?,?,?,?))`,
+          [entry.id, entry.text, entry.created_at, entry.updated_at, entry.deleted_at, entry.user_id, 1]
+        );
+      }
+    }
+  }
+
+  const deletedEntries: Entry[] = await db.getAllAsync(
+    `SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`
+  );
+  if (deletedEntries) {
+    for (const entry of deletedEntries) {
+      await db.runAsync(`DELETE FROM entries WHERE id = ?`, [entry.id]);
+      await supabase.from("entries").delete().eq("id", entry.id);
+    }
   }
 };
 
@@ -25,26 +99,21 @@ export const updateLocalUserIdToNull = async (db: SQLite.SQLiteDatabase | null, 
 // when subscribe
 export const syncAllLocalDataWithSupabase = async (db: SQLite.SQLiteDatabase | null) => {
   if (!db) return;
-  // await db.runAsync(`UPDATE entries SET synced = ?;`, [0]);
+  await db.runAsync(`UPDATE entries SET synced = 0 WHERE synced != 0;`);
   const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries");
   for (const entry of allEntries) {
     const { error } = await supabase.from("entries").insert([entry]);
-    if (error) console.error(error);
-    // if (!error) {
-    //   await db.runAsync(`UPDATE entries SET synced = ? WHERE id = ?`, [1, entry.id]);
-    // } else {
-    //   console.error(error);
-    // }
+    if (!error) {
+      await db.runAsync(`UPDATE entries SET synced = 1 WHERE id = ?`, [entry.id]);
+    } else {
+      console.error(error);
+    }
   }
 };
 
 // when unsubscribe
-export const unsyncAllLocalDataWithSupabase = async (
-  db: SQLite.SQLiteDatabase | null,
-  userId: string | null
-) => {
+export const deleteAllSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
   if (!db || !userId) return;
-  // await db.runAsync(`UPDATE entries SET synced = ?;`, [0]);
   await supabase.from("entries").delete().eq("user_id", userId);
 };
 
@@ -85,7 +154,7 @@ export const syncAllDataFromSupabase = async (db: SQLite.SQLiteDatabase | null) 
   });
 };
 
-// when edit  maybe need updated_at?
+// when edit
 export const syncEditedData = async (db: SQLite.SQLiteDatabase | null) => {
   if (!db) return;
   const latestEditedEntry: Entry | null = await db.getFirstAsync(

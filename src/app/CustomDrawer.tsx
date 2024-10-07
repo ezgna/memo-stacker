@@ -9,7 +9,6 @@ import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
 import i18n, { isJapanese } from "../utils/i18n";
-import { TrashModal } from "../components/TrashModal";
 
 interface Dates {
   date: string;
@@ -153,7 +152,27 @@ export default function CustomDrawer() {
   const deleteEntry = async (id: number) => {
     if (!db) return;
     try {
-      await db.runAsync(`DELETE FROM entries WHERE id = ?`, [id]);
+      const updateAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      const deletedAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
+        updateAt,
+        deletedAt,
+        id,
+      ]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
     } catch (e) {
@@ -164,7 +183,20 @@ export default function CustomDrawer() {
   const updateEntry = async (editingText: string, editingId: number) => {
     if (!db) return;
     try {
-      await db.runAsync(`UPDATE entries SET text = ? WHERE id = ?`, [editingText, editingId]);
+      const updateAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      const trimmedEditingText = editingText.trim();
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
+        trimmedEditingText,
+        updateAt,
+        editingId,
+      ]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) =>
         prev.map((entry) => (entry.id === editingId ? { ...entry, text: editingText } : entry))
@@ -179,7 +211,6 @@ export default function CustomDrawer() {
     const deletedEntries: Entry[] = await db.getAllAsync(
       "SELECT * FROM entries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC"
     );
-    await db.runAsync(`DELETE FROM entries WHERE deleted_at <= datetime('now', '-7 days')`);
     setIsTrash(true);
     setModalVisible(true);
     setSelectedEntries(deletedEntries);
@@ -187,9 +218,25 @@ export default function CustomDrawer() {
 
   const restoreFromTrash = async (id: number) => {
     if (!db) return;
-    await db.runAsync("UPDATE entries SET deleted_at = ? WHERE id = ?", [null, id]);
-    setDataUpdated(!dataUpdated);
-    setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
+    try {
+      const updateAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
+        updateAt,
+        null,
+        id,
+      ]);
+      setDataUpdated(!dataUpdated);
+      setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

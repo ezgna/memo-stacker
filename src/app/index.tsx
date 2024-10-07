@@ -8,17 +8,24 @@ import SaveButton from "../components/SaveButton";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
-import { supabase } from "../utils/supabase";
+import {
+  fetchSupabaseData,
+  syncAllLocalDataWithSupabase,
+  syncUnsyncedLocalDataWithSupabase,
+  updateLocalUserIdToUid,
+} from "../utils/sync";
 
 export default function index() {
   const db = useDatabase();
   const [text, setText] = useState<string>("");
-  const { session } = useAuthContext();
+  const { session, isOnline } = useAuthContext();
   const userId = session?.user.id || null;
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
+  const [isPaidUser, setIsPaidUser] = useState(false);
 
-  // synced INTEGER DEFAULT 0
+  console.log(isOnline, userId);
+
   const createTable = async () => {
     if (!db) return;
     try {
@@ -30,7 +37,8 @@ export default function index() {
           deleted_at TEXT,
           date TEXT,
           text TEXT,
-          user_id TEXT DEFAULT NULL
+          user_id TEXT DEFAULT NULL,
+          synced INTEGER DEFAULT 0
         );
         CREATE INDEX IF NOT EXISTS idx_date ON entries (date);
       `);
@@ -38,34 +46,6 @@ export default function index() {
       console.error(e);
     }
   };
-
-  // const updateUserId = async () => {
-  //   if (!db || !userId) return;
-  //   try {
-  //     await db.runAsync(`UPDATE entries SET user_id = ? WHERE user_id IS NULL;`, [userId]);
-  //     await supabase.from('entries').update({user_id: userId}).is('user_id', null);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
-
-  // const syncLocalDataWithSupabase = async () => {
-  //   if (!db) return;
-  //   const unsyncedEntries: Entry[] = await db.getAllAsync(`SELECT * FROM entries WHERE synced = 0`);
-  //   if (!unsyncedEntries.length) return
-  //   for (const entry of unsyncedEntries) {
-  //     const { error } = await supabase.from("entries").insert([entry]);
-  //     if (!error) {
-  //       await db.runAsync(`UPDATE entries SET synced = 1 WHERE id = ?`, [entry.id]);
-  //     } else {
-  //       console.error(error);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   syncLocalDataWithSupabase();
-  // }, [db]);
 
   const storeEntry = async (text: string) => {
     if (!db) return;
@@ -122,6 +102,14 @@ export default function index() {
   const deleteEntry = async (id: number) => {
     if (!db) return;
     try {
+      const updateAt = new Date().toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
       const deletedAt = new Date().toLocaleString("ja-JP", {
         year: "numeric",
         month: "2-digit",
@@ -130,8 +118,11 @@ export default function index() {
         minute: "2-digit",
         second: "2-digit",
       });
-      // await db.runAsync(`DELETE FROM entries WHERE id = ?`, [id]);
-      await db.runAsync("UPDATE entries SET deleted_at = ? WHERE id = ?", [deletedAt, id]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
+        updateAt,
+        deletedAt,
+        id,
+      ]);
       setDataUpdated(!dataUpdated);
     } catch (e) {
       console.error(e);
@@ -162,7 +153,7 @@ export default function index() {
         second: "2-digit",
       });
       const trimmedEditingText = editingText.trim();
-      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ? WHERE id = ?`, [
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
         trimmedEditingText,
         updateAt,
         editingId,
@@ -184,9 +175,32 @@ export default function index() {
     createTable();
   }, [db]);
 
+  useEffect(() => {
+    updateLocalUserIdToUid(db, userId);
+  }, [db, userId]);
+
   // useEffect(() => {
-  //   updateUserId();
-  // }, [userId]);
+  //   if (isPaidUser && isOnline) {
+  //     syncAllLocalDataWithSupabase(db);
+  //   } else if (!isPaidUser && isOnline) {
+
+  //   }
+  // }, [isPaidUser]);
+
+  useEffect(() => {
+    // Check isOnline if it will automatically change when network state change
+    const sync = async () => {
+      if (isOnline && isPaidUser) {
+        try {
+          await syncUnsyncedLocalDataWithSupabase(db, userId);
+          await fetchSupabaseData(db, userId);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    sync();
+  }, [db, userId, isOnline]);
 
   // const inputRef = useRef<TextInput>(null);
 

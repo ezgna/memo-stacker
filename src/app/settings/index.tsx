@@ -75,7 +75,7 @@ const SettingsScreen = () => {
       if (!db) {
         Alert.alert("database initialize error");
       } else {
-        const placeholders = dataList.map(() => "(?,?,?,?,?,?)").join(",");
+        const placeholders = dataList.map(() => "(?,?,?,?,?,?,?)").join(",");
         const values = dataList.reduce(
           (acc, data) =>
             acc.concat([
@@ -85,12 +85,13 @@ const SettingsScreen = () => {
               data.date,
               data.text,
               data.user_id,
+              data.synced
             ]),
-          [] as (string | null)[]
+          [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
           await db.runAsync(
-            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES ${placeholders}`,
+            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, synced) VALUES ${placeholders}`,
             values
           );
         });

@@ -6,5 +6,5 @@ export interface Entry {
   date: string;
   text: string;
   user_id: string | null;
-  // synced: number;
+  synced: number;
 }
