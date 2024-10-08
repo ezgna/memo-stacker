@@ -10,10 +10,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useDataContext } from "../../contexts/DataContext";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Fontisto from "@expo/vector-icons/Fontisto";
+import Feather from "@expo/vector-icons/Feather";
+import Entypo from "@expo/vector-icons/Entypo";
+import Toast from "react-native-root-toast";
 
 interface SettingsListType {
   id: number;
   label: string;
+  icon: any;
 }
 
 interface Files {
@@ -28,9 +34,9 @@ const SettingsScreen = () => {
   const { session } = useAuthContext();
 
   const data = [
-    { id: 1, label: `${i18n.t("account")}` },
-    { id: 2, label: `${i18n.t("export")}` },
-    { id: 3, label: `${i18n.t("import")}` },
+    { id: 1, label: `${i18n.t("account")}`, icon: "user" },
+    { id: 2, label: `${i18n.t("export")}`, icon: "export" },
+    { id: 3, label: `${i18n.t("import")}`, icon: "import" },
   ];
 
   // Hide export and import button for paid user
@@ -44,7 +50,9 @@ const SettingsScreen = () => {
           Alert.alert("database initialize error");
         } else {
           if (!session) {
-            Alert.alert("You have to signup to export");
+            Toast.show("You have to signup before exporting", {
+              position: Toast.positions.CENTER,
+            })
             router.push("/settings/(auth)/register");
           } else {
             const exportedFileName = await ExportGDrive(db);
@@ -58,7 +66,9 @@ const SettingsScreen = () => {
         break;
       case 3:
         if (!session) {
-          Alert.alert("You have to login to import");
+          Toast.show("You have to login before importing", {
+            position: Toast.positions.CENTER,
+          })
           router.push("/settings/(auth)/login");
         } else {
           const importedFiles = await ImportGDrive();
@@ -85,7 +95,7 @@ const SettingsScreen = () => {
               data.date,
               data.text,
               data.user_id,
-              data.synced
+              data.synced,
             ]),
           [] as (string | number | null)[]
         );
@@ -113,10 +123,27 @@ const SettingsScreen = () => {
 
   const renderItem = useCallback(
     ({ item }: { item: SettingsListType }) => (
-      <TouchableOpacity onPress={() => handlePress(item.id)}>
-        <Text style={isJapanese ? [styles.label, { fontFamily: "NotoSansJP" }] : styles.label}>
-          {item.label}
-        </Text>
+      <TouchableOpacity onPress={() => handlePress(item.id)} style={{ paddingLeft: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingRight: 10,
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {item.id === 1 ? (
+              <Feather name={item.icon} size={24} color="black" />
+            ) : (
+              <Fontisto name={item.icon} size={20} color="black" style={{ paddingLeft: 4 }} />
+            )}
+            <Text style={isJapanese ? [styles.label, { fontFamily: "NotoSansJP" }] : styles.label}>
+              {item.label}
+            </Text>
+          </View>
+          <Entypo name="chevron-small-right" size={24} color="black" />
+        </View>
       </TouchableOpacity>
     ),
     [handlePress]
@@ -153,7 +180,7 @@ const SettingsScreen = () => {
   }, [session]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 30 }}>
       <FlashList
         data={data}
         renderItem={renderItem}
@@ -170,8 +197,8 @@ export default SettingsScreen;
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 20,
-    paddingVertical: 5,
+    fontSize: 16,
+    paddingVertical: 20,
     paddingHorizontal: 15,
   },
   file: {
