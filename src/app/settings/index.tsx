@@ -184,7 +184,7 @@ const SettingsScreen = () => {
       <FlashList
         data={data}
         renderItem={renderItem}
-        estimatedItemSize={20}
+        estimatedItemSize={60}
         keyExtractor={(item) => item.id.toString()}
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
         ListFooterComponent={ListFooterComponent()}

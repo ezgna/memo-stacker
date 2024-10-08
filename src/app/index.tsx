@@ -14,6 +14,7 @@ import {
   syncUnsyncedLocalDataWithSupabase,
   updateLocalUserIdToUid,
 } from "../utils/sync";
+import { router } from "expo-router";
 
 export default function index() {
   const db = useDatabase();
@@ -23,8 +24,6 @@ export default function index() {
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
   const [isPaidUser, setIsPaidUser] = useState(false);
-
-  console.log(isOnline, userId);
 
   const createTable = async () => {
     if (!db) return;
