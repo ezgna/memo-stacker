@@ -1,10 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import i18n from "../utils/i18n";
 
 const CancelEditButton = ({ onPress }: { onPress: () => void }) => {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.5}>
-      <Text style={styles.text}>Cancel Edit</Text>
+      <Text style={styles.text}>{`${i18n.t('cancelEdit')}`}</Text>
     </TouchableOpacity>
   );
 };

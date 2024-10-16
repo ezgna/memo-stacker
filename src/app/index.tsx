@@ -1,5 +1,5 @@
 import { Entry } from "@/types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
@@ -8,22 +8,20 @@ import SaveButton from "../components/SaveButton";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
+import ResetDatabase from "../utils/resetDatabase";
 import {
   fetchSupabaseData,
-  syncAllLocalDataWithSupabase,
-  syncUnsyncedLocalDataWithSupabase,
   updateLocalUserIdToUid,
+  updateUnsyncedLocalDataWithSupabase
 } from "../utils/sync";
-import { router } from "expo-router";
 
 export default function index() {
   const db = useDatabase();
   const [text, setText] = useState<string>("");
-  const { session, isOnline } = useAuthContext();
+  const { session, isOnline, isProUser } = useAuthContext();
   const userId = session?.user.id || null;
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
-  const [isPaidUser, setIsPaidUser] = useState(false);
 
   const createTable = async () => {
     if (!db) return;
@@ -62,22 +60,8 @@ export default function index() {
       .replace(/\//g, "-")
       .split(" ")[0];
     const data = {
-      created_at: new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-      updated_at: new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       deleted_at: null,
       date: currentDate,
       text: text.trim(),
@@ -101,22 +85,8 @@ export default function index() {
   const deleteEntry = async (id: number) => {
     if (!db) return;
     try {
-      const updateAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      const deletedAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const updateAt = new Date().toISOString();
+      const deletedAt = new Date().toISOString();
       await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
         updateAt,
         deletedAt,
@@ -143,14 +113,7 @@ export default function index() {
       return;
     }
     try {
-      const updateAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
       await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
         trimmedEditingText,
@@ -178,20 +141,12 @@ export default function index() {
     updateLocalUserIdToUid(db, userId);
   }, [db, userId]);
 
-  // useEffect(() => {
-  //   if (isPaidUser && isOnline) {
-  //     syncAllLocalDataWithSupabase(db);
-  //   } else if (!isPaidUser && isOnline) {
-
-  //   }
-  // }, [isPaidUser]);
-
   useEffect(() => {
     // Check isOnline if it will automatically change when network state change
     const sync = async () => {
-      if (isOnline && isPaidUser) {
+      if (isOnline && isProUser) {
         try {
-          await syncUnsyncedLocalDataWithSupabase(db, userId);
+          await updateUnsyncedLocalDataWithSupabase(db, userId);
           await fetchSupabaseData(db, userId);
         } catch (e) {
           console.error(e);
@@ -199,15 +154,15 @@ export default function index() {
       }
     };
     sync();
-  }, [db, userId, isOnline]);
+  }, [db, userId, isOnline, isProUser]);
 
-  // const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInput>(null);
 
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.focus();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (!db) return;
@@ -232,10 +187,11 @@ export default function index() {
 
   return (
     <View style={styles.container}>
+      {/* <ResetDatabase /> */}
       <View>
         <TextInput
           style={styles.input}
-          // ref={inputRef}
+          ref={inputRef}
           onChangeText={editingId ? setEditingText : setText}
           value={editingId ? editingText : text}
           multiline

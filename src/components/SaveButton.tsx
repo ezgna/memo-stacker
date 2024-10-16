@@ -1,10 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import i18n from "../utils/i18n";
 
 const SaveButton = ({ onPress, editingId }: { onPress: () => void; editingId: number | null }) => {
   return (
     <TouchableOpacity style={styles.saveButton} onPress={onPress} activeOpacity={0.5}>
-      <Text style={styles.saveText}>{editingId ? "Done" : "Save"}</Text>
+      <Text style={styles.saveText}>{editingId ? `${i18n.t('done')}` : `${i18n.t('save')}`}</Text>
     </TouchableOpacity>
   );
 };

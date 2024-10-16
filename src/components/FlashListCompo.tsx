@@ -1,8 +1,8 @@
 import { FlashList } from "@shopify/flash-list";
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { Platform, Text, TextInput, View } from "react-native";
 import { EditActionSheet } from "./EditActionSheet";
-import { isJapanese } from "@/src/utils/i18n";
+import i18n, { isJapanese } from "@/src/utils/i18n";
 import { Entry } from "@/types";
 
 interface FlashListCompoProps {
@@ -22,6 +22,10 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
   isTrash,
   onRestore,
 }) => {
+  const sortedData = [...data].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
   const renderItem = ({ item }: { item: Entry }) => (
     <View
       style={[
@@ -36,7 +40,16 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
       ]}
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, color: "grey", marginBottom: 10 }}>{item.created_at}</Text>
+        <Text style={{ fontSize: 12, color: "grey", marginBottom: 10 }}>
+          {new Date(item.created_at).toLocaleString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}
+        </Text>
         <EditActionSheet
           deleteEntry={() => onDelete(item.id)}
           updateEntry={() => onUpdate(item.text, item.id)}
@@ -69,13 +82,19 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
   );
 
   return (
-    <FlashList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      estimatedItemSize={80}
-      showsVerticalScrollIndicator={false}
-      extraData={editingId}
-    />
+    <View style={{ flex: 1 }}>
+      {isTrash && data.length === 0 ? (
+        <Text style={{textAlign: 'center', fontSize: 16}}>{`${i18n.t("trashEmpty")}`}</Text>
+      ) : (
+        <FlashList
+          data={sortedData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          estimatedItemSize={80}
+          showsVerticalScrollIndicator={false}
+          extraData={editingId}
+        />
+      )}
+    </View>
   );
 };

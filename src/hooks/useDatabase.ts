@@ -1,5 +1,4 @@
 import * as SQLite from "expo-sqlite";
-
 import { useEffect, useState } from "react";
 
 export const useDatabase = () => {
@@ -7,7 +6,7 @@ export const useDatabase = () => {
   useEffect(() => {
     const openDatabase = async () => {
       try {
-        const dbInstance = await SQLite.openDatabaseAsync("MemoLog.db");
+        const dbInstance = await SQLite.openDatabaseAsync("MemoLogMinute.db");
         setDb(dbInstance);
       } catch (e) {
         console.error(e);

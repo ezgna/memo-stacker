@@ -3,18 +3,17 @@ import { useDatabase } from "@/src/hooks/useDatabase";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/services/GDriveUtils";
 import i18n, { isJapanese } from "@/src/utils/i18n";
 import { Entry } from "@/types";
+import Entypo from "@expo/vector-icons/Entypo";
+import Feather from "@expo/vector-icons/Feather";
+import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useDataContext } from "../../contexts/DataContext";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Fontisto from "@expo/vector-icons/Fontisto";
-import Feather from "@expo/vector-icons/Feather";
-import Entypo from "@expo/vector-icons/Entypo";
 import Toast from "react-native-root-toast";
+import { useDataContext } from "../../contexts/DataContext";
 
 interface SettingsListType {
   id: number;
@@ -52,14 +51,12 @@ const SettingsScreen = () => {
           if (!session) {
             Toast.show("You have to signup before exporting", {
               position: Toast.positions.CENTER,
-            })
+            });
             router.push("/settings/(auth)/register");
           } else {
             const exportedFileName = await ExportGDrive(db);
             if (exportedFileName) {
-              Alert.alert(
-                `A file "${exportedFileName}" was successfully created on your own google drive. Please import it on your new device.`
-              );
+              Alert.alert(i18n.t("exportFinished", { fileName: exportedFileName }));
             }
           }
         }
@@ -68,7 +65,7 @@ const SettingsScreen = () => {
         if (!session) {
           Toast.show("You have to login before importing", {
             position: Toast.positions.CENTER,
-          })
+          });
           router.push("/settings/(auth)/login");
         } else {
           const importedFiles = await ImportGDrive();
@@ -117,7 +114,7 @@ const SettingsScreen = () => {
     const importedDataList = await handleFileSelect(id);
     if (importedDataList) {
       restoreDatabase(importedDataList);
-      Alert.alert(`A file "${name}" was successfully imported to this device!`);
+      Alert.alert(i18n.t("importFinished", { fileName: name }));
     }
   };
 
@@ -204,7 +201,6 @@ const styles = StyleSheet.create({
   file: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 20,
     paddingVertical: 3,
   },
 });

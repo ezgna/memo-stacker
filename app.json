@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "testthree",
-    "slug": "testthree",
+    "name": "memologminute",
+    "slug": "memologminute",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -21,7 +21,7 @@
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ezgna.testthree"
+      "package": "com.ezgna.memolog"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +42,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "883709c0-cd67-4849-aad0-20c519e9a69d"
+      }
+    },
+    "owner": "ezgna"
   }
 }

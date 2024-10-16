@@ -23,7 +23,6 @@ export default function () {
       email: email,
       password: password,
     });
-    console.log
     if (error) {
       Alert.alert(error.message);
       setLoading(false);
@@ -116,7 +115,7 @@ export default function () {
             onChangeText={(text) => setPassword(text)}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 15 }}>
-            <Ionicons name={showPassword ? "eye" : "eye-off"} size={22} color={themeColor.gray} />
+            <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
           </TouchableOpacity>
         </View>
         <Button

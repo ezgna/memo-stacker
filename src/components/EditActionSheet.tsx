@@ -2,6 +2,7 @@ import { useActionSheet } from "@expo/react-native-action-sheet";
 import { Entypo } from "@expo/vector-icons";
 import { FC } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import i18n from "../utils/i18n";
 
 interface EditActionSheetProps {
   deleteEntry: () => void;
@@ -19,7 +20,7 @@ export const EditActionSheet: FC<EditActionSheetProps> = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onPress = () => {
-    const options = isTrash ? ["Restore", "Cancel"] : ["Edit", "Delete", "Cancel"];
+    const options = isTrash ? [`${i18n.t('restore')}`, `${i18n.t('cancel')}`] : [`${i18n.t('edit')}`, `${i18n.t('delete')}`, `${i18n.t('cancel')}`];
     const destructiveButtonIndex = isTrash ? undefined : 1;
     const cancelButtonIndex = 2;
 

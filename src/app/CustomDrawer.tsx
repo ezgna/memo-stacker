@@ -152,22 +152,8 @@ export default function CustomDrawer() {
   const deleteEntry = async (id: number) => {
     if (!db) return;
     try {
-      const updateAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      const deletedAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const updateAt = new Date().toISOString();
+      const deletedAt = new Date().toISOString();
       await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
         updateAt,
         deletedAt,
@@ -183,14 +169,7 @@ export default function CustomDrawer() {
   const updateEntry = async (editingText: string, editingId: number) => {
     if (!db) return;
     try {
-      const updateAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
       await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
         trimmedEditingText,
@@ -219,14 +198,7 @@ export default function CustomDrawer() {
   const restoreFromTrash = async (id: number) => {
     if (!db) return;
     try {
-      const updateAt = new Date().toLocaleString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const updateAt = new Date().toISOString();
       await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
         updateAt,
         null,

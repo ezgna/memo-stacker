@@ -2,7 +2,6 @@ import { Entry } from "@/types";
 import { supabase } from "./supabase";
 import * as SQLite from "expo-sqlite";
 
-// when signup and import
 export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
   if (!db || !userId) return;
   try {
@@ -15,8 +14,7 @@ export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, u
   }
 };
 
-// when offline to online
-export const syncUnsyncedLocalDataWithSupabase = async (
+export const updateUnsyncedLocalDataWithSupabase = async (
   db: SQLite.SQLiteDatabase | null,
   userId: string | null
 ) => {
@@ -24,8 +22,12 @@ export const syncUnsyncedLocalDataWithSupabase = async (
   const unsyncedEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE synced = 0");
   if (unsyncedEntries.length > 0) {
     for (const unsyncedEntry of unsyncedEntries) {
-      const { data } = await supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id);
-      if (data) {
+      const { data, error } = await supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id);
+      if (error) {
+        console.error(error);
+        return;
+      }
+      if (data.length > 0) {
         data.map(async (entry) => {
           if (new Date(entry.updated_at) < new Date(unsyncedEntry.updated_at)) {
             await supabase.from("entries").upsert([unsyncedEntry]);
@@ -99,7 +101,7 @@ export const updateLocalUserIdToNull = async (db: SQLite.SQLiteDatabase | null, 
 // when subscribe
 export const syncAllLocalDataWithSupabase = async (db: SQLite.SQLiteDatabase | null) => {
   if (!db) return;
-  await db.runAsync(`UPDATE entries SET synced = 0 WHERE synced != 0;`);
+  await db.runAsync(`UPDATE entries SET synced = 0 WHERE synced != 0;`); // I don't know this line is needed
   const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries");
   for (const entry of allEntries) {
     const { error } = await supabase.from("entries").insert([entry]);
