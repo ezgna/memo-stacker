@@ -63,6 +63,7 @@ export default function CustomDrawer() {
               return acc;
             }, {});
             const dates = Object.keys(entriesByDate)
+              .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
               .map((date) => ({
                 date,
                 entries: entriesByDate[date],
@@ -282,59 +283,3 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
   },
 });
-
-// const mockData = [
-//   {
-//     year: "2024",
-//     months: [
-//       {
-//         month: "2024-09",
-//         dates: [
-//           {
-//             date: "2024-09-15",
-//             entries: [
-//               { id: 1, date: "2024-09-15", text: "今日のエントリー" },
-//               { id: 2, date: "2024-09-15", text: "別のエントリー" },
-//             ],
-//           },
-//           {
-//             date: "2024-09-10",
-//             entries: [{ id: 3, date: "2024-09-10", text: "ミーティングについて" }],
-//           },
-//         ],
-//       },
-//       {
-//         month: "2024-08",
-//         dates: [
-//           {
-//             date: "2024-08-25",
-//             entries: [{ id: 4, date: "2024-08-25", text: "夏休みの思い出" }],
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     year: "2023",
-//     months: [
-//       {
-//         month: "2023-12",
-//         dates: [
-//           {
-//             date: "2023-12-31",
-//             entries: [{ id: 5, date: "2023-12-31", text: "大晦日の計画" }],
-//           },
-//         ],
-//       },
-//       {
-//         month: "2023-11",
-//         dates: [
-//           {
-//             date: "2023-11-05",
-//             entries: [{ id: 6, date: "2023-11-05", text: "プロジェクト締め切り" }],
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];

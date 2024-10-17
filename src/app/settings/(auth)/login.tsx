@@ -1,8 +1,9 @@
+import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, Keyboard, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
@@ -13,6 +14,7 @@ export default function () {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
+  const [imageHeight, setImageHeight] = useState(240);
 
   const login = async () => {
     setLoading(true);
@@ -33,17 +35,30 @@ export default function () {
     setLoading(false);
   };
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+      setImageHeight(0);
+    });
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setImageHeight(240);
+    });
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        marginTop: 30,
+        // marginTop: 30,
       }}
       scrollEnabled={false}
     >
       <View
         style={{
-          flex: 2,
+          // flex: 2,
           justifyContent: "center",
           alignItems: "center",
         }}
@@ -51,8 +66,8 @@ export default function () {
         <Image
           resizeMode="contain"
           style={{
-            height: 240,
-            width: 240,
+            height: imageHeight,
+            aspectRatio: 1,
           }}
           source={require("@/assets/images/login.png")}
         />
@@ -73,11 +88,11 @@ export default function () {
             padding: 30,
           }}
         >
-          Login
+          {i18n.t("login")}
         </Text>
         <Text style={{ marginBottom: 10 }}>Email</Text>
         <TextInput
-          containerStyle={styles.textInputStyle}
+          containerStyle={{ paddingVertical: 5 }}
           placeholder="Enter your email"
           value={email}
           autoCapitalize="none"
@@ -99,7 +114,7 @@ export default function () {
         >
           <TextInput
             borderWidth={0}
-            containerStyle={styles.textInputStyle}
+            containerStyle={{ paddingVertical: 5, flex: 1 }}
             placeholder="Enter your password"
             value={password}
             autoCapitalize="none"
@@ -113,7 +128,7 @@ export default function () {
           </TouchableOpacity>
         </View>
         <Button
-          text={loading ? "Loading" : "Continue"}
+          text={loading ? "Loading" : i18n.t("continue")}
           onPress={() => {
             login();
           }}
@@ -145,7 +160,7 @@ export default function () {
                 marginLeft: 5,
               }}
             >
-              Register here
+              {i18n.t("registerHere")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -171,10 +186,3 @@ export default function () {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  textInputStyle: {
-    paddingVertical: 5,
-    flex: 1,
-  },
-});

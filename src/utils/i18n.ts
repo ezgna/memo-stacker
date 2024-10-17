@@ -27,6 +27,12 @@ const i18n = new I18n({
     exportFinished: 'The file "{{fileName}}" has been successfully saved to your Google Drive. Please import it on your new device.',
     importFinished: 'The file "${{fileName}}" has been successfully imported to this device.',
     upgradeRequiresSignUp: 'You need to sign up before upgrading.',
+    register: 'Register',
+    createAnAccount: 'Create an account',
+    loginHere: 'Login here',
+    registerHere: 'Register here',
+    login: 'Login',
+    continue: 'Continue',
   },
   ja: {
     search: "メモを検索",
@@ -53,6 +59,12 @@ const i18n = new I18n({
     exportFinished: 'ファイル「{{fileName}}」が正常にGoogleドライブに保存されました。新しいデバイスでインポートしてください。',
     importFinished: 'ファイル「{{fileName}}」がこのデバイスに正常にインポートされました！',
     upgradeRequiresSignUp: 'アップグレードする前にサインアップが必要です。',
+    register: '登録',
+    createAnAccount: 'アカウント作成',
+    loginHere: 'ログインはこちら',
+    registerHere: '登録はこちら',
+    login: 'ログイン',
+    continue: '続ける',
   },
 });
 

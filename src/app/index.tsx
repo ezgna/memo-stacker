@@ -51,14 +51,14 @@ export default function index() {
       Toast.show("Content cannot be empty");
       return;
     }
-    const currentDate = new Date()
-      .toLocaleDateString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .replace(/\//g, "-")
-      .split(" ")[0];
+    const currentDate = new Date().toISOString().split("T")[0];
+      // .toLocaleDateString("ja-JP", {
+      //   year: "numeric",
+      //   month: "2-digit",
+      //   day: "2-digit",
+      // })
+      // .replace(/\//g, "-")
+      // .split(" ")[0];
     const data = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

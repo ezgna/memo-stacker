@@ -9,6 +9,7 @@ import SearchBox from "../components/SearchBox";
 import { AuthProvider } from "../contexts/AuthContext";
 import { DataProvider } from "../contexts/DataContext";
 import CustomDrawer from "./CustomDrawer";
+import { router } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +24,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/account')
+      // router.push('/settings/(auth)/register')
     }
   }, [loaded]);
 
