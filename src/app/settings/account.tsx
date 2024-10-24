@@ -6,6 +6,12 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import Toast from "react-native-root-toast";
+import * as SecureStore from "expo-secure-store";
+import { encryptEntryText, generateIv } from "@/src/utils/encryption";
+import * as Crypto from "expo-crypto";
+import CryptoES from "crypto-es";
+import { Base64 } from "crypto-es/lib/enc-base64";
+
 
 const APIKeys = {
   apple: "appl_gwbtLmaQvxoHsyGTjTgYuxyakov",
@@ -84,6 +90,7 @@ const account = () => {
         onPress: async () => {
           await supabase.auth.signOut();
           await Purchases.logOut();
+          await SecureStore.deleteItemAsync("password");
           Toast.show("You signed out");
         },
       },
@@ -91,12 +98,47 @@ const account = () => {
   };
 
   useEffect(() => {
-    const setup = async () => {
+    (async () => {
       const offerings = await Purchases.getOfferings();
       pkg = offerings.current?.availablePackages[0];
-    };
+    })();
+  }, []);
 
-    setup();
+  // RLSがちゃんと機能しているかチェックした。検証済み。
+  // useEffect(()=>{
+  //   const fetch = async () =>{
+  //     const { data, error } = await supabase.from('entries').insert([{id: 1000, text: 'test', user_id: session?.user.id}])
+  //     if (error) {
+  //       console.error(data, error)
+  //     } else {
+  //       console.log('succeed', data)
+  //     }
+  //   }
+  //   fetch();
+  // }, [])
+
+  useEffect(() => {
+    const generateMasterKey = () => {
+      const masterKey = CryptoES.lib.WordArray.random(32);
+      return masterKey;
+    };
+    const generateIv = () => {
+      const iv = CryptoES.lib.WordArray.random(16);
+      return iv.toString(Base64);
+    };
+    const encryptEntryText = (entryText: string, masterKey: CryptoES.lib.WordArray, iv: string) => {
+      const parsedIv = CryptoES.enc.Base64.parse(iv);
+      const encryptedText = CryptoES.AES.encrypt(entryText, masterKey, { iv: parsedIv });
+      return encryptedText;
+    };
+    
+    (async () => {
+      const masterKey = generateMasterKey();
+      const iv = generateIv();
+      console.log(masterKey);
+      const encryptedText = encryptEntryText("aaa", masterKey, iv);
+      console.log(encryptedText);
+    })();
   }, []);
 
   return (

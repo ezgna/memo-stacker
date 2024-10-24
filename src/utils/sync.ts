@@ -1,6 +1,7 @@
 import { Entry } from "@/types";
 import { supabase } from "./supabase";
 import * as SQLite from "expo-sqlite";
+import { decryptEntryText, encryptEntryText, generateIv } from "./encryption";
 
 export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
   if (!db || !userId) return;
@@ -16,12 +17,28 @@ export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, u
 
 export const updateUnsyncedLocalDataWithSupabase = async (
   db: SQLite.SQLiteDatabase | null,
-  userId: string | null
+  userId: string | null,
+  decryptedMasterKey: string
 ) => {
   if (!db || !userId) return;
   const unsyncedEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE synced = 0");
+
   if (unsyncedEntries.length > 0) {
+    console.log("a");
+
     for (const unsyncedEntry of unsyncedEntries) {
+      console.log("b");
+      const iv = await generateIv();
+      console.log("c");
+
+      const encryptedText = encryptEntryText(unsyncedEntry.text, decryptedMasterKey, iv);
+      console.log(encryptedText);
+
+      const encryptedUnsyncedEntry = {
+        ...unsyncedEntry,
+        text: encryptedText,
+        iv,
+      };
       const { data, error } = await supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id);
       if (error) {
         console.error(error);
@@ -30,17 +47,22 @@ export const updateUnsyncedLocalDataWithSupabase = async (
       if (data.length > 0) {
         data.map(async (entry) => {
           if (new Date(entry.updated_at) < new Date(unsyncedEntry.updated_at)) {
-            await supabase.from("entries").upsert([unsyncedEntry]);
+            await supabase.from("entries").upsert([encryptedUnsyncedEntry]);
           }
         });
       } else {
-        await supabase.from("entries").insert([unsyncedEntry]);
+        await supabase.from("entries").insert([encryptedUnsyncedEntry]);
       }
     }
   }
+  console.log('finish')
 };
 
-export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
+export const fetchSupabaseData = async (
+  db: SQLite.SQLiteDatabase | null,
+  userId: string | null,
+  decryptedMasterKey: string
+) => {
   if (!db || !userId) return;
   const { data, error } = await supabase.from("entries").select("*").eq("user_id", userId);
   if (error) {
@@ -49,6 +71,9 @@ export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId
   }
   if (data) {
     for (const entry of data) {
+      console.log('m')
+      const decryptedText = decryptEntryText(entry.text, decryptedMasterKey, entry.iv);
+      console.log('decryptedtext:', decryptedText)
       const localEntry: Entry | null = await db.getFirstAsync(`SELECT * FROM entries WHERE id = ?`, [
         entry.id,
       ]);
@@ -56,13 +81,13 @@ export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId
         if (new Date(entry.updated_at) > new Date(localEntry.updated_at)) {
           await db.runAsync(
             `UPDATE entries SET text = ?, updated_at = ?, deleted_at = ?, synced = 1 WHERE id = ?`,
-            [entry.text, entry.updated_at, entry.deleted_at, entry.id]
+            [decryptedText, entry.updated_at, entry.deleted_at, entry.id]
           );
         } else if (new Date(entry.updated_at) < new Date(localEntry.updated_at)) {
           await supabase
             .from("entries")
             .update({
-              text: localEntry.text,
+              text: encryptEntryText(localEntry.text, decryptedMasterKey, entry.iv),
               updated_at: localEntry.updated_at,
               deleted_at: localEntry.deleted_at,
             })
@@ -70,12 +95,14 @@ export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId
         }
       } else {
         await db.runAsync(
-          `INSERT INTO entries (id, text, created_at, updated_at, deleted_at, user_id, synced) VALUES (?,?,?,?,?,?,?))`,
-          [entry.id, entry.text, entry.created_at, entry.updated_at, entry.deleted_at, entry.user_id, 1]
+          `INSERT INTO entries (id, text, created_at, updated_at, deleted_at, user_id, synced) VALUES (?,?,?,?,?,?,?)`,
+          [entry.id, decryptedText, entry.created_at, entry.updated_at, entry.deleted_at, entry.user_id, 1]
         );
       }
     }
   }
+
+  console.log('finishFetch')
 
   const deletedEntries: Entry[] = await db.getAllAsync(
     `SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`

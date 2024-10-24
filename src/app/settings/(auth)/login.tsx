@@ -1,3 +1,4 @@
+import { encryptMasterKey, generateMasterKey } from "@/src/utils/encryption";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -7,6 +8,8 @@ import { Alert, Image, Keyboard, ScrollView, StyleSheet, TouchableOpacity, View 
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
+import * as SecureStore from "expo-secure-store";
+import CryptoES from "crypto-es";
 
 export default function () {
   const router = useRouter();
@@ -25,14 +28,43 @@ export default function () {
       email: email,
       password: password,
     });
-
     if (error) {
       Alert.alert(error.message);
+      setLoading(false);
+      return;
     } else if (session) {
+      const userId = session.user.id;
+      const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
+      if (error) console.error(error);
+      if (userIdInUsers && userIdInUsers.length > 0) {
+        console.log("userIdInUsers exists", userIdInUsers[0]);
+      } else {
+        console.log('1')
+        const masterKey: CryptoES.lib.WordArray = generateMasterKey();
+        console.log('2')
+        const result = encryptMasterKey(masterKey, password);
+        if (!result) {
+          console.log('not exist result of encryptMasterKey')
+          return
+        }
+        const { encryptedMasterKey, iv } = result;
+        console.log('3')
+        const { error } = await supabase
+          .from("users")
+          .insert({ user_id: userId, encrypted_master_key: encryptedMasterKey, iv: iv });
+        if (error) {
+          console.error(error);
+        }
+      }
+      await SecureStore.setItemAsync("password", password);
       Toast.show("you logged in!");
       router.navigate("/");
+    } else {
+      console.log("session not exist");
     }
     setLoading(false);
+    setEmail("");
+    setPassword("");
   };
 
   useEffect(() => {

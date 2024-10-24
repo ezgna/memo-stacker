@@ -12,8 +12,17 @@ import ResetDatabase from "../utils/resetDatabase";
 import {
   fetchSupabaseData,
   updateLocalUserIdToUid,
-  updateUnsyncedLocalDataWithSupabase
+  updateUnsyncedLocalDataWithSupabase,
 } from "../utils/sync";
+import {
+  decryptMasterKey,
+  encryptEntryText,
+  encryptMasterKey,
+  generateIv,
+  generateMasterKey,
+} from "../utils/encryption";
+import { supabase } from "../utils/supabase";
+import * as SecureStore from "expo-secure-store";
 
 export default function index() {
   const db = useDatabase();
@@ -34,8 +43,9 @@ export default function index() {
           deleted_at TEXT,
           date TEXT,
           text TEXT,
-          user_id TEXT DEFAULT NULL,
-          synced INTEGER DEFAULT 0
+          user_id TEXT,
+          synced INTEGER DEFAULT 0,
+          iv TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_date ON entries (date);
       `);
@@ -52,13 +62,13 @@ export default function index() {
       return;
     }
     const currentDate = new Date().toISOString().split("T")[0];
-      // .toLocaleDateString("ja-JP", {
-      //   year: "numeric",
-      //   month: "2-digit",
-      //   day: "2-digit",
-      // })
-      // .replace(/\//g, "-")
-      // .split(" ")[0];
+    // .toLocaleDateString("ja-JP", {
+    //   year: "numeric",
+    //   month: "2-digit",
+    //   day: "2-digit",
+    // })
+    // .replace(/\//g, "-")
+    // .split(" ")[0];
     const data = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -66,12 +76,13 @@ export default function index() {
       date: currentDate,
       text: text.trim(),
       user_id: userId,
+      iv: null,
     };
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?)`,
-          [data.created_at, data.updated_at, data.deleted_at, data.date, data.text, data.user_id]
+          `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, iv) VALUES (?,?,?,?,?,?,?)`,
+          [data.created_at, data.updated_at, data.deleted_at, data.date, data.text, data.user_id, data.iv]
         );
       });
 
@@ -146,8 +157,20 @@ export default function index() {
     const sync = async () => {
       if (isOnline && isProUser) {
         try {
-          await updateUnsyncedLocalDataWithSupabase(db, userId);
-          await fetchSupabaseData(db, userId);
+          const { data, error } = await supabase
+            .from("users")
+            .select("encrypted_master_key, iv")
+            .eq("user_id", userId);
+          if (error) {
+            console.error(error);
+          }
+          if (!(data && data.length > 0)) return;
+          const { encrypted_master_key: encryptedMasterKey, iv } = data[0];
+          const password = await SecureStore.getItemAsync("password");
+          if (!password) return;
+          const masterKey = decryptMasterKey(encryptedMasterKey, password, iv);
+          await updateUnsyncedLocalDataWithSupabase(db, userId, masterKey);
+          await fetchSupabaseData(db, userId, masterKey);
         } catch (e) {
           console.error(e);
         }

@@ -24,7 +24,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/(auth)/register')
+      // router.push('/settings/(auth)/testCrypto')
     }
   }, [loaded]);
 
