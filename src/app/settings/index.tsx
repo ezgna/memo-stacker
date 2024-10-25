@@ -92,14 +92,13 @@ const SettingsScreen = () => {
               data.date,
               data.text,
               data.user_id,
-              data.synced,
-              data.iv
+              0,
             ]),
           [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
           await db.runAsync(
-            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, synced, iv) VALUES ${placeholders}`,
+            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, synced) VALUES ${placeholders}`,
             values
           );
         });

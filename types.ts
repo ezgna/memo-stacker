@@ -7,5 +7,4 @@ export interface Entry {
   text: string;
   user_id: string | null;
   synced: number;
-  iv: string;
 }

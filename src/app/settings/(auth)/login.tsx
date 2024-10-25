@@ -1,4 +1,3 @@
-import { encryptMasterKey, generateMasterKey } from "@/src/utils/encryption";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -10,6 +9,8 @@ import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
 import * as SecureStore from "expo-secure-store";
 import CryptoES from "crypto-es";
+import { WordArray } from "crypto-es/lib/core";
+import { generateKeyFromPassword, generateMasterKey, jsonFormatter } from "@/src/utils/encryption";
 
 export default function () {
   const router = useRouter();
@@ -39,26 +40,23 @@ export default function () {
       if (userIdInUsers && userIdInUsers.length > 0) {
         console.log("userIdInUsers exists", userIdInUsers[0]);
       } else {
-        console.log('1')
-        const masterKey: CryptoES.lib.WordArray = generateMasterKey();
-        console.log('2')
-        const result = encryptMasterKey(masterKey, password);
-        if (!result) {
-          console.log('not exist result of encryptMasterKey')
-          return
-        }
-        const { encryptedMasterKey, iv } = result;
-        console.log('3')
+        const masterKey: string = generateMasterKey();
+        const key: string = generateKeyFromPassword(password)
+        setPassword(key);
+        const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, password, {
+          format: jsonFormatter,
+        });
+        const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
         const { error } = await supabase
           .from("users")
-          .insert({ user_id: userId, encrypted_master_key: encryptedMasterKey, iv: iv });
+          .insert({ user_id: userId, master_key: formattedEncryptedMasterKey });
         if (error) {
           console.error(error);
         }
       }
-      await SecureStore.setItemAsync("password", password);
       Toast.show("you logged in!");
       router.navigate("/");
+      await SecureStore.setItemAsync("password", password);
     } else {
       console.log("session not exist");
     }

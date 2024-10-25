@@ -2,21 +2,11 @@ import { useAuthContext } from "@/src/contexts/AuthContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import Toast from "react-native-root-toast";
-import * as SecureStore from "expo-secure-store";
-import { encryptEntryText, generateIv } from "@/src/utils/encryption";
-import * as Crypto from "expo-crypto";
-import CryptoES from "crypto-es";
-import { Base64 } from "crypto-es/lib/enc-base64";
-
-
-const APIKeys = {
-  apple: "appl_gwbtLmaQvxoHsyGTjTgYuxyakov",
-  google: "your_revenuecat_google_api_key",
-};
 
 let pkg: PurchasesPackage | undefined;
 
@@ -116,30 +106,6 @@ const account = () => {
   //   }
   //   fetch();
   // }, [])
-
-  useEffect(() => {
-    const generateMasterKey = () => {
-      const masterKey = CryptoES.lib.WordArray.random(32);
-      return masterKey;
-    };
-    const generateIv = () => {
-      const iv = CryptoES.lib.WordArray.random(16);
-      return iv.toString(Base64);
-    };
-    const encryptEntryText = (entryText: string, masterKey: CryptoES.lib.WordArray, iv: string) => {
-      const parsedIv = CryptoES.enc.Base64.parse(iv);
-      const encryptedText = CryptoES.AES.encrypt(entryText, masterKey, { iv: parsedIv });
-      return encryptedText;
-    };
-    
-    (async () => {
-      const masterKey = generateMasterKey();
-      const iv = generateIv();
-      console.log(masterKey);
-      const encryptedText = encryptEntryText("aaa", masterKey, iv);
-      console.log(encryptedText);
-    })();
-  }, []);
 
   return (
     <View style={{ padding: 20 }}>

@@ -10,7 +10,8 @@ import { useDatabase } from "../hooks/useDatabase";
 import { fetchSupabaseData, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
 import { supabase } from "../utils/supabase";
 import * as SecureStore from "expo-secure-store";
-import { decryptMasterKey } from "../utils/encryption";
+import CryptoES from "crypto-es";
+import { jsonFormatter } from "../utils/encryption";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
@@ -21,31 +22,22 @@ export default function SearchBox() {
   const handleSync = async () => {
     if (isOnline && isProUser) {
       try {
-        const { data, error } = await supabase
-          .from("users")
-          .select("encrypted_master_key, iv")
-          .eq("user_id", userId);
+        const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
         if (error) {
           console.error(error);
         }
-        if (!(data && data.length > 0)) {
-          console.log('data not exist')
-          return;
-        }
-        const { encrypted_master_key: encryptedMasterKey, iv } = data[0];
-        console.log('1')
+        if (!(data && data.length > 0)) return;
+        const { master_key: encryptedMasterKey } = data[0];
         const password = await SecureStore.getItemAsync("password");
-        console.log('2')
         if (!password) {
-          console.log('password not exist')
+          console.log("password not exist");
           return;
         }
-        const decryptedMasterKey: string = decryptMasterKey(encryptedMasterKey, password, iv);
-        console.log(3)
+        const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, password, {
+          format: jsonFormatter,
+        }).toString(CryptoES.enc.Utf8);
         await updateUnsyncedLocalDataWithSupabase(db, userId, decryptedMasterKey);
-        console.log(4)
         await fetchSupabaseData(db, userId, decryptedMasterKey);
-        console.log(5)
       } catch (e) {
         console.error(e);
       }
