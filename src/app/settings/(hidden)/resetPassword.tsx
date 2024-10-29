@@ -1,26 +1,48 @@
 import { supabase } from "@/src/utils/supabase";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
+import Toast from "react-native-root-toast";
 
 export default function () {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { token_hash }: { token_hash: string } = useLocalSearchParams();
 
-  async function forget() {
+  async function reset() {
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { data, error } = await supabase.auth.updateUser({ password: password });
     if (error) {
-      setLoading(false);
       console.error(error);
-      alert(error.message);
-    } else {
+      Alert.alert("There was an error updating your password.");
       setLoading(false);
-      Alert.alert("If the email is registered, you will receive a password reset email. Please check your inbox!");
+      return;
     }
+    if (data) {
+      router.navigate("/settings/(auth)/login");
+      Toast.show("Password updated successfully!", {
+        position: Toast.positions.CENTER,
+      });
+    }
+    setLoading(false);
   }
+
+  useEffect(() => {
+    (async () => {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash,
+        type: "recovery",
+      });
+      if (error) {
+        console.error(error);
+        Toast.show("Unknown Error");
+      } else {
+        Toast.show("Please enter your new password");
+      }
+    })();
+  }, []);
 
   return (
     <ScrollView
@@ -62,23 +84,22 @@ export default function () {
             padding: 30,
           }}
         >
-          Forget Password
+          Reset Password
         </Text>
-        <Text style={{ marginBottom: 10 }}>Email</Text>
+        <Text style={{ marginBottom: 10 }}>New Password</Text>
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
-          placeholder="Enter your email"
-          value={email}
+          placeholder="Enter your new password"
+          value={password}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
-          onChangeText={(text) => setEmail(text)}
+          keyboardType="visible-password"
+          onChangeText={(text) => setPassword(text)}
         />
         <Button
-          text={loading ? "Loading" : "Send email"}
+          text={loading ? "Loading" : "Reset password"}
           onPress={() => {
-            forget();
+            reset();
           }}
           style={{
             marginTop: 20,

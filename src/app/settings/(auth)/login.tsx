@@ -1,7 +1,7 @@
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, Keyboard, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
@@ -19,6 +19,7 @@ export default function () {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [imageHeight, setImageHeight] = useState(240);
+  const { message }: { message: string } = useLocalSearchParams();
 
   const login = async () => {
     setLoading(true);
@@ -41,15 +42,13 @@ export default function () {
         console.log("userIdInUsers exists", userIdInUsers[0]);
       } else {
         const masterKey: string = generateMasterKey();
-        const key: string = generateKeyFromPassword(password)
+        const key: string = generateKeyFromPassword(password);
         setPassword(key);
         const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, password, {
           format: jsonFormatter,
         });
         const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
-        const { error } = await supabase
-          .from("users")
-          .insert({ user_id: userId, master_key: formattedEncryptedMasterKey });
+        const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey });
         if (error) {
           console.error(error);
         }
@@ -77,6 +76,12 @@ export default function () {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (message) {
+      Toast.show(message);
+    }
+  }, [message]);
 
   return (
     <ScrollView

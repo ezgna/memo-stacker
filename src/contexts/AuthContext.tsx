@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
     });
     return () => {
@@ -51,16 +51,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     unsubscribe();
   }, []);
 
-  useEffect(()=>{
-    const configurePurchase = async ()=>{
+  useEffect(() => {
+    const configurePurchase = async () => {
       if (Platform.OS == "ios") {
         await Purchases.configure({ apiKey: APIKeys.apple });
       } else {
         await Purchases.configure({ apiKey: APIKeys.google });
       }
-    }
+    };
     configurePurchase();
-  }, [])
+  }, []);
 
   useEffect(() => {
     const setup = async () => {
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // console.log('userId: ', userId);
       if (userId) {
         const { customerInfo } = await Purchases.logIn(userId);
-        setIsProUser(!!customerInfo.entitlements.active["pro"])
+        setIsProUser(!!customerInfo.entitlements.active["pro"]);
         // if (!isProUser) {
         //   await supabase.from("entries").delete().eq("user_id", userId); // proを解約したユーザーのデータは一定期間保存後、削除。
         // }
@@ -81,8 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const listener = async (customerInfo: CustomerInfo) => {
-      setIsProUser(!!customerInfo.entitlements.active['pro'])
-    }
+      setIsProUser(!!customerInfo.entitlements.active["pro"]);
+    };
     Purchases.addCustomerInfoUpdateListener(listener);
     return () => {
       Purchases.removeCustomerInfoUpdateListener(listener);

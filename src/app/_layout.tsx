@@ -10,6 +10,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { DataProvider } from "../contexts/DataContext";
 import CustomDrawer from "./CustomDrawer";
 import { router } from "expo-router";
+import { supabase } from "../utils/supabase";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,7 +25,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/(auth)/testCrypto')
+      // router.push('/settings/(auth)/forgetPassword')
     }
   }, [loaded]);
 

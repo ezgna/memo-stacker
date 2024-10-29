@@ -164,13 +164,13 @@ export default function index() {
     sync();
   }, [db, userId, isOnline, isProUser]);
 
-  const inputRef = useRef<TextInput>(null);
+  // const inputRef = useRef<TextInput>(null);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (!db) return;
@@ -200,7 +200,7 @@ export default function index() {
       <View>
         <TextInput
           style={styles.input}
-          ref={inputRef}
+          // ref={inputRef}
           onChangeText={editingId ? setEditingText : setText}
           value={editingId ? editingText : text}
           multiline

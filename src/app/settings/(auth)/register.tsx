@@ -3,7 +3,7 @@ import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, Keyboard, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
@@ -24,6 +24,12 @@ export default function () {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          language: i18n.locale,
+        },
+        emailRedirectTo: 'memologminute://settings/login?message=Email+Verified',
+      },
     });
     if (error) {
       Alert.alert(error.message);
@@ -31,7 +37,8 @@ export default function () {
       return;
     }
     if (!session) {
-      Alert.alert("Please check your inbox for email verification!");
+      Alert.alert(i18n.t("email_verification_propmt"));
+      router.navigate('/')
     } else if (session) {
       Toast.show("You Signed up");
       router.navigate("/");

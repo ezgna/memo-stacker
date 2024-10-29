@@ -26,7 +26,9 @@ const account = () => {
     try {
       setIsPurchasing(true);
       if (!session) {
-        Alert.alert(i18n.t("upgradeRequiresSignUp"));
+        Toast.show(i18n.t("upgradeRequiresSignUp"), {
+          position: Toast.positions.CENTER,
+        });
         router.push("/settings/(auth)/register");
         return;
       }
@@ -44,20 +46,10 @@ const account = () => {
 
   const Free = () => {
     return (
-      <View
-        style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}
-      >
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
         <Text style={{ fontSize: 18 }}>{`${i18n.t("free")}`}</Text>
-        <TouchableOpacity
-          disabled={isPurchasing}
-          onPress={() => handlePress(pkg)}
-          style={{ backgroundColor: "gold", padding: 5, borderRadius: 8 }}
-        >
-          {isPurchasing ? (
-            <ActivityIndicator />
-          ) : (
-            <Text style={{ fontSize: 18 }}>{`${i18n.t("upgrade")}`}</Text>
-          )}
+        <TouchableOpacity disabled={isPurchasing} onPress={() => handlePress(pkg)} style={{ backgroundColor: "gold", padding: 5, borderRadius: 8 }}>
+          {isPurchasing ? <ActivityIndicator /> : <Text style={{ fontSize: 18 }}>{`${i18n.t("upgrade")}`}</Text>}
         </TouchableOpacity>
       </View>
     );
@@ -111,10 +103,7 @@ const account = () => {
     <View style={{ padding: 20 }}>
       <ScrollView>
         {data.map((item) => (
-          <View
-            key={item.id}
-            style={{ flex: 1, padding: 10, borderBottomWidth: 1, borderBottomColor: "lightgray" }}
-          >
+          <View key={item.id} style={{ flex: 1, padding: 10, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
             <Text style={{ fontSize: 14, color: "dimgray", paddingBottom: 10 }}>{item.label}</Text>
             <Text style={{ fontSize: 18 }}>{item.content}</Text>
           </View>
