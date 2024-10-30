@@ -28,7 +28,7 @@ export default function () {
         data: {
           language: i18n.locale,
         },
-        emailRedirectTo: 'memologminute://settings/login?message=Email+Verified',
+        emailRedirectTo: 'memologminute://settings/login?message=Email+Verified.+Login+here.',
       },
     });
     if (error) {

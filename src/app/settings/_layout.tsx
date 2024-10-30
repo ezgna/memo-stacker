@@ -20,7 +20,6 @@ const SettingsLayout = () => {
       />
       <Stack.Screen name="account" options={{ title: i18n.t("account") }} />
       <Stack.Screen name="(auth)" options={{ title: "" }} />
-      <Stack.Screen name="(hidden)" options={{ headerShown: false }} />
     </Stack>
   );
 };

@@ -1,5 +1,5 @@
 import { Session } from "@supabase/supabase-js";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import NetInfo from "@react-native-community/netinfo";
 import { Platform } from "react-native";
@@ -7,6 +7,7 @@ import Purchases, { CustomerInfo } from "react-native-purchases";
 
 interface AuthContextType {
   session: Session | null;
+  setSession: Dispatch<SetStateAction<Session | null>>;
   isOnline: boolean | null;
   isProUser: boolean;
 }
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const value = { session, isOnline, isProUser };
+  const value = { session, setSession, isOnline, isProUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

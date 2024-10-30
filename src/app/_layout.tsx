@@ -25,7 +25,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/(auth)/forgetPassword')
+      // router.push('/settings/account')
     }
   }, [loaded]);
 

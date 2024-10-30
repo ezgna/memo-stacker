@@ -7,6 +7,8 @@ const AuthLayout = () => {
       <Stack.Screen name="register" />
       <Stack.Screen name="login" />
       <Stack.Screen name="forgetPassword" />
+      <Stack.Screen name="changeEmail" />
+      <Stack.Screen name="(hidden)" options={{ headerShown: false }} />
     </Stack>
   );
 };

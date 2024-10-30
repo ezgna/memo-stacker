@@ -1,5 +1,6 @@
 import { supabase } from "@/src/utils/supabase";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { UNSTABLE_usePreventRemove } from "@react-navigation/native";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
@@ -10,24 +11,34 @@ export default function () {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { token_hash }: { token_hash: string } = useLocalSearchParams();
+  const navigation = useNavigation();
+  const [isPreventingRemove, setIsPrevengingRemove] = useState(true);
 
   async function reset() {
     setLoading(true);
-    const { data, error } = await supabase.auth.updateUser({ password: password });
+    setIsPrevengingRemove(false)
+    const { data, error } = await supabase.auth.updateUser({ password });
     if (error) {
-      console.error(error);
-      Alert.alert("There was an error updating your password.");
+      Alert.alert(error.message);
       setLoading(false);
+      setIsPrevengingRemove(true)
       return;
     }
     if (data) {
-      router.navigate("/settings/(auth)/login");
+      router.navigate("/settings/account");
       Toast.show("Password updated successfully!", {
         position: Toast.positions.CENTER,
       });
     }
     setLoading(false);
   }
+
+  UNSTABLE_usePreventRemove(isPreventingRemove, ({ data }) => {
+    Alert.alert(`If you leave now, your password won't be changed.`, "Are you sure you want to leave?", [
+      { text: `Don't leave`, style: "cancel" },
+      { text: "leave", style: "destructive", onPress: () => navigation.dispatch(data.action) },
+    ]);
+  });
 
   useEffect(() => {
     (async () => {
@@ -38,8 +49,9 @@ export default function () {
       if (error) {
         console.error(error);
         Toast.show("Unknown Error");
+        router.navigate("/");
       } else {
-        Toast.show("Please enter your new password");
+        Toast.show("You're automatically logged in. Please enter your new password");
       }
     })();
   }, []);
@@ -107,32 +119,6 @@ export default function () {
           disabled={loading}
           textStyle={{ marginVertical: 3 }}
         />
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 15,
-            justifyContent: "center",
-          }}
-        >
-          <Text size="md">Already have an account?</Text>
-          <TouchableOpacity
-            onPress={() => {
-              router.replace("/settings/(auth)/login");
-            }}
-          >
-            <Text
-              size="md"
-              fontWeight="bold"
-              style={{
-                marginLeft: 5,
-              }}
-            >
-              Login here
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );

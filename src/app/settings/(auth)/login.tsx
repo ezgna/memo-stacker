@@ -1,16 +1,15 @@
+import { generateKeyFromPassword, generateMasterKey, jsonFormatter } from "@/src/utils/encryption";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import CryptoES from "crypto-es";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, Keyboard, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
-import * as SecureStore from "expo-secure-store";
-import CryptoES from "crypto-es";
-import { WordArray } from "crypto-es/lib/core";
-import { generateKeyFromPassword, generateMasterKey, jsonFormatter } from "@/src/utils/encryption";
 
 export default function () {
   const router = useRouter();
