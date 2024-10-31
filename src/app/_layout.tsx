@@ -11,6 +11,7 @@ import { DataProvider } from "../contexts/DataContext";
 import CustomDrawer from "./CustomDrawer";
 import { router } from "expo-router";
 import { supabase } from "../utils/supabase";
+import { ThemeProvider, useThemeContext } from "../contexts/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,26 +35,31 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <DataProvider>
-        <ActionSheetProvider>
-          <RootSiblingParent>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <Drawer
-                drawerContent={() => <CustomDrawer />}
-                screenOptions={({ route }) => ({
-                  headerRight: () => <SearchBox />,
-                  headerShown: !["settings", "(auth)"].includes(route.name),
-                  headerTitle: "",
-                  drawerStyle: {
-                    width: "40%",
-                  },
-                })}
-              />
-            </GestureHandlerRootView>
-          </RootSiblingParent>
-        </ActionSheetProvider>
-      </DataProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DataProvider>
+          <ActionSheetProvider>
+            <RootSiblingParent>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <Drawer
+                  drawerContent={() => <CustomDrawer />}
+                  screenOptions={({ route }) => ({
+                    headerRight: () => <SearchBox />,
+                    headerShown: !["settings", "(auth)"].includes(route.name),
+                    headerTitle: "",
+                    headerStyle: {
+                      backgroundColor: '#242424'
+                    },
+                    drawerStyle: {
+                      width: "40%",
+                    },
+                  })}
+                />
+              </GestureHandlerRootView>
+            </RootSiblingParent>
+          </ActionSheetProvider>
+        </DataProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

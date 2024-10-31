@@ -82,7 +82,7 @@ export default function () {
             height: imageHeight,
             aspectRatio: 1,
           }}
-          source={require("@/assets/images/register.png")}
+          source={require("@/src/assets/images/register.png")}
         />
       </View>
       <View

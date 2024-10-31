@@ -1,3 +1,4 @@
+import { useAuthContext } from "@/src/contexts/AuthContext";
 import { supabase } from "@/src/utils/supabase";
 import { UNSTABLE_usePreventRemove } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
@@ -8,6 +9,7 @@ import Toast from "react-native-root-toast";
 
 export default function () {
   const router = useRouter();
+  const { session } = useAuthContext();
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { token_hash }: { token_hash: string } = useLocalSearchParams();
@@ -16,12 +18,12 @@ export default function () {
 
   async function reset() {
     setLoading(true);
-    setIsPrevengingRemove(false)
+    setIsPrevengingRemove(false);
     const { data, error } = await supabase.auth.updateUser({ password });
     if (error) {
       Alert.alert(error.message);
       setLoading(false);
-      setIsPrevengingRemove(true)
+      setIsPrevengingRemove(true);
       return;
     }
     if (data) {
@@ -51,7 +53,11 @@ export default function () {
         Toast.show("Unknown Error");
         router.navigate("/");
       } else {
-        Toast.show("You're automatically logged in. Please enter your new password");
+        if (session) {
+          Toast.show("Please enter your new password");
+        } else {
+          Toast.show("You're automatically logged in. Please enter your new password");
+        }
       }
     })();
   }, []);
@@ -77,7 +83,7 @@ export default function () {
             height: 240,
             width: 240,
           }}
-          source={require("@/assets/images/forget.png")}
+          source={require("@/src/assets/images/forget.png")}
         />
       </View>
       <View

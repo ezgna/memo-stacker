@@ -7,7 +7,7 @@ import Purchases, { CustomerInfo } from "react-native-purchases";
 
 interface AuthContextType {
   session: Session | null;
-  setSession: Dispatch<SetStateAction<Session | null>>;
+  // setSession: Dispatch<SetStateAction<Session | null>>;
   isOnline: boolean | null;
   isProUser: boolean;
 }
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const value = { session, setSession, isOnline, isProUser };
+  const value = { session, isOnline, isProUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

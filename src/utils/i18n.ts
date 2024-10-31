@@ -34,6 +34,7 @@ const i18n = new I18n({
     login: 'Login',
     continue: 'Continue',
     email_verification_propmt: 'Check your inbox to complete the email verification.',
+    password: 'Password',
   },
   ja: {
     search: "メモを検索",
@@ -67,6 +68,7 @@ const i18n = new I18n({
     login: 'ログイン',
     continue: '続ける',
     email_verification_propmt: 'メールの認証を完了するため、受信箱を確認してください',
+    password: 'パスワード',
   },
 });
 
