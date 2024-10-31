@@ -9,6 +9,8 @@ import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
 import i18n, { isJapanese } from "../utils/i18n";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { themeColors } from "../utils/theme";
 
 interface Dates {
   date: string;
@@ -33,6 +35,7 @@ export default function CustomDrawer() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEntries, setSelectedEntries] = useState<Entry[]>([]);
   const [isTrash, setIsTrash] = useState(false);
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (!db) return;
@@ -104,44 +107,37 @@ export default function CustomDrawer() {
   }));
 
   const CollapseIndicator = ({ element }: { element: string }) => (
-    <AntDesign name={collapsedItems[element] ? "down" : "right"} size={16} color="black" />
+    <AntDesign name={collapsedItems[element] ? "down" : "right"} size={16} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
   );
 
   const renderSectionHeader = ({ section: { title } }: { section: { title: string } }) => (
     <TouchableOpacity onPress={() => toggleCollapsed(title)} style={styles.collapseButton}>
       <CollapseIndicator element={title} />
-      <Text style={styles.titleText}>{title}</Text>
+      <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{title}</Text>
     </TouchableOpacity>
   );
 
-  const renderItem: SectionListRenderItem<Months, { title: string; data: Months[] }> = ({
-    item,
-    section,
-  }) => (
+  const renderItem: SectionListRenderItem<Months, { title: string; data: Months[] }> = ({ item, section }) => (
     <View>
       <Collapsible collapsed={!collapsedItems[section.title]}>
         <TouchableOpacity
           onPress={() => toggleCollapsed(item.month)}
-          style={[
-            styles.collapseButton,
-            { paddingLeft: 16, borderLeftWidth: 2, borderLeftColor: "grey", marginLeft: 7 },
-          ]}
+          style={[styles.collapseButton, { paddingLeft: 16, borderLeftWidth: 2, borderLeftColor: "grey", marginLeft: 7 }]}
         >
           <CollapseIndicator element={item.month} />
-          <Text style={styles.titleText}>{item.month}</Text>
+          <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{item.month}</Text>
         </TouchableOpacity>
         <Collapsible collapsed={!collapsedItems[item.month]}>
           {item.dates.map((dateItem) => (
-            <View
-              style={{ paddingLeft: 23, borderLeftWidth: 2, borderLeftColor: "gray", marginLeft: 7 }}
-              key={dateItem.date}
-            >
+            <View style={{ paddingLeft: 23, borderLeftWidth: 2, borderLeftColor: "gray", marginLeft: 7 }} key={dateItem.date}>
               <TouchableOpacity
                 key={dateItem.date}
                 onPress={() => handleEntryPress(dateItem.entries)}
                 style={{ paddingLeft: 13, borderLeftWidth: 2, borderLeftColor: "grey" }}
               >
-                <Text style={styles.titleText}>{dateItem.date.slice(7)}</Text>
+                <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>
+                  {dateItem.date.slice(7)}
+                </Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -155,11 +151,7 @@ export default function CustomDrawer() {
     try {
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
-        updateAt,
-        deletedAt,
-        id,
-      ]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, deletedAt, id]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
     } catch (e) {
@@ -172,15 +164,9 @@ export default function CustomDrawer() {
     try {
       const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
-      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
-        trimmedEditingText,
-        updateAt,
-        editingId,
-      ]);
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [trimmedEditingText, updateAt, editingId]);
       setDataUpdated(!dataUpdated);
-      setSelectedEntries((prev) =>
-        prev.map((entry) => (entry.id === editingId ? { ...entry, text: editingText } : entry))
-      );
+      setSelectedEntries((prev) => prev.map((entry) => (entry.id === editingId ? { ...entry, text: editingText } : entry)));
     } catch (e) {
       console.error(e);
     }
@@ -188,9 +174,7 @@ export default function CustomDrawer() {
 
   const handleTrashPress = async () => {
     if (!db) return;
-    const deletedEntries: Entry[] = await db.getAllAsync(
-      "SELECT * FROM entries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC"
-    );
+    const deletedEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC");
     setIsTrash(true);
     setModalVisible(true);
     setSelectedEntries(deletedEntries);
@@ -200,11 +184,7 @@ export default function CustomDrawer() {
     if (!db) return;
     try {
       const updateAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
-        updateAt,
-        null,
-        id,
-      ]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, null, id]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
     } catch (e) {
@@ -213,26 +193,35 @@ export default function CustomDrawer() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ borderBottomWidth: 2, marginBottom: 10, flexDirection: "row", alignItems: "center" }}>
+    <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
+      <View
+        style={{
+          borderBottomWidth: 2,
+          marginBottom: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          borderBottomColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+        }}
+      >
         <Text
-          style={
-            isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" }
-          }
+          style={[
+            { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+            isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" },
+          ]}
         >
           {i18n.t("memolog")}
         </Text>
         <TouchableOpacity onPress={() => router.navigate("/settings")}>
-          <Ionicons name="settings-outline" size={24} color="black" style={{ paddingLeft: 10 }} />
+          <Ionicons
+            name="settings-outline"
+            size={24}
+            color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText}
+            style={{ paddingLeft: 10 }}
+          />
         </TouchableOpacity>
       </View>
       {fetchedData && fetchedData.length > 0 && (
-        <SectionList
-          sections={sections}
-          renderSectionHeader={renderSectionHeader}
-          renderItem={renderItem}
-          style={{ flex: 0.7 }}
-        />
+        <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
       )}
       <View
         style={{
@@ -241,7 +230,7 @@ export default function CustomDrawer() {
       >
         <TouchableOpacity
           style={{
-            backgroundColor: "whitesmoke",
+            backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : 'gainsboro',
             width: 50,
             height: 50,
             borderRadius: 25,
@@ -250,7 +239,7 @@ export default function CustomDrawer() {
           }}
           onPress={() => handleTrashPress()}
         >
-          <Ionicons name="trash-outline" size={26} color="black" />
+          <Ionicons name="trash-outline" size={26} color={theme === "dark" ? 'silver' : '#333'} />
         </TouchableOpacity>
       </View>
       <DateModal
@@ -279,7 +268,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     paddingLeft: 5,
-    color: "#262626",
     fontFamily: "Poppins",
   },
 });

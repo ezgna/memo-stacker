@@ -2,6 +2,7 @@ import { useAuthContext } from "@/src/contexts/AuthContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
+import { themeColors } from "@/src/utils/theme";
 import { router, useLocalSearchParams } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ const account = () => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const { message }: { message: string } = useLocalSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
+  const { theme } = useThemeContext();
 
   const RegisterLink = () => {
     return (
@@ -91,15 +93,21 @@ const account = () => {
   const LoggedIn = ({ type }: { type: string }) => {
     return (
       <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "flex-end" }}>
-        {type === "email" && <Text style={{ fontSize: 17 }}>{session?.user.email}</Text>}
-        {type === "password" && <Text style={{ fontSize: 14, color: "dimgray" }}>you can only reset your password.</Text>}
+        {type === "email" && (
+          <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
+        )}
+        {type === "password" && (
+          <Text style={{ fontSize: 14, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+            you can only reset your password.
+          </Text>
+        )}
         <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
           {type === "email" ? (
-            <Text style={{ fontSize: 17 }}>Change</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>Change</Text>
           ) : type === "password" && loading ? (
             <ActivityIndicator />
           ) : (
-            <Text style={{ fontSize: 17 }}>Reset</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>Reset</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -109,7 +117,7 @@ const account = () => {
   const Free = () => {
     return (
       <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", width: "100%" }}>
-        <Text style={{ fontSize: 17 }}>{`${i18n.t("free")}`}</Text>
+        <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("free")}`}</Text>
         <TouchableOpacity disabled={isPurchasing} onPress={() => handlePressUpgrade(pkg)}>
           {isPurchasing ? <ActivityIndicator /> : <Text style={{ fontSize: 17, color: "gold", fontWeight: "bold" }}>{`${i18n.t("upgrade")}`}</Text>}
         </TouchableOpacity>
@@ -165,17 +173,21 @@ const account = () => {
   }, [message]);
 
   return (
-    <View style={{ padding: 20 }}>
-      <ScrollView scrollEnabled={false}>
-        {data.map((item) => (
-          <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <Text style={{ fontSize: 14, color: "dimgray", paddingBottom: 10 }}>{item.label}</Text>
-            <Text style={{ fontSize: 18 }}>{item.content}</Text>
-          </View>
-        ))}
-      </ScrollView>
+    <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+      <View style={{ padding: 20 }}>
+        <ScrollView scrollEnabled={false}>
+          {data.map((item) => (
+            <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
+              <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+                {item.label}
+              </Text>
+              <Text style={{ fontSize: 18 }}>{item.content}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
       {session && (
-        <View style={{ marginTop: 10 }}>
+        <View>
           <Button title="sign out" onPress={() => signOut()} />
         </View>
       )}

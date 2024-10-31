@@ -14,6 +14,8 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
+import { themeColors } from "@/src/utils/theme";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 
 interface SettingsListType {
   id: number;
@@ -31,6 +33,7 @@ const SettingsScreen = () => {
   const [files, setFiles] = useState<Files[] | null>(null);
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { session } = useAuthContext();
+  const { theme } = useThemeContext();
 
   const data = [
     { id: 1, label: `${i18n.t("account")}`, icon: "user" },
@@ -84,23 +87,11 @@ const SettingsScreen = () => {
       } else {
         const placeholders = dataList.map(() => "(?,?,?,?,?,?,?)").join(",");
         const values = dataList.reduce(
-          (acc, data) =>
-            acc.concat([
-              data.created_at,
-              data.updated_at,
-              data.deleted_at,
-              data.date,
-              data.text,
-              data.user_id,
-              0,
-            ]),
+          (acc, data) => acc.concat([data.created_at, data.updated_at, data.deleted_at, data.date, data.text, data.user_id, 0]),
           [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
-          await db.runAsync(
-            `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, synced) VALUES ${placeholders}`,
-            values
-          );
+          await db.runAsync(`INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id, synced) VALUES ${placeholders}`, values);
         });
         setFiles(null);
         setDataUpdated(!dataUpdated);
@@ -131,15 +122,20 @@ const SettingsScreen = () => {
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {item.id === 1 ? (
-              <Feather name={item.icon} size={24} color="black" />
+              <Feather name={item.icon} size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             ) : (
-              <Fontisto name={item.icon} size={20} color="black" style={{ paddingLeft: 4 }} />
+              <Fontisto name={item.icon} size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} style={{ paddingLeft: 4 }} />
             )}
-            <Text style={isJapanese ? [styles.label, { fontFamily: "NotoSansJP" }] : styles.label}>
+            <Text
+              style={[
+                { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+                isJapanese ? [styles.label, { fontFamily: "NotoSansJP" }] : styles.label,
+              ]}
+            >
               {item.label}
             </Text>
           </View>
-          <Entypo name="chevron-small-right" size={24} color="black" />
+          <Entypo name="chevron-small-right" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText} />
         </View>
       </TouchableOpacity>
     ),
@@ -153,10 +149,7 @@ const SettingsScreen = () => {
           <FlashList
             data={files}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => handleFileSelectWithClear(item.id, item.name)}
-                style={styles.file}
-              >
+              <TouchableOpacity onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
                 <MaterialCommunityIcons name="file-document" size={24} color="#4285F4" />
                 <Text style={{ paddingLeft: 5 }}>{item.name}</Text>
               </TouchableOpacity>
@@ -177,7 +170,7 @@ const SettingsScreen = () => {
   }, [session]);
 
   return (
-    <View style={{ flex: 1, padding: 30 }}>
+    <View style={{ flex: 1, padding: 30, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       <FlashList
         data={data}
         renderItem={renderItem}

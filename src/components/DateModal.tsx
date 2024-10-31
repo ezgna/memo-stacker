@@ -6,6 +6,8 @@ import { useDataContext } from "../contexts/DataContext";
 import SaveButton from "./SaveButton";
 import CancelEditButton from "./CancelEditButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import { themeColors } from "../utils/theme";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 interface DateModalProps {
   onClose: () => void;
@@ -17,18 +19,11 @@ interface DateModalProps {
   onRestore: (id: number) => void;
 }
 
-export const DateModal: FC<DateModalProps> = ({
-  onClose,
-  modalVisible,
-  selectedEntries,
-  onDelete,
-  updateEntry,
-  isTrash,
-  onRestore
-}) => {
+export const DateModal: FC<DateModalProps> = ({ onClose, modalVisible, selectedEntries, onDelete, updateEntry, isTrash, onRestore }) => {
   const { dataUpdated } = useDataContext();
   const [editingText, setEditingText] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
+  const { theme } = useThemeContext();
 
   const handleEdit = (text: string, id: number) => {
     setEditingId(id);
@@ -52,7 +47,14 @@ export const DateModal: FC<DateModalProps> = ({
           <TouchableWithoutFeedback onPress={onClose}>
             <View style={styles.overlay} />
           </TouchableWithoutFeedback>
-          <View style={[styles.modalContainer, isTrash && { backgroundColor: "whitesmoke" }]}>
+          <View
+            style={[
+              styles.modalContainer,
+              isTrash
+                ? { backgroundColor: theme === "dark" ? 'black' : "gainsboro" }
+                : { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "snow" },
+            ]}
+          >
             {editingId ? (
               <View>
                 <TextInput style={styles.input} value={editingText} onChangeText={setEditingText} multiline />
@@ -60,14 +62,7 @@ export const DateModal: FC<DateModalProps> = ({
                 <SaveButton onPress={() => updateEntry(editingText, editingId)} editingId={editingId} />
               </View>
             ) : null}
-            <FlashListCompo
-              data={selectedEntries}
-              onDelete={onDelete}
-              onUpdate={handleEdit}
-              editingId={editingId}
-              isTrash={isTrash}
-              onRestore={onRestore}
-            />
+            <FlashListCompo data={selectedEntries} onDelete={onDelete} onUpdate={handleEdit} editingId={editingId} isTrash={isTrash} onRestore={onRestore} />
           </View>
         </View>
       </ActionSheetProvider>
@@ -85,7 +80,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     height: "60%",
     width: "100%",
-    backgroundColor: "snow",
     position: "absolute",
     bottom: 0,
     borderTopLeftRadius: 30,

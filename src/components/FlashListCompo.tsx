@@ -4,6 +4,8 @@ import { Platform, Text, TextInput, View } from "react-native";
 import { EditActionSheet } from "./EditActionSheet";
 import i18n, { isJapanese } from "@/src/utils/i18n";
 import { Entry } from "@/types";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { themeColors } from "../utils/theme";
 
 interface FlashListCompoProps {
   data: Entry[];
@@ -14,17 +16,10 @@ interface FlashListCompoProps {
   onRestore?: (id: number) => void;
 }
 
-export const FlashListCompo: FC<FlashListCompoProps> = ({
-  data,
-  onDelete,
-  onUpdate,
-  editingId,
-  isTrash,
-  onRestore,
-}) => {
-  const sortedData = [...data].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpdate, editingId, isTrash, onRestore }) => {
+  const { theme } = useThemeContext();
+
+  const sortedData = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   const renderItem = ({ item }: { item: Entry }) => (
     <View
@@ -36,11 +31,13 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
           paddingVertical: 12,
           paddingHorizontal: 15,
         },
-        editingId === item.id ? { borderColor: "black" } : { borderColor: "gainsboro" },
+        editingId === item.id
+          ? { borderColor: theme === "dark" ? "darkgray" : "dimgray" }
+          : { borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border },
       ]}
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, color: "grey", marginBottom: 10 }}>
+        <Text style={{ fontSize: 12, marginBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
           {new Date(item.created_at).toLocaleString("ja-JP", {
             year: "numeric",
             month: "2-digit",
@@ -75,7 +72,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
           {item.text}
         </Text>
       )} */}
-      <Text style={{ fontSize: 18, color: "raisinblack" }} selectable={true}>
+      <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }} selectable={true}>
         {item.text}
       </Text>
     </View>
@@ -84,7 +81,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({
   return (
     <View style={{ flex: 1 }}>
       {isTrash && data.length === 0 ? (
-        <Text style={{textAlign: 'center', fontSize: 16}}>{`${i18n.t("trashEmpty")}`}</Text>
+        <Text style={{ textAlign: "center", fontSize: 16 }}>{`${i18n.t("trashEmpty")}`}</Text>
       ) : (
         <FlashList
           data={sortedData}

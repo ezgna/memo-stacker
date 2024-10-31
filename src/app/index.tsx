@@ -10,14 +10,12 @@ import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
 import { supabase } from "../utils/supabase";
-import {
-  fetchSupabaseData,
-  updateLocalUserIdToUid,
-  updateUnsyncedLocalDataWithSupabase,
-} from "../utils/sync";
+import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
 import CryptoES from "crypto-es";
 import { jsonFormatter } from "../utils/encryption";
 import ResetDatabase from "../utils/resetDatabase";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { themeColors } from "../utils/theme";
 
 export default function index() {
   const db = useDatabase();
@@ -26,6 +24,7 @@ export default function index() {
   const userId = session?.user.id || null;
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
+  const { theme } = useThemeContext();
 
   const createTable = async () => {
     if (!db) return;
@@ -66,10 +65,14 @@ export default function index() {
     };
     try {
       await db.withTransactionAsync(async () => {
-        await db.runAsync(
-          `INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?)`,
-          [data.created_at, data.updated_at, data.deleted_at, data.date, data.text, data.user_id]
-        );
+        await db.runAsync(`INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?)`, [
+          data.created_at,
+          data.updated_at,
+          data.deleted_at,
+          data.date,
+          data.text,
+          data.user_id,
+        ]);
       });
 
       setText("");
@@ -84,11 +87,7 @@ export default function index() {
     try {
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [
-        updateAt,
-        deletedAt,
-        id,
-      ]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, deletedAt, id]);
       setDataUpdated(!dataUpdated);
     } catch (e) {
       console.error(e);
@@ -112,11 +111,7 @@ export default function index() {
     try {
       const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
-      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [
-        trimmedEditingText,
-        updateAt,
-        editingId,
-      ]);
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [trimmedEditingText, updateAt, editingId]);
       setEditingId(null);
       setEditingText("");
       setDataUpdated(!dataUpdated);
@@ -176,15 +171,11 @@ export default function index() {
     if (!db) return;
     const fetchAllEntries = async () => {
       try {
-        const entries: Entry[] = await db.getAllAsync(
-          "SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC"
-        );
+        const entries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
         setFetchedEntries(entries);
         // console.log(entries)
         if (searchQuery) {
-          const searchedEntries = entries.filter((entry) =>
-            entry.text?.toLowerCase().includes(searchQuery.toLowerCase())
-          );
+          const searchedEntries = entries.filter((entry) => entry.text?.toLowerCase().includes(searchQuery.toLowerCase()));
           setFetchedEntries(searchedEntries);
         }
       } catch (e) {
@@ -195,11 +186,17 @@ export default function index() {
   }, [db, dataUpdated, searchQuery]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
       {/* <ResetDatabase /> */}
       <View>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+              borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+            },
+          ]}
           // ref={inputRef}
           onChangeText={editingId ? setEditingText : setText}
           value={editingId ? editingText : text}
@@ -207,18 +204,10 @@ export default function index() {
         />
         <View>
           {editingId ? <CancelEditButton onPress={() => cancelEdit()} /> : null}
-          <SaveButton
-            onPress={editingId ? () => updateEntry() : () => storeEntry(text)}
-            editingId={editingId}
-          />
+          <SaveButton onPress={editingId ? () => updateEntry() : () => storeEntry(text)} editingId={editingId} />
         </View>
       </View>
-      <FlashListCompo
-        data={fetchedEntries}
-        onDelete={deleteEntry}
-        onUpdate={handleEdit}
-        editingId={editingId}
-      />
+      <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
     </View>
   );
 }
@@ -230,7 +219,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "gainsboro",
     borderRadius: 5,
     marginVertical: 10,
     fontSize: 18,

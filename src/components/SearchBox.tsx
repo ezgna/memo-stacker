@@ -12,11 +12,14 @@ import { supabase } from "../utils/supabase";
 import * as SecureStore from "expo-secure-store";
 import CryptoES from "crypto-es";
 import { jsonFormatter } from "../utils/encryption";
+import { themeColors } from "../utils/theme";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
   const { session, isOnline, isProUser } = useAuthContext();
   const userId = session?.user.id || null;
+  const { theme } = useThemeContext();
   const db = useDatabase();
 
   const handleSync = async () => {
@@ -51,12 +54,12 @@ export default function SearchBox() {
           <MaterialIcons name="sync" size={20} color={isOnline ? "gray" : "lightgray"} />
         </TouchableOpacity>
       )}
-      <View style={styles.inputContainer}>
-        <FontAwesome name="search" size={16} color="grey" />
+      <View style={[styles.inputContainer, { backgroundColor: theme === "dark" ? themeColors.dark.background : "gainsboro" }]}>
+        <FontAwesome name="search" size={16} color={theme === "dark" ? "darkgray" : "gray"} />
         <TextInput
           style={isJapanese ? [styles.textInput, { fontFamily: "NotoSansJP" }] : styles.textInput}
           placeholder={i18n.t("search")}
-          placeholderTextColor="silver"
+          placeholderTextColor={theme === "dark" ? "gray" : "darkgray"}
           onChangeText={setSearchQuery}
           value={searchQuery}
         />
@@ -76,7 +79,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingLeft: 7,
-    backgroundColor: "gainsboro",
     borderRadius: 3,
     height: "70%",
     width: "100%",

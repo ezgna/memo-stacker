@@ -1,17 +1,9 @@
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { useFonts } from "expo-font";
-import { Drawer } from "expo-router/drawer";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { RootSiblingParent } from "react-native-root-siblings";
-import SearchBox from "../components/SearchBox";
-import { AuthProvider } from "../contexts/AuthContext";
-import { DataProvider } from "../contexts/DataContext";
-import CustomDrawer from "./CustomDrawer";
+import { AppContent } from "./app_layouts/AppContent";
+import { AppProviders } from "./app_layouts/AppProviders";
 import { router } from "expo-router";
-import { supabase } from "../utils/supabase";
-import { ThemeProvider, useThemeContext } from "../contexts/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,31 +27,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <DataProvider>
-          <ActionSheetProvider>
-            <RootSiblingParent>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <Drawer
-                  drawerContent={() => <CustomDrawer />}
-                  screenOptions={({ route }) => ({
-                    headerRight: () => <SearchBox />,
-                    headerShown: !["settings", "(auth)"].includes(route.name),
-                    headerTitle: "",
-                    headerStyle: {
-                      backgroundColor: '#242424'
-                    },
-                    drawerStyle: {
-                      width: "40%",
-                    },
-                  })}
-                />
-              </GestureHandlerRootView>
-            </RootSiblingParent>
-          </ActionSheetProvider>
-        </DataProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <AppProviders>
+      <AppContent />
+    </AppProviders>
   );
 }

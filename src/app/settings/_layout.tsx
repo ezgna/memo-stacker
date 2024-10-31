@@ -1,19 +1,28 @@
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
+import { themeColors } from "@/src/utils/theme";
 import Feather from "@expo/vector-icons/Feather";
 import { router, Stack } from "expo-router";
 import React from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SettingsLayout = () => {
+  const { theme } = useThemeContext();
+
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : themeColors.light.secondaryBackground },
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{
           title: i18n.t("settings"),
           headerRight: () => (
             <TouchableOpacity onPress={() => router.back()}>
-              <Feather name="x" size={20} color="black" />
+              <Feather name="x" size={20} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
             </TouchableOpacity>
           ),
         }}
