@@ -18,7 +18,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/account')
+      // router.push('/settings/appearanceTest')
     }
   }, [loaded]);
 

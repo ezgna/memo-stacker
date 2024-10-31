@@ -81,7 +81,9 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
   return (
     <View style={{ flex: 1 }}>
       {isTrash && data.length === 0 ? (
-        <Text style={{ textAlign: "center", fontSize: 16 }}>{`${i18n.t("trashEmpty")}`}</Text>
+        <Text style={{ textAlign: "center", fontSize: 16, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t(
+          "trashEmpty"
+        )}`}</Text>
       ) : (
         <FlashList
           data={sortedData}

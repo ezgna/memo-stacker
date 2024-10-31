@@ -10,17 +10,19 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
 import { themeColors } from "@/src/utils/theme";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { Picker } from "@react-native-picker/picker";
+import AppearanceSettings from "@/src/components/AppearanceSettings";
 
 interface SettingsListType {
   id: number;
   label: string;
-  icon: any;
+  icon?: any;
 }
 
 interface Files {
@@ -34,11 +36,13 @@ const SettingsScreen = () => {
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { session } = useAuthContext();
   const { theme } = useThemeContext();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const data = [
-    { id: 1, label: `${i18n.t("account")}`, icon: "user" },
-    { id: 2, label: `${i18n.t("export")}`, icon: "export" },
-    { id: 3, label: `${i18n.t("import")}`, icon: "import" },
+    { id: 1, label: `${i18n.t("account")}` },
+    { id: 2, label: `${i18n.t("theme")}` },
+    { id: 3, label: `${i18n.t("export")}`, icon: "export" },
+    { id: 4, label: `${i18n.t("import")}`, icon: "import" },
   ];
 
   // Hide export and import button for paid user
@@ -48,6 +52,9 @@ const SettingsScreen = () => {
         router.push("/settings/account");
         break;
       case 2:
+        setIsModalVisible(true);
+        break;
+      case 3:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
@@ -64,7 +71,7 @@ const SettingsScreen = () => {
           }
         }
         break;
-      case 3:
+      case 4:
         if (!session) {
           Toast.show("You have to login before importing", {
             position: Toast.positions.CENTER,
@@ -122,7 +129,9 @@ const SettingsScreen = () => {
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {item.id === 1 ? (
-              <Feather name={item.icon} size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            ) : item.id === 2 ? (
+              <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             ) : (
               <Fontisto name={item.icon} size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} style={{ paddingLeft: 4 }} />
             )}
@@ -179,6 +188,17 @@ const SettingsScreen = () => {
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
         ListFooterComponent={ListFooterComponent()}
       />
+      <Modal visible={isModalVisible} transparent={true} onRequestClose={() => setIsModalVisible(false)} animationType="fade">
+        <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+          <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+            <TouchableWithoutFeedback>
+              <View style={{ height: "25%", backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+                <AppearanceSettings />
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
