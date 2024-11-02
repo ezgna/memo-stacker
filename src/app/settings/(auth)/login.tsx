@@ -36,7 +36,7 @@ export default function () {
     } else if (session) {
       const userId = session.user.id;
       const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
-      if (error) console.error(error);
+      if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
       if (userIdInUsers && userIdInUsers.length > 0) {
         console.log("userIdInUsers exists", userIdInUsers[0]);
       } else {
@@ -49,7 +49,7 @@ export default function () {
         const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
         const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey });
         if (error) {
-          console.error(error);
+          console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey })', error);
         }
       }
       Toast.show("you logged in!");

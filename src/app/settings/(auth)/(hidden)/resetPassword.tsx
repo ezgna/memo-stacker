@@ -5,6 +5,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
+import * as SecureStore from "expo-secure-store";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -27,11 +28,13 @@ export default function () {
       return;
     }
     if (data) {
+      await SecureStore.setItemAsync("password", password);
       router.navigate("/settings/account");
       Toast.show("Password updated successfully!", {
         position: Toast.positions.CENTER,
       });
     }
+    setPassword('');
     setLoading(false);
   }
 

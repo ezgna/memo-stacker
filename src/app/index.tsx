@@ -54,12 +54,12 @@ export default function index() {
       Toast.show("Content cannot be empty");
       return;
     }
-    const currentDate = new Date().toISOString().split("T")[0];
+    const localizedDateString = new Date().toLocaleDateString().replace(/\//g, "-");
     const data = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       deleted_at: null,
-      date: currentDate,
+      date: localizedDateString,
       text: text.trim(),
       user_id: userId,
     };

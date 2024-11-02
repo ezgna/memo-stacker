@@ -220,28 +220,33 @@ export default function CustomDrawer() {
           />
         </TouchableOpacity>
       </View>
-      {fetchedData && fetchedData.length > 0 && (
-        <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
+      {fetchedData && fetchedData.length > 0 ? (
+        <>
+          <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
+          <View
+            style={{
+              flex: 0.3,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => handleTrashPress()}
+            >
+              <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <Text>No Entry yet</Text>
       )}
-      <View
-        style={{
-          flex: 0.3,
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : 'gainsboro',
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => handleTrashPress()}
-        >
-          <Ionicons name="trash-outline" size={26} color={theme === "dark" ? 'silver' : '#333'} />
-        </TouchableOpacity>
-      </View>
+
       <DateModal
         onClose={() => setModalVisible(false)}
         modalVisible={modalVisible}

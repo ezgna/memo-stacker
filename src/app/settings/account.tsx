@@ -18,14 +18,7 @@ const account = () => {
   const { message }: { message: string } = useLocalSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
-
-  const RegisterLink = () => {
-    return (
-      <TouchableOpacity onPress={() => router.push("/settings/(auth)/register")}>
-        <Text style={{ fontSize: 18, color: "steelblue", fontWeight: 600 }}>Sign up here</Text>
-      </TouchableOpacity>
-    );
-  };
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handlePressChangeOrReset = async (type: string, email?: string) => {
     if (type === "email") {
@@ -74,7 +67,10 @@ const account = () => {
         router.push("/settings/(auth)/register");
         return;
       }
-      if (!pkg) return;
+      if (!pkg) {
+        console.log("No pkg");
+        return;
+      }
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       if (customerInfo.entitlements.active["pro"] !== undefined) {
         Alert.alert("purchase successful");
@@ -127,8 +123,8 @@ const account = () => {
 
   const data = [
     { id: 1, label: `${i18n.t("plan")}`, content: isProUser ? `${i18n.t("pro")}` : Free() },
-    { id: 2, label: `${i18n.t("email")}`, content: session ? <LoggedIn type="email" /> : RegisterLink() },
-    { id: 3, label: `${i18n.t("password")}`, content: session ? <LoggedIn type="password" /> : "" },
+    { id: 2, label: `${i18n.t("email")}`, content: session && <LoggedIn type="email" /> },
+    { id: 3, label: `${i18n.t("password")}`, content: session && <LoggedIn type="password" /> },
   ];
 
   const signOut = async () => {
@@ -141,10 +137,12 @@ const account = () => {
         text: `${i18n.t("signOut")}`,
         style: "destructive",
         onPress: async () => {
-          await supabase.auth.signOut();
+          setIsSigningOut(true);
           await Purchases.logOut();
           await SecureStore.deleteItemAsync("password");
+          await supabase.auth.signOut();
           Toast.show("You signed out");
+          setIsSigningOut(false);
         },
       },
     ]);
@@ -176,19 +174,31 @@ const account = () => {
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       <View style={{ padding: 20 }}>
         <ScrollView scrollEnabled={false}>
-          {data.map((item) => (
-            <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-              <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
-                {item.label}
-              </Text>
-              <Text style={{ fontSize: 18 }}>{item.content}</Text>
-            </View>
-          ))}
+          {data.map(
+            (item) =>
+              item.content && (
+                <View
+                  key={item.id}
+                  style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}
+                >
+                  <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+                    {item.label}
+                  </Text>
+                  <Text style={{ fontSize: 18 }}>{item.content}</Text>
+                </View>
+              )
+          )}
         </ScrollView>
       </View>
-      {session && (
+      {session ? (
         <View>
           <Button title="sign out" onPress={() => signOut()} />
+          {isSigningOut && <ActivityIndicator />}
+        </View>
+      ) : (
+        <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
+          <Button title="sign up" onPress={() => router.push("/settings/(auth)/register")} />
+          <Button title="login" onPress={() => router.push("/settings/(auth)/login")} />
         </View>
       )}
     </View>

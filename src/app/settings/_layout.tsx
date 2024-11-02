@@ -13,7 +13,7 @@ const SettingsLayout = () => {
     <Stack
       screenOptions={{
         headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
-        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : themeColors.light.secondaryBackground },
+        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : 'white' },
       }}
     >
       <Stack.Screen
