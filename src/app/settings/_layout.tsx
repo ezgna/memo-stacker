@@ -13,7 +13,7 @@ const SettingsLayout = () => {
     <Stack
       screenOptions={{
         headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
-        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : 'white' },
+        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
       }}
     >
       <Stack.Screen
@@ -29,6 +29,7 @@ const SettingsLayout = () => {
       />
       <Stack.Screen name="account" options={{ title: i18n.t("account") }} />
       <Stack.Screen name="(auth)" options={{ title: "" }} />
+      <Stack.Screen name="faq" options={{ title: i18n.t("faq") }} />
     </Stack>
   );
 };
