@@ -1,7 +1,10 @@
+import AppearanceSettings from "@/src/components/AppearanceSettings";
 import { useAuthContext } from "@/src/contexts/AuthContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/services/GDriveUtils";
 import i18n, { isJapanese } from "@/src/utils/i18n";
+import { themeColors } from "@/src/utils/theme";
 import { Entry } from "@/types";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
@@ -14,10 +17,6 @@ import { Alert, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
-import { themeColors } from "@/src/utils/theme";
-import { useThemeContext } from "@/src/contexts/ThemeContext";
-import { Picker } from "@react-native-picker/picker";
-import AppearanceSettings from "@/src/components/AppearanceSettings";
 
 interface SettingsListType {
   id: number;
@@ -41,8 +40,9 @@ const SettingsScreen = () => {
   const data = [
     { id: 1, label: `${i18n.t("account")}` },
     { id: 2, label: `${i18n.t("theme")}` },
-    { id: 3, label: `${i18n.t("export")}`, icon: "export" },
-    { id: 4, label: `${i18n.t("import")}`, icon: "import" },
+    { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
+    { id: 4, label: `${i18n.t("export")}`, icon: "export" },
+    { id: 5, label: `${i18n.t("import")}`, icon: "import" },
   ];
 
   // Hide export and import button for paid user
@@ -55,6 +55,9 @@ const SettingsScreen = () => {
         setIsModalVisible(true);
         break;
       case 3:
+        router.push("/settings/faq");
+        break;
+      case 4:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
@@ -71,7 +74,7 @@ const SettingsScreen = () => {
           }
         }
         break;
-      case 4:
+      case 5:
         if (!session) {
           Toast.show("You have to login before importing", {
             position: Toast.positions.CENTER,
@@ -128,13 +131,20 @@ const SettingsScreen = () => {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {item.id === 1 ? (
-              <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            ) : item.id === 2 ? (
-              <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            ) : (
-              <Fontisto name={item.icon} size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} style={{ paddingLeft: 4 }} />
-            )}
+            <View style={{ width: 30 }}>
+              {item.id === 1 ? (
+                <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              ) : item.id === 2 ? (
+                <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              ) : (
+                <Fontisto
+                  name={item.icon}
+                  size={20}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 4 }}
+                />
+              )}
+            </View>
             <Text
               style={[
                 { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
