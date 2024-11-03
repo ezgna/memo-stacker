@@ -16,6 +16,7 @@ import { jsonFormatter } from "../utils/encryption";
 import ResetDatabase from "../utils/resetDatabase";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
+import * as Crypto from 'expo-crypto';
 
 export default function index() {
   const db = useDatabase();
@@ -31,7 +32,7 @@ export default function index() {
     try {
       await db.execAsync(`
         CREATE TABLE IF NOT EXISTS entries (
-          id INTEGER PRIMARY KEY,
+          id TEXT PRIMARY KEY,
           created_at TEXT,
           updated_at TEXT,
           deleted_at TEXT,
@@ -56,6 +57,7 @@ export default function index() {
     }
     const localizedDateString = new Date().toLocaleDateString().replace(/\//g, "-");
     const data = {
+      id: Crypto.randomUUID(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       deleted_at: null,
@@ -65,7 +67,8 @@ export default function index() {
     };
     try {
       await db.withTransactionAsync(async () => {
-        await db.runAsync(`INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?)`, [
+        await db.runAsync(`INSERT INTO entries (id, created_at, updated_at, deleted_at, date, text, user_id) VALUES (?,?,?,?,?,?,?)`, [
+          data.id,
           data.created_at,
           data.updated_at,
           data.deleted_at,

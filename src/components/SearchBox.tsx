@@ -27,9 +27,12 @@ export default function SearchBox() {
       try {
         const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
         if (error) {
-          console.error(error);
+          console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
         }
-        if (!(data && data.length > 0)) return;
+        if (!(data && data.length > 0)) {
+          console.log('no data exist')
+          return;
+        }
         const { master_key: encryptedMasterKey } = data[0];
         const password = await SecureStore.getItemAsync("password");
         if (!password) {
@@ -42,7 +45,7 @@ export default function SearchBox() {
         await updateUnsyncedLocalDataWithSupabase(db, userId, decryptedMasterKey);
         await fetchSupabaseData(db, userId, decryptedMasterKey);
       } catch (e) {
-        console.error(e);
+        console.error('handleSync try catch error', e);
       }
     }
   };

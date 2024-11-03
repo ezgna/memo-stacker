@@ -38,7 +38,7 @@ export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatab
 
       const { data, error } = await supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id);
       if (error) {
-        console.error(error);
+        console.error('supabase.from("entries").select("updated_at").eq("id", unsyncedEntry.id)', error);
         return;
       }
       if (data.length > 0) {
@@ -50,7 +50,7 @@ export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatab
       } else {
         const { error } = await supabase.from("entries").insert([encryptedUnsyncedEntry]);
         if (error) {
-          console.error(error);
+          console.error('supabase.from("entries").insert([encryptedUnsyncedEntry])', error);
         }
       }
     }

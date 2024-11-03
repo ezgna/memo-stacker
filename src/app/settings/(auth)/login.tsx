@@ -52,8 +52,9 @@ export default function () {
           console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey })', error);
         }
       }
+      router.navigate("/")
+      await new Promise(resolve => setTimeout(resolve, 0))
       Toast.show("you logged in!");
-      router.navigate("/");
       await SecureStore.setItemAsync("password", password);
     } else {
       console.log("session not exist");
