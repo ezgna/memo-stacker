@@ -70,9 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (userId) {
         const { customerInfo } = await Purchases.logIn(userId);
         setIsProUser(!!customerInfo.entitlements.active["pro"]);
-        // if (!isProUser) {
-        //   await supabase.from("entries").delete().eq("user_id", userId); // proを解約したユーザーのデータは一定期間保存後、削除。
-        // }
       } else {
         setIsProUser(false);
       }

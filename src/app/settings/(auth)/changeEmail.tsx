@@ -1,6 +1,8 @@
 import { useAuthContext } from "@/src/contexts/AuthContext";
+import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
@@ -36,10 +38,7 @@ export default function () {
       console.log("session not exist");
       Toast.show("unknown error");
     }
-    const { data, error } = await supabase.auth.updateUser(
-      { email },
-      { emailRedirectTo: "memologminute://settings/account?message=Email+Updated+Successfully!" }
-    );
+    const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "memologminute://settings/account?message=Email+Updated+Successfully!" });
     if (error) {
       console.error(error);
       Toast.show(error.message, {
@@ -49,7 +48,8 @@ export default function () {
       return;
     }
     if (data) {
-      Alert.alert("A confirmation email has been sent to your new address. Please check your inbox.");
+      Alert.alert(i18n.t("confirmation_email_sent"));
+      router.navigate("/");
     }
     setLoading(false);
     setEmail("");

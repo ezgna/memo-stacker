@@ -1,8 +1,8 @@
 import i18n, { isJapanese } from "@/src/utils/i18n";
 import { MaterialIcons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
@@ -21,16 +21,18 @@ export default function SearchBox() {
   const userId = session?.user.id || null;
   const { theme } = useThemeContext();
   const db = useDatabase();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSync = async () => {
     if (isOnline && isProUser) {
+      setIsLoading(true);
       try {
         const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
         if (error) {
           console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
         }
         if (!(data && data.length > 0)) {
-          console.log('no data exist')
+          console.log("no data exist");
           return;
         }
         const { master_key: encryptedMasterKey } = data[0];
@@ -45,7 +47,9 @@ export default function SearchBox() {
         await updateUnsyncedLocalDataWithSupabase(db, userId, decryptedMasterKey);
         await fetchSupabaseData(db, userId, decryptedMasterKey);
       } catch (e) {
-        console.error('handleSync try catch error', e);
+        console.error("handleSync try catch error", e);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -53,9 +57,15 @@ export default function SearchBox() {
   return (
     <View style={styles.container}>
       {isProUser && (
-        <TouchableOpacity style={{ marginRight: 100 }} onPress={() => handleSync()} disabled={!isOnline}>
-          <MaterialIcons name="sync" size={20} color={isOnline ? "gray" : "lightgray"} />
-        </TouchableOpacity>
+        <View style={{ marginRight: 100 }}>
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <TouchableOpacity onPress={() => handleSync()} disabled={!isOnline}>
+              <MaterialIcons name="sync" size={20} color={isOnline ? "gray" : "lightgray"} />
+            </TouchableOpacity>
+          )}
+        </View>
       )}
       <View style={[styles.inputContainer, { backgroundColor: theme === "dark" ? themeColors.dark.background : "gainsboro" }]}>
         <FontAwesome name="search" size={16} color={theme === "dark" ? "darkgray" : "gray"} />

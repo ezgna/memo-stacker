@@ -1,7 +1,7 @@
 import { Entry } from "@/types";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { Alert, StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
 import { FlashListCompo } from "../components/FlashListCompo";
@@ -16,7 +16,7 @@ import { jsonFormatter } from "../utils/encryption";
 import ResetDatabase from "../utils/resetDatabase";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
-import * as Crypto from 'expo-crypto';
+import * as Crypto from "expo-crypto";
 
 export default function index() {
   const db = useDatabase();
@@ -85,9 +85,26 @@ export default function index() {
     }
   };
 
-  const deleteEntry = async (id: number) => {
+  const deleteEntry = async (id: string) => {
     if (!db) return;
     try {
+      if (!isProUser) {
+        const confirmed = await new Promise((resolve) => {
+          Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => resolve(false),
+            },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => resolve(true),
+            },
+          ]);
+        });
+        if (!confirmed) return;
+      }
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
       await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, deletedAt, id]);
@@ -98,9 +115,9 @@ export default function index() {
   };
 
   const [editingText, setEditingText] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const handleEdit = (text: string, id: number) => {
+  const handleEdit = (text: string, id: string) => {
     setEditingId(id);
     setEditingText(text);
   };
@@ -130,6 +147,17 @@ export default function index() {
 
   useEffect(() => {
     createTable();
+    (async () => {
+      if (!isProUser) {
+        if (!db) return;
+        const deletedEntries: Entry[] = await db.getAllAsync(`SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`);
+        if (deletedEntries) {
+          for (const entry of deletedEntries) {
+            await db.runAsync(`DELETE FROM entries WHERE id = ?`, [entry.id]);
+          }
+        }
+      }
+    })();
   }, [db]);
 
   useEffect(() => {

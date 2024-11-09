@@ -1,3 +1,4 @@
+import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -18,7 +19,7 @@ export default function () {
       alert(error.message);
     } else {
       setLoading(false);
-      Alert.alert("If the email is registered, you will receive a password reset email. Please check your inbox!");
+      Alert.alert(`${i18n.t("password_reset_instructions")}`);
     }
   }
 
@@ -43,7 +44,7 @@ export default function () {
             height: 240,
             width: 240,
           }}
-          source={require('@/src/assets/images/forget.png')}
+          source={require("@/src/assets/images/forget.png")}
         />
       </View>
       <View
@@ -62,7 +63,7 @@ export default function () {
             padding: 30,
           }}
         >
-          Forget Password
+          {i18n.t("forget_password")}
         </Text>
         <Text style={{ marginBottom: 10 }}>Email</Text>
         <TextInput
@@ -95,7 +96,7 @@ export default function () {
             justifyContent: "center",
           }}
         >
-          <Text size="md">Already have an account?</Text>
+          <Text size="md">{i18n.t("already_have_account")}</Text>
           <TouchableOpacity
             onPress={() => {
               router.replace("/settings/(auth)/login");
@@ -108,7 +109,7 @@ export default function () {
                 marginLeft: 5,
               }}
             >
-              Login here
+              {i18n.t("loginHere")}
             </Text>
           </TouchableOpacity>
         </View>

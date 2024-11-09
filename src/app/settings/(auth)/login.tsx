@@ -10,58 +10,89 @@ import { Alert, Image, Keyboard, ScrollView, TouchableOpacity, View } from "reac
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+let email: string;
 
 export default function () {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
+  const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [imageHeight, setImageHeight] = useState(240);
   const { message }: { message: string } = useLocalSearchParams();
+  const [isInvalidUsername, setIsInvalidUsername] = useState(false);
+
+  const isValidUsername = (username: string) => {
+    const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
+    return usernameRegex.test(username);
+  };
 
   const login = async () => {
-    setLoading(true);
-    const {
-      error,
-      data: { session },
-    } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    if (error) {
-      Alert.alert(error.message);
-      setLoading(false);
-      return;
-    } else if (session) {
-      const userId = session.user.id;
-      const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
-      if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
-      if (userIdInUsers && userIdInUsers.length > 0) {
-        console.log("userIdInUsers exists", userIdInUsers[0]);
-      } else {
-        const masterKey: string = generateMasterKey();
-        const key: string = generateKeyFromPassword(password);
-        setPassword(key);
-        const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, password, {
-          format: jsonFormatter,
-        });
-        const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
-        const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey });
-        if (error) {
-          console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey })', error);
+    try {
+      setLoading(true);
+      if (!identifier.includes("@")) {
+        if (!isValidUsername(identifier)) {
+          Toast.show("Invalid username");
+          return;
         }
+        const { data, error } = await supabase.from("users").select("email").eq("username", identifier).single();
+        if (error) {
+          setIsInvalidUsername(true)
+          console.log(identifier)
+          setIdentifier('')
+          return;
+        }
+        email = data.email;
       }
-      router.navigate("/")
-      await new Promise(resolve => setTimeout(resolve, 0))
-      Toast.show("you logged in!");
-      await SecureStore.setItemAsync("password", password);
-    } else {
-      console.log("session not exist");
+      const {
+        error,
+        data: { session },
+      } = await supabase.auth.signInWithPassword({
+        email: email || identifier,
+        password: password,
+      });
+      if (error) {
+        Alert.alert(error.message);
+        return;
+      } else if (session) {
+        const userId = session.user.id;
+        const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
+        if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
+        if (userIdInUsers && userIdInUsers.length > 0) {
+          console.log("userIdInUsers exists", userIdInUsers[0]);
+        } else {
+          const masterKey: string = generateMasterKey();
+          const key: string = generateKeyFromPassword(password);
+          setPassword(key);
+          const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, password, {
+            format: jsonFormatter,
+          });
+          const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
+          const username = await AsyncStorage.getItem("username");
+          if (!username) {
+            console.error("no username");
+          }
+          const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email });
+          if (error) {
+            console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
+          }
+        }
+        router.navigate("/");
+        Toast.show("you logged in!");
+        await SecureStore.setItemAsync("password", password);
+      } else {
+        console.log("session not exist");
+      }
+      setIdentifier("");
+      setPassword("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      email = '';
     }
-    setLoading(false);
-    setEmail("");
-    setPassword("");
   };
 
   useEffect(() => {
@@ -125,16 +156,16 @@ export default function () {
         >
           {i18n.t("login")}
         </Text>
-        <Text style={{ marginBottom: 10 }}>Email</Text>
+        <Text style={{ marginBottom: 10 }}>Email or Username</Text>
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
-          placeholder="Enter your email"
-          value={email}
+          borderColor={isInvalidUsername ? "red" : undefined}
+          placeholder={isInvalidUsername ? 'First time logging in? Use your email, not username' : "Enter your email or username"}
+          value={identifier}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
-          onChangeText={(text) => setEmail(text)}
+          keyboardType="default"
+          onChangeText={(text) => setIdentifier(text)}
         />
 
         <Text style={{ marginTop: 15, marginBottom: 10 }}>Password</Text>
@@ -182,7 +213,7 @@ export default function () {
             justifyContent: "center",
           }}
         >
-          <Text size="md">Don't have an account?</Text>
+          <Text size="md">{i18n.t("dont_have_account")}</Text>
           <TouchableOpacity
             onPress={() => {
               router.replace("/settings/(auth)/register");
@@ -213,7 +244,7 @@ export default function () {
             }}
           >
             <Text size="md" fontWeight="bold">
-              Forget password
+              {i18n.t("forget_password")}
             </Text>
           </TouchableOpacity>
         </View>

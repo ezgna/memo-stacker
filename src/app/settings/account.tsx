@@ -19,13 +19,14 @@ const account = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [username, setUsername] = useState("");
 
   const handlePressChangeOrReset = async (type: string, email?: string) => {
     if (type === "email") {
       router.push("/settings/changeEmail");
     } else if (type === "password") {
       const confirmed = await new Promise((resolve) => {
-        Alert.alert("Confirm your action", "Are you sure you want to reset your password?", [
+        Alert.alert(`${i18n.t("confirm_password_reset_title")}`, `${i18n.t("confirm_password_reset_message")}`, [
           {
             text: "Cancel",
             style: "cancel",
@@ -52,8 +53,10 @@ const account = () => {
         alert(error.message);
       } else {
         setLoading(false);
-        Alert.alert("A password reset email has been sent to your current email address. Please check your inbox!");
+        Alert.alert(`${i18n.t("password_reset_email_sent")}`);
       }
+    } else if (type === "username") {
+      router.push("/settings/changeUsername");
     }
   };
 
@@ -64,7 +67,7 @@ const account = () => {
         Toast.show(i18n.t("upgradeRequiresSignUp"), {
           position: Toast.positions.CENTER,
         });
-        router.push("/settings/(auth)/register");
+        router.push("/settings/(auth)/login");
         return;
       }
       if (!pkg) {
@@ -93,12 +96,13 @@ const account = () => {
           <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
         )}
         {type === "password" && (
-          <Text style={{ fontSize: 14, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
-            you can only reset your password.
+          <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+            {i18n.t("password_reset_only")}
           </Text>
         )}
+        {type === "username" && <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username}</Text>}
         <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
-          {type === "email" ? (
+          {type === "email" || type === "username" ? (
             <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>Change</Text>
           ) : type === "password" && loading ? (
             <ActivityIndicator />
@@ -123,12 +127,13 @@ const account = () => {
 
   const data = [
     { id: 1, label: `${i18n.t("plan")}`, content: isProUser ? `${i18n.t("pro")}` : Free() },
-    { id: 2, label: `${i18n.t("email")}`, content: session && <LoggedIn type="email" /> },
-    { id: 3, label: `${i18n.t("password")}`, content: session && <LoggedIn type="password" /> },
+    { id: 2, label: `${i18n.t("username")}`, content: session && <LoggedIn type="username" /> },
+    { id: 3, label: `${i18n.t("email")}`, content: session && <LoggedIn type="email" /> },
+    { id: 4, label: `${i18n.t("password")}`, content: session && <LoggedIn type="password" /> },
   ];
 
   const signOut = async () => {
-    Alert.alert(`${i18n.t("signOut")}`, `${i18n.t("confirmSignOut")}`, [
+    Alert.alert(`${i18n.t("confirmSignOut")}`, "", [
       {
         text: `${i18n.t("cancel")}`,
         style: "cancel",
@@ -152,16 +157,36 @@ const account = () => {
     (async () => {
       const offerings = await Purchases.getOfferings();
       pkg = offerings.current?.availablePackages[0];
+      const { data, error } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
+      if (error?.details === "The result contains 0 rows") {
+        return;
+      } else if (data) {
+        setUsername(data.username);
+      }
     })();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     (async () => {
       if (message) {
-        const { error } = await supabase.auth.refreshSession();
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error(refreshError);
+          return;
+        }
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
         if (error) {
           console.error(error);
           return;
+        } else if (session) {
+          const { error } = await supabase.from("users").update({ email: session?.user.email }).eq("user_id", session?.user.id);
+          if (error) {
+            console.error(error);
+            return;
+          }
         }
         Toast.show(message, {
           position: Toast.positions.CENTER,
@@ -191,12 +216,9 @@ const account = () => {
         </ScrollView>
       </View>
       {session ? (
-        <View>
-          <Button title="sign out" onPress={() => signOut()} />
-          {isSigningOut && <ActivityIndicator />}
-        </View>
+        <View>{isSigningOut ? <ActivityIndicator /> : <Button title={`${i18n.t("signOut")}`} onPress={() => signOut()} />}</View>
       ) : (
-        <View style={{ flexDirection: "row", justifyContent: 'space-evenly' }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
           <Button title="sign up" onPress={() => router.push("/settings/(auth)/register")} />
           <Button title="login" onPress={() => router.push("/settings/(auth)/login")} />
         </View>

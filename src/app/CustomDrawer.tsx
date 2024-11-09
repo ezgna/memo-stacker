@@ -3,7 +3,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
@@ -11,6 +11,7 @@ import { useDatabase } from "../hooks/useDatabase";
 import i18n, { isJapanese } from "../utils/i18n";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
+import { useAuthContext } from "../contexts/AuthContext";
 
 interface Dates {
   date: string;
@@ -36,6 +37,7 @@ export default function CustomDrawer() {
   const [selectedEntries, setSelectedEntries] = useState<Entry[]>([]);
   const [isTrash, setIsTrash] = useState(false);
   const { theme } = useThemeContext();
+  const { isProUser } = useAuthContext();
 
   useEffect(() => {
     if (!db) return;
@@ -146,9 +148,26 @@ export default function CustomDrawer() {
     </View>
   );
 
-  const deleteEntry = async (id: number) => {
+  const deleteEntry = async (id: string) => {
     if (!db) return;
     try {
+      if (!isProUser) {
+        const confirmed = await new Promise((resolve) => {
+          Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => resolve(false),
+            },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => resolve(true),
+            },
+          ]);
+        });
+        if (!confirmed) return;
+      }
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
       await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, deletedAt, id]);
@@ -159,7 +178,7 @@ export default function CustomDrawer() {
     }
   };
 
-  const updateEntry = async (editingText: string, editingId: number) => {
+  const updateEntry = async (editingText: string, editingId: string) => {
     if (!db) return;
     try {
       const updateAt = new Date().toISOString();
@@ -180,7 +199,7 @@ export default function CustomDrawer() {
     setSelectedEntries(deletedEntries);
   };
 
-  const restoreFromTrash = async (id: number) => {
+  const restoreFromTrash = async (id: string) => {
     if (!db) return;
     try {
       const updateAt = new Date().toISOString();
@@ -223,25 +242,27 @@ export default function CustomDrawer() {
       {fetchedData && fetchedData.length > 0 ? (
         <>
           <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
-          <View
-            style={{
-              flex: 0.3,
-            }}
-          >
-            <TouchableOpacity
+          {isProUser && (
+            <View
               style={{
-                backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                justifyContent: "center",
-                alignItems: "center",
+                flex: 0.3,
               }}
-              onPress={() => handleTrashPress()}
             >
-              <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => handleTrashPress()}
+              >
+                <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
+              </TouchableOpacity>
+            </View>
+          )}
         </>
       ) : (
         <Text>No Entry yet</Text>

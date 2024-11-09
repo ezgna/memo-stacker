@@ -9,11 +9,11 @@ import { themeColors } from "../utils/theme";
 
 interface FlashListCompoProps {
   data: Entry[];
-  onDelete: (id: number) => void;
-  onUpdate: (text: string, id: number) => void;
-  editingId: number | null;
+  onDelete: (id: string) => void;
+  onUpdate: (text: string, id: string) => void;
+  editingId: string | null;
   isTrash?: boolean;
-  onRestore?: (id: number) => void;
+  onRestore?: (id: string) => void;
 }
 
 export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpdate, editingId, isTrash, onRestore }) => {

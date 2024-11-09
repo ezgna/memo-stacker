@@ -13,19 +13,19 @@ interface DateModalProps {
   onClose: () => void;
   modalVisible: boolean;
   selectedEntries: Entry[];
-  onDelete: (id: number) => void;
-  updateEntry: (editingText: string, editingId: number) => void;
+  onDelete: (id: string) => void;
+  updateEntry: (editingText: string, editingId: string) => void;
   isTrash: boolean;
-  onRestore: (id: number) => void;
+  onRestore: (id: string) => void;
 }
 
 export const DateModal: FC<DateModalProps> = ({ onClose, modalVisible, selectedEntries, onDelete, updateEntry, isTrash, onRestore }) => {
   const { dataUpdated } = useDataContext();
   const [editingText, setEditingText] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { theme } = useThemeContext();
 
-  const handleEdit = (text: string, id: number) => {
+  const handleEdit = (text: string, id: string) => {
     setEditingId(id);
     setEditingText(text);
   };

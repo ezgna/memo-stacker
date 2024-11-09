@@ -7,45 +7,86 @@ import { Alert, Image, Keyboard, ScrollView, TouchableOpacity, View } from "reac
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function () {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [imageHeight, setImageHeight] = useState(240);
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const isValidUsername = (username: string) => {
+    const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
+    return usernameRegex.test(username);
+  };
 
   const register = async () => {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          language: i18n.locale,
+    try {
+      setLoading(true);
+      if (!isValidUsername(username)) {
+        setIsUsernameValid(false);
+        setUsername("");
+        Toast.show("Invalid username");
+        return;
+      } else {
+        const { data, error } = await supabase.from("users").select('user_id').eq("username", username).single();
+        if (data) {
+          Toast.show(i18n.t("username_already_taken"));
+          setIsUsernameValid(false);
+          setUsername("");
+          return;
+        } else if (error.details === "The result contains 0 rows") {
+          setIsUsernameValid(true);
+        }
+      }
+
+      const { data, error } = await supabase.from("users").select('user_id').eq("email", email).single();
+      if (data) {
+        Toast.show(i18n.t("email_already_registered"));
+        setIsEmailValid(false)
+        setEmail("");
+        return;
+      } else if (error.details === "The result contains 0 rows") {
+        setIsEmailValid(true)
+      }
+      
+      const {
+        data: { session },
+        error: signUpError,
+      } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            language: i18n.locale,
+          },
+          emailRedirectTo: "memologminute://settings/login?message=Email+Verified.+Login+here.",
         },
-        emailRedirectTo: 'memologminute://settings/login?message=Email+Verified.+Login+here.',
-      },
-    });
-    if (error) {
-      Alert.alert(error.message);
+      });
+      if (signUpError) {
+        Alert.alert(signUpError.message);
+        return;
+      }
+      if (!session) {
+        await AsyncStorage.setItem("username", username);
+        Alert.alert(i18n.t("email_verification_propmt"));
+        router.navigate("/");
+      } else if (session) {
+        console.error("unknown error");
+      }
+      setEmail("");
+      setPassword("");
+      setUsername("");
+    } catch (e) {
+      console.error(e);
+    } finally {
       setLoading(false);
-      return;
     }
-    if (!session) {
-      Alert.alert(i18n.t("email_verification_propmt"));
-      router.navigate('/')
-    } else if (session) {
-      Toast.show("You Signed up");
-      router.navigate("/");
-    }
-    setEmail("");
-    setPassword("");
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -103,9 +144,23 @@ export default function () {
         >
           {i18n.t("register")}
         </Text>
-        <Text style={{ marginBottom: 10 }}>Email</Text>
+        <Text style={{ marginBottom: 10 }}>Username</Text>
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
+          borderColor={!isUsernameValid ? "red" : undefined}
+          placeholder={i18n.t("username_requirement")}
+          value={username}
+          autoCapitalize="none"
+          autoComplete="username"
+          autoCorrect={false}
+          keyboardType="default"
+          onChangeText={(text) => setUsername(text)}
+        />
+
+        <Text style={{ marginTop: 15, marginBottom: 10 }}>Email</Text>
+        <TextInput
+          containerStyle={{ paddingVertical: 5 }}
+          borderColor={!isEmailValid ? "red" : undefined}
           placeholder="Enter your email"
           value={email}
           autoCapitalize="none"
@@ -160,7 +215,7 @@ export default function () {
             justifyContent: "center",
           }}
         >
-          <Text size="md">Already have an account?</Text>
+          <Text size="md">{i18n.t("already_have_account")}</Text>
           <TouchableOpacity
             onPress={() => {
               router.replace("/settings/(auth)/login");
