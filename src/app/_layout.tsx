@@ -8,6 +8,7 @@ import { router } from "expo-router";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+
   const [loaded] = useFonts({
     Kanit: require("../assets/fonts/Kanit-Medium.ttf"),
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
@@ -18,7 +19,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      // router.push('/settings/account')
+      // router.push('/settings/adoTest')
     }
   }, [loaded]);
 

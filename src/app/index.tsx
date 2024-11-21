@@ -17,6 +17,8 @@ import ResetDatabase from "../utils/resetDatabase";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
 import * as Crypto from "expo-crypto";
+import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
+import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 
 export default function index() {
   const db = useDatabase();
@@ -216,30 +218,53 @@ export default function index() {
     fetchAllEntries();
   }, [db, dataUpdated, searchQuery]);
 
+  useEffect(() => {
+    (async () => {
+      const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+      switch (result) {
+        case RESULTS.DENIED:
+          await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+          break;
+        case RESULTS.BLOCKED:
+          break;
+        default:
+          break;
+      }
+      await mobileAds().initialize();
+    })();
+  }, []);
+
   return (
-    <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
-      {/* <ResetDatabase /> */}
-      <View>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-              borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
-            },
-          ]}
-          // ref={inputRef}
-          onChangeText={editingId ? setEditingText : setText}
-          value={editingId ? editingText : text}
-          multiline
-        />
+    <>
+      <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
+        {/* <ResetDatabase /> */}
         <View>
-          {editingId ? <CancelEditButton onPress={() => cancelEdit()} /> : null}
-          <SaveButton onPress={editingId ? () => updateEntry() : () => storeEntry(text)} editingId={editingId} />
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+                borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              },
+            ]}
+            // ref={inputRef}
+            onChangeText={editingId ? setEditingText : setText}
+            value={editingId ? editingText : text}
+            multiline
+          />
+          <View>
+            {editingId ? <CancelEditButton onPress={() => cancelEdit()} /> : null}
+            <SaveButton onPress={editingId ? () => updateEntry() : () => storeEntry(text)} editingId={editingId} />
+          </View>
         </View>
+        <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
-    </View>
+      {!isProUser && !userId && (
+        <View>
+          <BannerAd unitId="ca-app-pub-4363360791941587/8952562876" size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+        </View>
+      )}
+    </>
   );
 }
 

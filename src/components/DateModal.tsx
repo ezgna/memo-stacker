@@ -51,13 +51,24 @@ export const DateModal: FC<DateModalProps> = ({ onClose, modalVisible, selectedE
             style={[
               styles.modalContainer,
               isTrash
-                ? { backgroundColor: theme === "dark" ? 'black' : "gainsboro" }
+                ? { backgroundColor: theme === "dark" ? "black" : "gainsboro" }
                 : { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "snow" },
             ]}
           >
             {editingId ? (
               <View>
-                <TextInput style={styles.input} value={editingText} onChangeText={setEditingText} multiline />
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+                      borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+                    },
+                  ]}
+                  value={editingText}
+                  onChangeText={setEditingText}
+                  multiline
+                />
                 <CancelEditButton onPress={() => cancelEdit()} />
                 <SaveButton onPress={() => updateEntry(editingText, editingId)} editingId={editingId} />
               </View>

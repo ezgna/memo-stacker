@@ -42,7 +42,7 @@ export default function CustomDrawer() {
   useEffect(() => {
     if (!db) return;
     const fetchData = async () => {
-      const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries ORDER BY created_at DESC");
+      const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
       const groupedByYear = allEntries.reduce<Record<string, Record<string, Entry[]>>>((acc, entry) => {
         const year = entry.date.slice(0, 4);
         const month = entry.date.slice(5, 7);

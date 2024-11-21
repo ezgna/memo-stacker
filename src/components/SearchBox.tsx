@@ -70,7 +70,11 @@ export default function SearchBox() {
       <View style={[styles.inputContainer, { backgroundColor: theme === "dark" ? themeColors.dark.background : "gainsboro" }]}>
         <FontAwesome name="search" size={16} color={theme === "dark" ? "darkgray" : "gray"} />
         <TextInput
-          style={isJapanese ? [styles.textInput, { fontFamily: "NotoSansJP" }] : styles.textInput}
+          style={[
+            styles.textInput,
+            isJapanese && { fontFamily: "NotoSansJP" },
+            { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+          ]}
           placeholder={i18n.t("search")}
           placeholderTextColor={theme === "dark" ? "gray" : "darkgray"}
           onChangeText={setSearchQuery}

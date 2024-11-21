@@ -12,7 +12,7 @@ const i18n = new I18n({
     email: "Email address",
     plan: "Your plan",
     free: "free",
-    pro: "Pro",
+    pro: "Pro🔥",
     signOut: "sign out",
     confirmSignOut: "Are you sure you want to sign out?",
     edit: "Edit",
@@ -26,7 +26,7 @@ const i18n = new I18n({
     upgrade: "upgrade",
     exportFinished: 'The file "{{fileName}}" has been successfully saved to your Google Drive. Please import it on your new device.',
     importFinished: 'The file "${{fileName}}" has been successfully imported to this device.',
-    upgradeRequiresSignUp: "You need to sign up before upgrading.",
+    upgradeRequiresLogin: "You need to login before upgrading.",
     register: "Register",
     createAnAccount: "Create an account",
     loginHere: "Login here",
@@ -70,16 +70,16 @@ const i18n = new I18n({
     device_transfer_answer: 'Currently, only iOS is supported. Data cannot be transferred to Android (planned for release soon).\nFor Free users: Export data from the settings page. A Google account is required.\nAfter export, verify the file in Google Drive and import on your new device.\nFor Pro users: Just log in with the same account to sync notes automatically.',
     
     sign_up_login_question: 'Do I need to sign up or log in?',
-    sign_up_login_answer: 'Saving notes does not require login.\nHowever, Pro users must log in to enable data syncing across devices.',
+    sign_up_login_answer: 'Saving memos itself doesn’t require logging in, but banner ads are hidden when the user is logged in. Additionally, logging in is required to become a Pro user. It is used to automatically sync data across multiple devices.',
     
     platform_availability_question: 'Will there be an Android or PC version?',
     platform_availability_answer: 'Development is underway.\nThe Android version is expected within a few months, with a web version planned for release by 2025.',
     
     email_recovery_question: 'What if I forgot or can’t use my email address?',
-    email_recovery_answer: 'Use your registered secondary email or phone number to log in.\nIf both are unavailable, account recovery is not possible.',
+    email_recovery_answer: 'Use your registered username to log in.\nIf both are unavailable, account recovery is not possible.',
     
     password_recovery_question: 'What if I forgot my password?',
-    password_recovery_answer: 'If you’ve forgotten your password, go to Settings → Account → Login → Reset Password and enter the email, secondary email, or phone number used at signup to reset your password.',
+    password_recovery_answer: 'If you’ve forgotten your password, go to Settings → Account → Login → Reset Password and enter the email used at signup to reset your password.',
     
     language_settings_question: 'How do I change the language setting?',
     language_settings_answer: 'Currently, MemoLog supports Japanese and English.\nThe language is based on your device settings, so adjust it in your device’s settings app.',
@@ -94,7 +94,7 @@ const i18n = new I18n({
     email: "メールアドレス",
     plan: "現在のプラン",
     free: "フリー",
-    pro: "プロ",
+    pro: "プロ🔥",
     signOut: "ログアウト",
     confirmSignOut: "本当にログアウトしますか？",
     edit: "編集",
@@ -108,7 +108,7 @@ const i18n = new I18n({
     upgrade: "アップグレード",
     exportFinished: "ファイル「{{fileName}}」が正常にGoogleドライブに保存されました。新しいデバイスでインポートしてください。",
     importFinished: "ファイル「{{fileName}}」がこのデバイスに正常にインポートされました！",
-    upgradeRequiresSignUp: "アップグレードするにはログインしてください",
+    upgradeRequiresLogin: "アップグレードするにはログインしてください",
     register: "登録",
     createAnAccount: "アカウント作成",
     loginHere: "ログインはこちら",
@@ -134,7 +134,7 @@ const i18n = new I18n({
     username: 'ユーザーネーム',
 
     memoLog_overview_question: 'メモログとは何ですか？',
-    memoLog_overview_answer: 'メモログは、その場で思いついた内容を効率的に記録できるアプリです。\nメモは時系列順に保存されるため、日記のように使うこともできます。',
+    memoLog_overview_answer: 'メモログは、その瞬間に思いついたことを効率的に記録できるアプリです。\nメモは時系列順に保存されるため、日記のように使うこともできます。',
     
     view_notes_home_question: 'メモの閲覧方法（ホーム画面）',
     view_notes_home_answer: 'ホーム画面（アプリを開いた際の最初の画面）でスワイプすると、すべてのメモを遡って見ることができます。\nまた、画面右上の検索バーを使用すれば、特定のキーワードを含むメモも検索できます。\n日本語ではひらがなとカタカナが区別されます（例:「あ」と検索すると「あ」を含むメモが表示され、「ア」は表示されません）。\n英語では大文字と小文字の区別はありません（例:「A」と検索すると「a」と「A」を含むメモが表示されます）。',
@@ -152,16 +152,16 @@ const i18n = new I18n({
     device_transfer_answer: 'iOSのみ対応しています。 Androidへのデータ移行はできません（近日公開予定）。\nフリーユーザー：設定ページからエクスポートしてください。Googleアカウントが必要です。\nエクスポート後、Googleドライブにファイルが保存されていることを確認し、新しい端末でインポートします。\nプロユーザー：同じアカウントでログインすると、メモが自動で同期されます。',
     
     sign_up_login_question: 'サインアップやログインは必要ですか？',
-    sign_up_login_answer: 'メモの保存自体には不要ですが、プロユーザーはログインが必須です。\nデータを複数端末で自動同期するために必要です。',
+    sign_up_login_answer: 'メモの保存自体には不要ですが、バナー広告はログイン状態では非表示になります。また、プロユーザーになるにはログインが必須です。\nデータを複数端末で自動同期するために使用されます。',
     
     platform_availability_question: 'Android版やPC版はありますか？',
     platform_availability_answer: '現在開発中です。\nAndroid版は数ヶ月以内に公開予定で、PC（ウェブ）版は2025年内の公開を予定しています。',
     
     email_recovery_question: 'メールアドレスを忘れた、または使用できない',
-    email_recovery_answer: 'サブメールアドレスまたは電話番号でログインしてください。\nどちらも使用できない場合、アカウントの復元はできません。',
+    email_recovery_answer: 'ユーザーネームでログインしてください。\nどちらも使用できない場合、アカウントの復元はできません。',
     
     password_recovery_question: 'パスワードを忘れた場合',
-    password_recovery_answer: 'パスワードを再発行するには、設定→アカウント→ログイン→パスワード再発行から、\nサインアップ時に使用したメールアドレスまたはサブメールアドレス、電話番号を入力してリセットしてください。',
+    password_recovery_answer: 'パスワードを再発行するには、設定→アカウント→ログイン→パスワード再発行から、\nサインアップ時に使用したメールアドレスを入力してリセットしてください。',
     
     language_settings_question: '言語設定について',
     language_settings_answer: '日本語と英語に対応しています。\n端末の設定に準拠しており、変更したい場合は端末の設定から行ってください。\nアプリ内の言語も自動的に切り替わります。',

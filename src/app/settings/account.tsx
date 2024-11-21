@@ -64,7 +64,7 @@ const account = () => {
     try {
       setIsPurchasing(true);
       if (!session) {
-        Toast.show(i18n.t("upgradeRequiresSignUp"), {
+        Toast.show(i18n.t("upgradeRequiresLogin"), {
           position: Toast.positions.CENTER,
         });
         router.push("/settings/(auth)/login");
@@ -119,7 +119,11 @@ const account = () => {
       <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", width: "100%" }}>
         <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("free")}`}</Text>
         <TouchableOpacity disabled={isPurchasing} onPress={() => handlePressUpgrade(pkg)}>
-          {isPurchasing ? <ActivityIndicator /> : <Text style={{ fontSize: 17, color: "gold", fontWeight: "bold" }}>{`${i18n.t("upgrade")}`}</Text>}
+          {isPurchasing ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("upgrade")}`}</Text>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -209,7 +213,7 @@ const account = () => {
                   <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
                     {item.label}
                   </Text>
-                  <Text style={{ fontSize: 18 }}>{item.content}</Text>
+                  <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
                 </View>
               )
           )}
