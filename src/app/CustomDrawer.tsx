@@ -294,6 +294,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     paddingLeft: 5,
-    fontFamily: "Poppins",
+    paddingBottom: 2,
+    fontFamily: "RobotoMono",
   },
 });

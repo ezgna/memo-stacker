@@ -10,7 +10,7 @@
     "splash": {
       "image": "./src/assets/images/memologIcon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ABAEB2"
     },
     "ios": {
       "supportsTablet": true,

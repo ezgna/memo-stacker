@@ -1,9 +1,9 @@
-import Drawer from "expo-router/drawer";
-import CustomDrawer from "../CustomDrawer";
 import SearchBox from "@/src/components/SearchBox";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { themeColors } from "@/src/utils/theme";
+import Drawer from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
+import CustomDrawer from "../CustomDrawer";
 
 export const AppContent = () => {
   const { theme } = useThemeContext();

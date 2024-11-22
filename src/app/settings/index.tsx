@@ -2,7 +2,7 @@ import AppearanceSettings from "@/src/components/AppearanceSettings";
 import { useAuthContext } from "@/src/contexts/AuthContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { useDatabase } from "@/src/hooks/useDatabase";
-import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/services/GDriveUtils";
+import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDriveUtils";
 import i18n, { isJapanese } from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import { Entry } from "@/types";
@@ -17,6 +17,7 @@ import { Alert, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 interface SettingsListType {
   id: number;
@@ -33,7 +34,7 @@ const SettingsScreen = () => {
   const db = useDatabase();
   const [files, setFiles] = useState<Files[] | null>(null);
   const { dataUpdated, setDataUpdated } = useDataContext();
-  const { session } = useAuthContext();
+  const { session, isProUser } = useAuthContext();
   const { theme } = useThemeContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -49,7 +50,11 @@ const SettingsScreen = () => {
   const handlePress = async (id: number) => {
     switch (id) {
       case 1:
-        router.push("/settings/account");
+        if (session) {
+          router.push("/settings/account");
+        } else {
+          router.push('/settings/(auth)/login')
+        }
         break;
       case 2:
         setIsModalVisible(true);
@@ -190,6 +195,63 @@ const SettingsScreen = () => {
 
   return (
     <View style={{ flex: 1, padding: 30, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+      {!isProUser ? (
+        <View
+          style={{
+            backgroundColor: "#ECEFF1",
+            paddingVertical: 20,
+            paddingHorizontal: 20,
+            borderRadius: 20,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowRadius: 4,
+            shadowOpacity: 0.1,
+            marginBottom: 15,
+          }}
+        >
+          <FontAwesome6 name="face-meh" size={50} color="#9E9E9E" />
+          <View style={{ marginRight: 40 }}>
+            <Text style={{ fontSize: 14, fontWeight: "bold", marginBottom: 5 }}>Free plan</Text>
+            <Text style={{ fontSize: 12 }}>Monthly subscription</Text>
+          </View>
+          <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>
+            <TouchableOpacity onPress={() => router.push("/settings/subscriptionPlans")}>
+              <Text>See plan</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View
+          style={{
+            backgroundColor: "#FFF3E0",
+            paddingVertical: 20,
+            paddingHorizontal: 20,
+            borderRadius: 20,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowRadius: 4,
+            shadowOpacity: 0.1,
+            marginBottom: 15,
+          }}
+        >
+          <FontAwesome6 name="face-smile-wink" size={50} color="#FF9800" />
+          <View style={{ marginRight: 40 }}>
+            <Text style={{ fontSize: 14, fontWeight: "bold", marginBottom: 5 }}>Pro🔥</Text>
+            <Text style={{ fontSize: 12 }}>Monthly subscription</Text>
+          </View>
+          <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>
+            <TouchableOpacity onPress={() => router.push("/settings/subscriptionPlans")}>
+              <Text>See plan</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
       <FlashList
         data={data}
         renderItem={renderItem}

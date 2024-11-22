@@ -114,23 +114,23 @@ const account = () => {
     );
   };
 
-  const Free = () => {
-    return (
-      <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", width: "100%" }}>
-        <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("free")}`}</Text>
-        <TouchableOpacity disabled={isPurchasing} onPress={() => handlePressUpgrade(pkg)}>
-          {isPurchasing ? (
-            <ActivityIndicator />
-          ) : (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("upgrade")}`}</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    );
-  };
+  // const Free = () => {
+  //   return (
+  //     <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", width: "100%" }}>
+  //       <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("free")}`}</Text>
+  //       <TouchableOpacity disabled={isPurchasing} onPress={() => handlePressUpgrade(pkg)}>
+  //         {isPurchasing ? (
+  //           <ActivityIndicator />
+  //         ) : (
+  //           <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t("upgrade")}`}</Text>
+  //         )}
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // };
 
   const data = [
-    { id: 1, label: `${i18n.t("plan")}`, content: isProUser ? `${i18n.t("pro")}` : Free() },
+    // { id: 1, label: `${i18n.t("plan")}`, content: isProUser ? `${i18n.t("pro")}` : Free() },
     { id: 2, label: `${i18n.t("username")}`, content: session && <LoggedIn type="username" /> },
     { id: 3, label: `${i18n.t("email")}`, content: session && <LoggedIn type="email" /> },
     { id: 4, label: `${i18n.t("password")}`, content: session && <LoggedIn type="password" /> },
@@ -219,14 +219,7 @@ const account = () => {
           )}
         </ScrollView>
       </View>
-      {session ? (
-        <View>{isSigningOut ? <ActivityIndicator /> : <Button title={`${i18n.t("signOut")}`} onPress={() => signOut()} />}</View>
-      ) : (
-        <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-          <Button title="sign up" onPress={() => router.push("/settings/(auth)/register")} />
-          <Button title="login" onPress={() => router.push("/settings/(auth)/login")} />
-        </View>
-      )}
+      <View>{isSigningOut ? <ActivityIndicator /> : <Button title={`${i18n.t("signOut")}`} onPress={() => signOut()} />}</View>
     </View>
   );
 };

@@ -259,7 +259,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      {!isProUser && !userId && (
+      {!isProUser && (
         <View>
           <BannerAd unitId="ca-app-pub-4363360791941587/8952562876" size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
         </View>
