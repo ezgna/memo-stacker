@@ -43,7 +43,7 @@ const faq = () => {
   );
 
   return (
-    <View style={{paddingTop: 10, paddingBottom: 50}}>
+    <View style={{ flex: 1, paddingTop: 10, paddingBottom: 50, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       <ScrollView>
         {data.map((item) => (
           <TouchableOpacity
@@ -57,7 +57,7 @@ const faq = () => {
                 marginHorizontal: 20,
                 borderBottomColor: "gainsboro",
               },
-              !collapsedItems[item.id] && { backgroundColor: "#EBF4FA" },
+              !collapsedItems[item.id] && { backgroundColor: theme === "dark" ? "#24313A" : "#EBF4FA" },
             ]}
           >
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
@@ -65,7 +65,9 @@ const faq = () => {
               <CollapseIndicator id={item.id} />
             </View>
             <Collapsible collapsed={collapsedItems[item.id]}>
-              <Text style={{ fontSize: 18, paddingTop: 20, lineHeight: 30 }}>{item.answer}</Text>
+              <Text style={{ fontSize: 18, paddingTop: 20, lineHeight: 30, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+                {item.answer}
+              </Text>
             </Collapsible>
           </TouchableOpacity>
         ))}

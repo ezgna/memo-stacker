@@ -1,16 +1,18 @@
-import { View, Text, TouchableOpacity, Alert, ActivityIndicator, Platform, Linking } from "react-native";
-import React, { useEffect, useState } from "react";
 import { useAuthContext } from "@/src/contexts/AuthContext";
-import { Entypo, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
+import i18n from "@/src/utils/i18n";
+import { themeColors } from "@/src/utils/theme";
+import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Linking, Platform, Text, TouchableOpacity, View } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import Toast from "react-native-root-toast";
-import i18n from "@/src/utils/i18n";
-import { supabase } from "@/src/utils/supabase";
 
 let pkg: PurchasesPackage | undefined;
 
 const subscriptionPlans = () => {
+  const { theme } = useThemeContext();
   const { isProUser, session } = useAuthContext();
   const [isPurchasing, setIsPurchasing] = useState(false);
 
@@ -69,7 +71,7 @@ const subscriptionPlans = () => {
   }, [session]);
 
   return (
-    <View>
+    <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       {!isProUser ? (
         <>
           <View
@@ -89,15 +91,16 @@ const subscriptionPlans = () => {
               <FontAwesome6 name="face-meh" size={40} color="#9E9E9E" />
               <View style={{ borderWidth: 1, borderRadius: 20, padding: 8 }}>
                 <Text style={{ fontSize: 12 }}>
-                  <Text style={{ fontWeight: "900" }}>・</Text>Current Plan
+                  <Text style={{ fontWeight: "900" }}>・</Text>
+                  {i18n.t("currentPlan")}
                 </Text>
               </View>
             </View>
             <View style={{ marginBottom: 15 }}>
-              <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>Free plan</Text>
-              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Manual Backup</Text>
-              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Manual Data Transfer</Text>
-              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Ads Enabled</Text>
+              <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>{i18n.t("freePlan")}</Text>
+              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("manualBackup")}</Text>
+              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("manualDataTransfer")}</Text>
+              <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("adsEnabled")}</Text>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
               <TouchableOpacity disabled={isPurchasing} onPress={() => handlePressUpgrade(pkg)} style={{ flexDirection: "row", alignItems: "center" }}>
@@ -105,7 +108,7 @@ const subscriptionPlans = () => {
                   <ActivityIndicator />
                 ) : (
                   <>
-                    <Text style={{ fontSize: 16, marginRight: 4 }}>Upgrade to Pro</Text>
+                    <Text style={{ fontSize: 16, marginRight: 4 }}>{i18n.t("upgradeToPro")}</Text>
                     <Entypo name="chevron-thin-right" size={13} color="black" />
                   </>
                 )}
@@ -130,17 +133,16 @@ const subscriptionPlans = () => {
               <FontAwesome6 name="face-smile-wink" size={40} color="#FF9800" />
             </View>
             <View style={{ marginBottom: 10 }}>
-              <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>Pro plan🔥</Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>✔︎ Auto Backup</Text>
-              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>
-                Your daily notes are securely saved to a backup system, so even if you lose your device, you can easily recover them.
-              </Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>✔︎ Cloud Sync</Text>
-              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>Access your data across all devices.</Text>
-              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>✔︎ Ad-Free</Text>
-              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>
-                Enjoy faster navigation and a more professional feel without being interrupted by pop-ups or banner ads.
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>{i18n.t("proPlan")}</Text>
+                <Text style={{ fontSize: 16 }}>¥300/月</Text>
+              </View>
+              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>{i18n.t("autoBackup")}</Text>
+              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>{i18n.t("autoBackupDescription")}</Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>{i18n.t("cloudSync")}</Text>
+              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>{i18n.t("cloudSyncDescription")}</Text>
+              <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>{i18n.t("adFree")}</Text>
+              <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>{i18n.t("adFreeDescription")}</Text>
             </View>
           </View>
         </>
@@ -162,15 +164,16 @@ const subscriptionPlans = () => {
             <FontAwesome6 name="face-smile-wink" size={40} color="#FF9800" />
             <View style={{ borderWidth: 1, borderRadius: 20, padding: 8 }}>
               <Text style={{ fontSize: 12 }}>
-                <Text style={{ fontWeight: "900" }}>・</Text>Current Plan
+                <Text style={{ fontWeight: "900" }}>・</Text>
+                {i18n.t("currentPlan")}
               </Text>
             </View>
           </View>
           <View style={{ marginBottom: 15 }}>
-            <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>Pro plan🔥</Text>
-            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Auto Backup</Text>
-            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Auto Sync</Text>
-            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>✔︎ Ad-Free</Text>
+            <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>{i18n.t("proPlan")}</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("autoBackup")}</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("cloudSync")}</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, letterSpacing: 0.5 }}>{i18n.t("adFree")}</Text>
           </View>
           <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
             <TouchableOpacity onPress={() => openManageSubscription()} style={{ flexDirection: "row", alignItems: "center" }}>

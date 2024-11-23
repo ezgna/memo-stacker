@@ -91,23 +91,27 @@ const account = () => {
 
   const LoggedIn = ({ type }: { type: string }) => {
     return (
-      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "flex-end" }}>
-        {type === "email" && (
-          <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
-        )}
-        {type === "password" && (
-          <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
-            {i18n.t("password_reset_only")}
-          </Text>
-        )}
-        {type === "username" && <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username}</Text>}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+        <View style={{ flex: 1 }}>
+          {type === "email" && (
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
+          )}
+          {type === "password" && (
+            <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+              {i18n.t("password_reset_only")}
+            </Text>
+          )}
+          {type === "username" && (
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username}</Text>
+          )}
+        </View>
         <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
           {type === "email" || type === "username" ? (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>Change</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("change")}</Text>
           ) : type === "password" && loading ? (
             <ActivityIndicator />
           ) : (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>Reset</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("reset")}</Text>
           )}
         </TouchableOpacity>
       </View>

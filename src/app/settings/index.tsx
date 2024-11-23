@@ -18,6 +18,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { setStatusBarStyle } from "expo-status-bar";
 
 interface SettingsListType {
   id: number;
@@ -46,14 +47,13 @@ const SettingsScreen = () => {
     { id: 5, label: `${i18n.t("import")}`, icon: "import" },
   ];
 
-  // Hide export and import button for paid user
   const handlePress = async (id: number) => {
     switch (id) {
       case 1:
         if (session) {
           router.push("/settings/account");
         } else {
-          router.push('/settings/(auth)/login')
+          router.push("/settings/(auth)/login");
         }
         break;
       case 2:
@@ -193,6 +193,14 @@ const SettingsScreen = () => {
     }
   }, [session]);
 
+  useEffect(() => {
+    if (theme === "dark") {
+      setStatusBarStyle("light");
+    } else if (theme === 'light') {
+      setStatusBarStyle('dark')
+    }
+  }, [theme]);
+
   return (
     <View style={{ flex: 1, padding: 30, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       {!isProUser ? (
@@ -214,12 +222,12 @@ const SettingsScreen = () => {
         >
           <FontAwesome6 name="face-meh" size={50} color="#9E9E9E" />
           <View style={{ marginRight: 40 }}>
-            <Text style={{ fontSize: 14, fontWeight: "bold", marginBottom: 5 }}>Free plan</Text>
-            <Text style={{ fontSize: 12 }}>Monthly subscription</Text>
+            <Text style={{ fontSize: 14, fontWeight: "bold", marginBottom: 5 }}>{i18n.t("freePlan")}</Text>
+            {/* <Text style={{ fontSize: 12 }}>{i18n.t("monthlySubscription")}</Text> */}
           </View>
           <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>
             <TouchableOpacity onPress={() => router.push("/settings/subscriptionPlans")}>
-              <Text>See plan</Text>
+              <Text>{i18n.t("seePlan")}</Text>
             </TouchableOpacity>
           </View>
         </View>
