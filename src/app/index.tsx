@@ -1,24 +1,23 @@
 import { Entry } from "@/types";
+import CryptoES from "crypto-es";
+import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useRef, useState } from "react";
-import { Alert, StyleSheet, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, AppState, StyleSheet, TextInput, View } from "react-native";
+import mobileAds, { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
+import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
 import { FlashListCompo } from "../components/FlashListCompo";
 import SaveButton from "../components/SaveButton";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import { useDatabase } from "../hooks/useDatabase";
+import { jsonFormatter } from "../utils/encryption";
 import { supabase } from "../utils/supabase";
 import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
-import CryptoES from "crypto-es";
-import { jsonFormatter } from "../utils/encryption";
-import ResetDatabase from "../utils/resetDatabase";
-import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
-import * as Crypto from "expo-crypto";
-import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
-import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 
 export default function index() {
   const db = useDatabase();
@@ -218,21 +217,52 @@ export default function index() {
     fetchAllEntries();
   }, [db, dataUpdated, searchQuery]);
 
+  const [isAppActive, setIsAppActive] = useState(AppState.currentState === "active");
+  const [nonPersonalized, setNonPersonalized] = useState(true);
+  const [adsInitialized, setAdsInitialized] = useState(false);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        setIsAppActive(true);
+      } else {
+        setIsAppActive(false);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   useEffect(() => {
     (async () => {
-      const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-      switch (result) {
-        case RESULTS.DENIED:
-          await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-          break;
-        case RESULTS.BLOCKED:
-          break;
-        default:
-          break;
+      try {
+        if (!isAppActive) return;
+        const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+        switch (result) {
+          case RESULTS.GRANTED:
+            setNonPersonalized(false);
+            break;
+          case RESULTS.DENIED:
+            const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+            setNonPersonalized(requestResult !== RESULTS.GRANTED);
+            break;
+          case RESULTS.BLOCKED:
+            setNonPersonalized(true);
+            break;
+          default:
+            break;
+        }
+        if (!adsInitialized) {
+          await mobileAds().initialize();
+          setAdsInitialized(true);
+        }
+      } catch (error) {
+        console.error(error);
       }
-      await mobileAds().initialize();
     })();
-  }, []);
+  }, [isAppActive]);
 
   return (
     <>
@@ -261,7 +291,11 @@ export default function index() {
       </View>
       {!isProUser && (
         <View>
-          <BannerAd unitId="ca-app-pub-4363360791941587/8952562876" size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+          <BannerAd
+            unitId="ca-app-pub-4363360791941587/8952562876"
+            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
+          />
         </View>
       )}
     </>

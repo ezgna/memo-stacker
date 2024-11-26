@@ -265,7 +265,7 @@ export default function CustomDrawer() {
           )}
         </>
       ) : (
-        <Text>No Entry yet</Text>
+        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>No Entry yet</Text>
       )}
 
       <DateModal

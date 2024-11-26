@@ -1,11 +1,11 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppContent } from "./app_layouts/AppContent";
 import { AppProviders } from "./app_layouts/AppProviders";
 import { router } from "expo-router";
 
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -13,12 +13,12 @@ export default function RootLayout() {
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
     NotoSansJP: require("../assets/fonts/NotoSansJP-Regular.ttf"),
     RocknRollOne: require("../assets/fonts/RocknRollOne-Regular.ttf"),
-    RobotoMono: require('../assets/fonts/RobotoMono-VariableFont_wght.ttf')
+    RobotoMono: require("../assets/fonts/RobotoMono-VariableFont_wght.ttf"),
   });
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      // SplashScreen.hideAsync();
       // router.push('/settings/account')
     }
   }, [loaded]);
