@@ -11,6 +11,7 @@ import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AntDesign } from "@expo/vector-icons";
 
 let email: string;
 
@@ -21,8 +22,9 @@ export default function () {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [imageHeight, setImageHeight] = useState(240);
-  const { message }: { message: string } = useLocalSearchParams();
+  // const { message }: { message: string } = useLocalSearchParams();
   const [isInvalidUsername, setIsInvalidUsername] = useState(false);
+  const [isNotConfirmed, setIsNotConfirmed] = useState(false);
 
   const isValidUsername = (username: string) => {
     const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
@@ -39,9 +41,8 @@ export default function () {
         }
         const { data, error } = await supabase.from("users").select("email").eq("username", identifier).single();
         if (error) {
-          setIsInvalidUsername(true)
-          console.log(identifier)
-          setIdentifier('')
+          setIsInvalidUsername(true);
+          console.log(identifier);
           return;
         }
         email = data.email;
@@ -54,14 +55,47 @@ export default function () {
         password: password,
       });
       if (error) {
-        Alert.alert(error.message);
+        if (error.message === "Email not confirmed") {
+          Alert.alert("Email not confirmed", i18n.t("email_not_verified"), [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Resend",
+              style: "destructive",
+              onPress: async () => {
+                const { error } = await supabase.auth.signUp({
+                  email: identifier,
+                  password: password,
+                  options: {
+                    data: {
+                      language: i18n.locale,
+                    },
+                    emailRedirectTo: "memologminute://settings/login?message=Email+Verified.+Login+here.",
+                  },
+                });
+                if (error) {
+                  console.error("const { error } = await supabase.auth.signUp({", error);
+                  return;
+                }
+                Toast.show(i18n.t("email_resent"), {
+                  position: Toast.positions.CENTER,
+                });
+                setIsNotConfirmed(true);
+              },
+            },
+          ]);
+        } else {
+          Alert.alert(error.message);
+        }
         return;
       } else if (session) {
         const userId = session.user.id;
         const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
         if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
         if (userIdInUsers && userIdInUsers.length > 0) {
-          console.log("userIdInUsers exists", userIdInUsers[0]);
+          // console.log("userIdInUsers exists", userIdInUsers[0]);
         } else {
           const masterKey: string = generateMasterKey();
           const key: string = generateKeyFromPassword(password);
@@ -85,13 +119,13 @@ export default function () {
       } else {
         console.log("session not exist");
       }
-      setIdentifier("");
-      setPassword("");
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
-      email = '';
+      setIdentifier("");
+      setPassword("");
+      email = "";
     }
   };
 
@@ -108,11 +142,13 @@ export default function () {
     };
   }, []);
 
-  useEffect(() => {
-    if (message) {
-      Toast.show(message);
-    }
-  }, [message]);
+  // useEffect(() => {
+  //   if (message) {
+  //     Toast.show(message, {
+  //       position: Toast.positions.CENTER,
+  //     });
+  //   }
+  // }, [message]);
 
   return (
     <ScrollView
@@ -146,6 +182,12 @@ export default function () {
           backgroundColor: themeColor.white,
         }}
       >
+        {isNotConfirmed && (
+          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 30 }}>
+            <AntDesign name="exclamationcircleo" size={25} color="red" style={{ paddingRight: 15 }} />
+            <Text style={{ paddingRight: 30 }}>{i18n.t("email_not_received")}</Text>
+          </View>
+        )}
         <Text
           fontWeight="bold"
           size="h3"
@@ -160,7 +202,7 @@ export default function () {
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
           borderColor={isInvalidUsername ? "red" : undefined}
-          placeholder={isInvalidUsername ? 'First time logging in? Use your email, not username' : "Enter your email or username"}
+          placeholder={isInvalidUsername ? "First time logging in? Use your email, not username" : "Enter your email or username"}
           value={identifier}
           autoCapitalize="none"
           autoCorrect={false}

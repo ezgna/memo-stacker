@@ -92,7 +92,14 @@ const i18n = new I18n({
     subscriptionPlans: 'Subscription Settings',
     change: 'Change',
     reset: 'Reset',
-    
+    email_not_verified: "Your email has not been verified. Would you like to resend the verification email?",
+    email_resent: "The confirmation email has been resent.",
+    email_not_received: "If you do not receive the email after multiple attempts, please register again with a different email address.",
+    resend_email: "Resend Email",
+    email_sent: "The confirmation email has been sent. Please check your inbox and click the link.",
+    subscription_price: "$2.99/mo",
+    privacy_policy: "Privacy Policy",
+    terms_of_use: "Terms of Use",
   },
   ja: {
     search: "メモを検索",
@@ -182,7 +189,15 @@ const i18n = new I18n({
     monthlySubscription: "月額プラン",
     subscriptionPlans: 'プラン設定',
     change: '変更',
-    reset: 'リセット'
+    reset: 'リセット',
+    email_not_verified: "メールが確認されていません。確認メールを再送しますか？",
+    email_resent: "確認メールを再送しました。",
+    email_not_received: "何度送ってもメールが届かない場合は、他のメールアドレスで再登録してください。",
+    resend_email: "確認メールを再送する",
+    email_sent: "確認メールを送信しました。受信トレイを確認してリンクをクリックしてください。",
+    subscription_price: "¥500/月",
+    privacy_policy: "プライバシーポリシー",
+    terms_of_use: "利用規約",
   },
 });
 

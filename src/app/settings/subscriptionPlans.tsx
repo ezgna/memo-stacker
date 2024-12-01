@@ -133,9 +133,9 @@ const subscriptionPlans = () => {
               <FontAwesome6 name="face-smile-wink" size={40} color="#FF9800" />
             </View>
             <View style={{ marginBottom: 10 }}>
-              <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 30, fontWeight: "bold", marginBottom: 15 }}>{i18n.t("proPlan")}</Text>
-                <Text style={{ fontSize: 16 }}>¥300/月</Text>
+                <Text style={{ fontSize: 16 }}>{i18n.t("subscription_price")}</Text>
               </View>
               <Text style={{ fontSize: 14, marginBottom: 5, letterSpacing: 0.5 }}>{i18n.t("autoBackup")}</Text>
               <Text style={{ fontSize: 12, marginBottom: 10, color: "gray" }}>{i18n.t("autoBackupDescription")}</Text>

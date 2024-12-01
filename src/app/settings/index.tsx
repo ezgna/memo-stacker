@@ -13,7 +13,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Linking, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
@@ -43,8 +43,10 @@ const SettingsScreen = () => {
     { id: 1, label: `${i18n.t("account")}` },
     { id: 2, label: `${i18n.t("theme")}` },
     { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
-    { id: 4, label: `${i18n.t("export")}`, icon: "export" },
-    { id: 5, label: `${i18n.t("import")}`, icon: "import" },
+    { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
+    { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
+    { id: 6, label: `${i18n.t("export")}`, icon: "export" },
+    { id: 7, label: `${i18n.t("import")}`, icon: "import" },
   ];
 
   const handlePress = async (id: number) => {
@@ -62,7 +64,21 @@ const SettingsScreen = () => {
       case 3:
         router.push("/settings/faq");
         break;
-      case 4:
+      case 4: 
+        try {
+          await Linking.openURL('https://sites.google.com/view/memolog-minute/privacy-policy')
+        } catch (e) {
+          console.error(e)
+        }
+        break;
+      case 5:
+        try {
+          await Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')
+        } catch (e) {
+          console.error(e)
+        }
+        break;
+      case 6:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
@@ -79,7 +95,7 @@ const SettingsScreen = () => {
           }
         }
         break;
-      case 5:
+      case 7:
         if (!session) {
           Toast.show("You have to login before importing", {
             position: Toast.positions.CENTER,
@@ -221,8 +237,8 @@ const SettingsScreen = () => {
           }}
         >
           <FontAwesome6 name="face-meh" size={50} color="#9E9E9E" />
-          <View style={{ marginRight: 40 }}>
-            <Text style={{ fontSize: 14, fontWeight: "bold", marginBottom: 5 }}>{i18n.t("freePlan")}</Text>
+          <View style={{ marginRight: 80 }}>
+            <Text style={{ fontSize: 14, fontWeight: "bold" }}>{i18n.t("freePlan")}</Text>
             {/* <Text style={{ fontSize: 12 }}>{i18n.t("monthlySubscription")}</Text> */}
           </View>
           <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>

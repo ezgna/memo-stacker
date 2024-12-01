@@ -29,7 +29,7 @@ export default function () {
     }
     if (data) {
       await SecureStore.setItemAsync("password", password);
-      router.navigate("/settings/account");
+      router.replace("/settings/account");
       Toast.show("Password updated successfully!", {
         position: Toast.positions.CENTER,
       });
