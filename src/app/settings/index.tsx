@@ -237,8 +237,8 @@ const SettingsScreen = () => {
           }}
         >
           <FontAwesome6 name="face-meh" size={50} color="#9E9E9E" />
-          <View style={{ marginRight: 80 }}>
-            <Text style={{ fontSize: 14, fontWeight: "bold" }}>{i18n.t("freePlan")}</Text>
+          <View style={{ marginRight: 60 }}>
+            <Text style={{ fontSize: 14, fontWeight: "bold", }}>{i18n.t("freePlan")}</Text>
             {/* <Text style={{ fontSize: 12 }}>{i18n.t("monthlySubscription")}</Text> */}
           </View>
           <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>

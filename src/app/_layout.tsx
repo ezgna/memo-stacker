@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppContent } from "./app_layouts/AppContent";
 import { AppProviders } from "./app_layouts/AppProviders";
 import { router } from "expo-router";
+import { Platform } from "react-native";
 
 // SplashScreen.preventAutoHideAsync()
 
@@ -19,12 +20,16 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       // SplashScreen.hideAsync();
-      // router.push('/settings/')
+      // router.push('/settings/register')
     }
   }, [loaded]);
 
   if (!loaded) {
     return null;
+  }
+
+  if (Platform.OS === "web") {
+    return <></>;
   }
 
   return (

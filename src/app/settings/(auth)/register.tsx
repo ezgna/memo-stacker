@@ -18,13 +18,16 @@ export default function () {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [imageHeight, setImageHeight] = useState(240);
-  const [isUsernameValid, setIsUsernameValid] = useState(true);
+  // const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [resendCredentials, setResendCredentials] = useState({ email, password });
   const [isResended, setIsResended] = useState(false);
 
   const isValidUsername = (username: string) => {
+    if (username === "") {
+      return true;
+    }
     const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
     return usernameRegex.test(username);
   };
@@ -33,19 +36,18 @@ export default function () {
     try {
       setLoading(true);
       if (!isValidUsername(username)) {
-        setIsUsernameValid(false);
-        setUsername("");
+        // setIsUsernameValid(false);
         Toast.show("Invalid username");
         return;
       } else {
         const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
         if (data) {
           Toast.show(i18n.t("username_already_taken"));
-          setIsUsernameValid(false);
+          // setIsUsernameValid(false);
           setUsername("");
           return;
         } else if (error.details === "The result contains 0 rows") {
-          setIsUsernameValid(true);
+          // setIsUsernameValid(true);
         }
       }
 
@@ -194,11 +196,11 @@ export default function () {
           </View>
         ) : (
           <>
-            <Text style={{ marginBottom: 10 }}>Username</Text>
+            {/* <Text style={{ marginBottom: 10 }}>{i18n.t("username")}</Text> */}
             <TextInput
-              containerStyle={{ paddingVertical: 5 }}
-              borderColor={!isUsernameValid ? "red" : undefined}
-              placeholder={i18n.t("username_requirement")}
+              containerStyle={{ paddingVertical: 5, marginBottom: 5 }}
+              borderColor={!isValidUsername(username) ? "red" : undefined}
+              placeholder={i18n.t("username")}
               value={username}
               autoCapitalize="none"
               autoComplete="username"
@@ -206,12 +208,19 @@ export default function () {
               keyboardType="default"
               onChangeText={(text) => setUsername(text)}
             />
-
-            <Text style={{ marginTop: 15, marginBottom: 10 }}>Email</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {!isValidUsername(username) && (
+                <>
+                  <AntDesign name="exclamationcircleo" size={12} color="red" style={{ paddingRight: 5 }} />
+                  <Text style={{ fontSize: 12, color: "red" }}>{i18n.t("username_requirement")}</Text>
+                </>
+              )}
+            </View>
+            {/* <Text style={{ marginTop: 15, marginBottom: 10 }}></Text> */}
             <TextInput
-              containerStyle={{ paddingVertical: 5 }}
+              containerStyle={{ paddingVertical: 5, marginBottom: 20, marginTop: 15 }}
               borderColor={!isEmailValid ? "red" : undefined}
-              placeholder="Enter your email"
+              placeholder={i18n.t("email")}
               value={email}
               autoCapitalize="none"
               autoComplete="email"
@@ -220,7 +229,7 @@ export default function () {
               onChangeText={(text) => setEmail(text)}
             />
 
-            <Text style={{ marginTop: 15, marginBottom: 10 }}>Password</Text>
+            {/* <Text style={{ marginTop: 15, marginBottom: 10 }}>{i18n.t("password")}</Text> */}
             <View
               style={{
                 flexDirection: "row",
@@ -233,7 +242,7 @@ export default function () {
               <TextInput
                 borderWidth={0}
                 containerStyle={{ flex: 1, paddingVertical: 5 }}
-                placeholder="Enter your password"
+                placeholder={i18n.t("password")}
                 value={password}
                 autoCapitalize="none"
                 autoComplete="off"

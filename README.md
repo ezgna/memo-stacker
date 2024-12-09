@@ -4,7 +4,7 @@
 
 ## App Store
 
-You can download **Memolog Minute** directly from the [iOS App Store](https://apps.apple.com).
+You can download **Memolog Minute** directly from the [iOS App Store](https://apps.apple.com/us/app/memolog-minute/id6736639271).
 
 ## About the Codebase
 

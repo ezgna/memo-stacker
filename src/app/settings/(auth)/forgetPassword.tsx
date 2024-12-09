@@ -65,10 +65,10 @@ export default function () {
         >
           {i18n.t("forget_password")}
         </Text>
-        <Text style={{ marginBottom: 10 }}>Email</Text>
+        {/* <Text style={{ marginBottom: 10 }}>Email</Text> */}
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
-          placeholder="Enter your email"
+          placeholder={i18n.t('email')}
           value={email}
           autoCapitalize="none"
           autoComplete="email"
@@ -77,7 +77,7 @@ export default function () {
           onChangeText={(text) => setEmail(text)}
         />
         <Button
-          text={loading ? "Loading" : "Send email"}
+          text={loading ? "Loading" : i18n.t('send_email')}
           onPress={() => {
             forget();
           }}

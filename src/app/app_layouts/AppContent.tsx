@@ -4,10 +4,11 @@ import { themeColors } from "@/src/utils/theme";
 import Drawer from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import CustomDrawer from "../CustomDrawer";
+import { Platform, View } from "react-native";
 
 export const AppContent = () => {
   const { theme } = useThemeContext();
-
+  
   return (
     <>
       <Drawer

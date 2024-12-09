@@ -43,14 +43,14 @@ const i18n = new I18n({
     confirm_password_reset_message: "Are you sure you want to reset your password?",
     password_reset_email_sent: "A password reset email has been sent to your current email address. Please check your inbox!",
     password_reset_only: "You can only reset your password",
-    forget_password: "Forget password",
+    forget_password: "パスワード再発行",
     already_have_account: "Already have an account?",
     dont_have_account: "Don't have an account?",
     username_requirement: "4-16 characters, letters or numbers only",
     username_already_taken: "This username is already taken. Please choose another one.",
     email_already_registered: "This email address is already registered. Please use a different one.",
     confirmation_email_sent: "A confirmation email has been sent to your new address. Please check your inbox.",
-    username: 'username',
+    username: 'Username',
     memoLog_overview_question: 'What is MemoLog?',
     memoLog_overview_answer: 'MemoLog is an app for efficiently recording quick notes.\nNotes are saved chronologically, allowing it to function like a diary.',
     view_notes_home_question: 'How do I view my notes? (Home Screen)',
@@ -100,6 +100,8 @@ const i18n = new I18n({
     subscription_price: "$2.99/mo",
     privacy_policy: "Privacy Policy",
     terms_of_use: "Terms of Use",
+    email_or_username: 'Email or Username',
+    send_email: 'Send email'
   },
   ja: {
     search: "メモを検索",
@@ -135,13 +137,13 @@ const i18n = new I18n({
     email_verification_propmt: "メールの認証を完了するため、受信箱を確認してください",
     password: "パスワード",
     theme: "テーマ",
-    faq: "よくある質問",    
-    password_reset_instructions: "ご登録のメールアドレスにパスワードリセットのメールをお送りしました。受信箱をご確認ください！",
+    faq: "よくある質問",
+    password_reset_instructions: "ご登録のメールアドレスにパスワード再発行リンクをお送りしました（登録済みの場合）。受信箱をご確認ください！",
     confirm_password_reset_title: "操作を確認",
     confirm_password_reset_message: "本当にパスワードをリセットしますか？",
-    password_reset_email_sent: "現在のメールアドレスにパスワードリセットのメールをお送りしました。受信箱をご確認ください！",
-    password_reset_only: "パスワードのリセットのみ可能です",
-    forget_password: "パスワードリセット",
+    password_reset_email_sent: "現在のメールアドレスにパスワードリセットリンクをお送りしました。受信箱をご確認ください！",
+    password_reset_only: "パスワードの再発行のみ可能です",
+    forget_password: "パスワード再発行",
     already_have_account: "アカウントをお持ちですか？",
     dont_have_account: "アカウントをお持ちでないですか？",
     username_requirement: "4〜16文字、英字または数字のみ",
@@ -165,7 +167,7 @@ const i18n = new I18n({
     sign_up_login_answer: 'メモの保存自体には不要ですが、プロユーザーになるにはログインが必須です。\nデータを複数端末で自動同期するために使用され、ログインするだけで全ての端末で安全に同期できます。',
     platform_availability_question: 'Android版やPC版はありますか？',
     platform_availability_answer: '現在開発中です。\nAndroid版は数ヶ月以内に公開予定で、PC（ウェブ）版は2025年内の公開を予定しています。',
-    email_recovery_question: 'メールアドレス忘れた、又は使えない',
+    email_recovery_question: 'メールアドレスを忘れた、又は使えない',
     email_recovery_answer: 'ユーザーネームでログインしてください。\nどちらも使用できない場合、アカウントの復元はできません。',
     password_recovery_question: 'パスワードを忘れた',
     password_recovery_answer: 'パスワードを再発行するには、設定→アカウント→ログイン→パスワード再発行から、\nサインアップ時に使用したメールアドレスを入力してリセットしてください。',
@@ -198,12 +200,15 @@ const i18n = new I18n({
     subscription_price: "¥500/月",
     privacy_policy: "プライバシーポリシー",
     terms_of_use: "利用規約",
+    email_or_username: 'メールアドレスまたはユーザーネーム',
+    send_email: 'メール送信',
+
   },
 });
 
-i18n.locale = getLocales()[0].languageCode ?? "en";
+i18n.locale = getLocales()[0]?.languageCode ?? "en"; // webだとgetLocales()[0]がundefinedになってエラー？
 i18n.enableFallback = true;
 
-export const isJapanese = getLocales()[0].languageCode === "ja";
+export const isJapanese = getLocales()[0]?.languageCode === "ja"; // webだとgetLocales()[0]がundefinedになってエラー？
 
 export default i18n;

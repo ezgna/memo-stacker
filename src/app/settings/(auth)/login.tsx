@@ -198,11 +198,11 @@ export default function () {
         >
           {i18n.t("login")}
         </Text>
-        <Text style={{ marginBottom: 10 }}>Email or Username</Text>
+        {/* <Text style={{ marginBottom: 10 }}>{i18n.t("email_or_username")}</Text> */}
         <TextInput
-          containerStyle={{ paddingVertical: 5 }}
+          containerStyle={{ paddingVertical: 5, marginBottom: 20 }}
           borderColor={isInvalidUsername ? "red" : undefined}
-          placeholder={isInvalidUsername ? "First time logging in? Use your email, not username" : "Enter your email or username"}
+          placeholder={isInvalidUsername ? "First time logging in? Use your email, not username" : i18n.t("email_or_username")}
           value={identifier}
           autoCapitalize="none"
           autoCorrect={false}
@@ -210,7 +210,7 @@ export default function () {
           onChangeText={(text) => setIdentifier(text)}
         />
 
-        <Text style={{ marginTop: 15, marginBottom: 10 }}>Password</Text>
+        {/* <Text style={{ marginTop: 15, marginBottom: 10 }}>{i18n.t("password")}</Text> */}
         <View
           style={{
             flexDirection: "row",
@@ -223,7 +223,7 @@ export default function () {
           <TextInput
             borderWidth={0}
             containerStyle={{ paddingVertical: 5, flex: 1 }}
-            placeholder="Enter your password"
+            placeholder={i18n.t('password')}
             value={password}
             autoCapitalize="none"
             autoComplete="off"
