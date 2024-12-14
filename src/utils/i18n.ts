@@ -1,11 +1,10 @@
 import { getLocales } from "expo-localization";
 import { I18n } from "i18n-js";
-import subscriptionPlans from "../app/settings/subscriptionPlans";
 
 const i18n = new I18n({
   en: {
     search: "Search your logs",
-    memolog: "MemoLog",
+    memolog: "Memolog",
     export: "Export",
     import: "Import",
     settings: "Settings",
@@ -43,7 +42,7 @@ const i18n = new I18n({
     confirm_password_reset_message: "Are you sure you want to reset your password?",
     password_reset_email_sent: "A password reset email has been sent to your current email address. Please check your inbox!",
     password_reset_only: "You can only reset your password",
-    forget_password: "パスワード再発行",
+    forget_password: "Forget password",
     already_have_account: "Already have an account?",
     dont_have_account: "Don't have an account?",
     username_requirement: "4-16 characters, letters or numbers only",
@@ -51,8 +50,8 @@ const i18n = new I18n({
     email_already_registered: "This email address is already registered. Please use a different one.",
     confirmation_email_sent: "A confirmation email has been sent to your new address. Please check your inbox.",
     username: 'Username',
-    memoLog_overview_question: 'What is MemoLog?',
-    memoLog_overview_answer: 'MemoLog is an app for efficiently recording quick notes.\nNotes are saved chronologically, allowing it to function like a diary.',
+    memoLog_overview_question: 'What is Easy View Memo?',
+    memoLog_overview_answer: 'This app is designed for efficiently recording quick notes. \nNotes are saved chronologically, making it function like a diary.',
     view_notes_home_question: 'How do I view my notes? (Home Screen)',
     view_notes_home_answer: 'Swipe on the home screen (first screen upon opening the app) to browse all notes.\nYou can also use the search bar at the top right to find notes containing specific keywords.\nIn Japanese, hiragana and katakana are treated differently (“あ” displays notes with “あ”, but not “ア”).\nIn English, uppercase and lowercase are not distinguished (“A” will display both “a” and “A”).',
     view_notes_tabs_question: 'How do I view notes? (Tabs)',
@@ -101,7 +100,11 @@ const i18n = new I18n({
     privacy_policy: "Privacy Policy",
     terms_of_use: "Terms of Use",
     email_or_username: 'Email or Username',
-    send_email: 'Send email'
+    send_email: 'Send email',
+    go_to_settings: "Go to settings↑",
+    no_memo_yet: "No memo yet",
+    registered_email: "Registered email address",
+    sign_up_required: "You need to sign up"
   },
   ja: {
     search: "メモを検索",
@@ -151,28 +154,28 @@ const i18n = new I18n({
     email_already_registered: "このメールアドレスは既に登録されています。他のメールアドレスを使用してください。",
     confirmation_email_sent: "確認メールが新しいアドレスに送信されました。受信ボックスをご確認ください。",
     username: 'ユーザーネーム',
-    memoLog_overview_question: 'メモログとは何ですか？',
-    memoLog_overview_answer: 'メモログは、その瞬間に思いついたことを効率的に記録できるアプリです。\nメモは時系列順に保存されるため、日記のように使うこともできます。',
+    memoLog_overview_question: 'このアプリについて',
+    memoLog_overview_answer: '見やすいメモ帳（メモログ）は、その瞬間に思いついたことを効率的に記録できるアプリです。\nメモは時系列順に保存されるため、日記のように使うこともできます。',
     view_notes_home_question: 'メモの閲覧方法（ホーム画面）',
     view_notes_home_answer: 'ホーム画面（アプリを開いた際の最初の画面）でスワイプすると、すべてのメモを遡って見ることができます。\nまた、画面右上の検索バーを使用すれば、特定のキーワードを含むメモも検索できます。\n日本語ではひらがなとカタカナが区別されます（例:「あ」と検索すると「あ」を含むメモが表示され、「ア」は表示されません）。\n英語では大文字と小文字の区別はありません（例:「A」と検索すると「a」と「A」を含むメモが表示されます）。',
     view_notes_tabs_question: 'メモの閲覧方法（タブ）',
     view_notes_tabs_answer: 'ホーム画面左上の三本線アイコンをタップすると、「メモログ」の下に年・月・日のフォルダが自動で表示されます（メモがない場合は非表示）。\n年・月・日の順でタップしていくと、指定の日付のメモが閲覧できます。',
     edit_delete_notes_question: 'メモの編集・削除',
-    edit_delete_notes_answer: "ホーム画面またはタブ画面で、メモの右上の三点リーダをタップすると、編集や削除が可能です。\nフリーユーザー: ゴミ箱機能はありませんが、削除前に確認アラートが表示されます。削除後、画面からは消えますが、内部には保持されます。\nプロユーザー: 削除したメモはゴミ箱に7日間保存され、復元可能です。7日を過ぎると、端末とクラウドの両方から完全に削除され、復元はできません。\nゴミ箱内のメモを復元するには、同じように三点リーダをタップしてください。",
+    edit_delete_notes_answer: "ホーム画面またはタブ画面で、メモの右上の三点リーダをタップすると、編集や削除が可能です。\nフリープラン: ゴミ箱機能はありませんが、削除前に確認アラートが表示されます。削除後は画面からは消えますが、内部的には保持されています（削除後7日以内にプロプランにアップグレードすることで復元可能）。\nプロプラン: 削除したメモはゴミ箱に7日間保存され、いつでも復元できます。7日を過ぎると、端末とクラウドの両方から完全に削除され、復元はできません。\nゴミ箱内のメモを復元するには、同じように三点リーダをタップしてください。",
     security_info_question: 'セキュリティは大丈夫ですか？',
-    security_info_answer: 'フリーユーザー：メモは端末内にのみ保存され、直接端末が見られない限り安全です。\nプロユーザー：メモは端末とクラウドに保存されます。\nクラウドへのアップロード時には暗号化が施され、開発者を含む第三者には閲覧できません。\n端末が第三者に渡った場合を除き、メモの内容が漏洩することはありません。',
+    security_info_answer: 'フリープラン：メモは端末内にのみ保存され、直接端末が見られない限り安全です。\nプロプラン：メモは端末とクラウドに保存されます。\nクラウドへのアップロード時には暗号化が施され、開発者を含む第三者は閲覧できません。\n端末が直接第三者に渡った場合を除き、メモの内容が漏洩することはありません。',
     device_transfer_question: '機種変更時の操作',
-    device_transfer_answer: 'iOSのみ対応しています。 Androidへのデータ移行はできません（近日公開予定）。\nフリーユーザー：設定ページからエクスポートしてください。Googleアカウントが必要です。\nエクスポート後、Googleドライブにファイルが保存されていることを確認し、新しい端末でインポートします。\nプロユーザー：同じアカウントでログインすると、メモが自動で同期されます。',
-    sign_up_login_question: 'サインアップやログインは必要ですか？',
-    sign_up_login_answer: 'メモの保存自体には不要ですが、プロユーザーになるにはログインが必須です。\nデータを複数端末で自動同期するために使用され、ログインするだけで全ての端末で安全に同期できます。',
+    device_transfer_answer: 'iOSのみ対応しています。 Androidへのデータ移行はできません（開発中）。\nフリープラン：設定ページからエクスポートしてください（サインアップ必須）。Googleアカウントが必要です。\nエクスポート後、Googleドライブにファイルが保存されていることを確認し、新しい端末でインポートします。\nプロプラン：同じアカウントでメモログにログインすると、メモが自動で同期されます。',
+    sign_up_login_question: 'アカウント登録は必要ですか？',
+    sign_up_login_answer: 'メモの保存自体には不要ですが、プロプランに加入するには登録が必須です。\nデータを複数端末で自動同期するために使用され、ログインするだけで全ての端末で安全に同期できます。',
     platform_availability_question: 'Android版やPC版はありますか？',
     platform_availability_answer: '現在開発中です。\nAndroid版は数ヶ月以内に公開予定で、PC（ウェブ）版は2025年内の公開を予定しています。',
     email_recovery_question: 'メールアドレスを忘れた、又は使えない',
     email_recovery_answer: 'ユーザーネームでログインしてください。\nどちらも使用できない場合、アカウントの復元はできません。',
     password_recovery_question: 'パスワードを忘れた',
-    password_recovery_answer: 'パスワードを再発行するには、設定→アカウント→ログイン→パスワード再発行から、\nサインアップ時に使用したメールアドレスを入力してリセットしてください。',
+    password_recovery_answer: '設定→アカウント→登録→ログインはこちら→パスワード再発行に進み、\nサインアップ時に使用したメールアドレスを入力してください。正しい登録済みのメールアドレスを送信すると再発行用リンクが送られてきます（間違ったメールアドレスには送信されません）。',
     language_settings_question: '言語設定',
-    language_settings_answer: '日本語と英語に対応しています。\n端末の設定に準拠しており、変更したい場合は端末の設定から行ってください。\nアプリ内の言語も自動的に切り替わります。',
+    language_settings_answer: '日本語と英語に対応しています。\n端末の設定に準拠しているため、変更する場合は端末の設定から行ってください。\nアプリ内の言語は自動で切り替わります。',
     freePlan: "フリープラン",
     manualBackup: "✔︎ 手動バックアップ",
     manualDataTransfer: "✔︎ 手動データ移行",
@@ -202,7 +205,10 @@ const i18n = new I18n({
     terms_of_use: "利用規約",
     email_or_username: 'メールアドレスまたはユーザーネーム',
     send_email: 'メール送信',
-
+    go_to_settings: "設定に移動↑",
+    no_memo_yet: "メモがありません😢",
+    registered_email: '登録済みメールアドレス',
+    sign_up_required: "アカウント登録が必要です"
   },
 });
 

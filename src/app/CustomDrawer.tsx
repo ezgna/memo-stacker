@@ -265,7 +265,10 @@ export default function CustomDrawer() {
           )}
         </>
       ) : (
-        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>No Entry yet</Text>
+        <>
+          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 16, textAlign: 'right', paddingRight: isJapanese ? 16 : 11 }]}>{i18n.t('go_to_settings')}</Text>
+          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 14, paddingTop: 15 }]}>{i18n.t('no_memo_yet')}</Text>
+        </>
       )}
 
       <DateModal

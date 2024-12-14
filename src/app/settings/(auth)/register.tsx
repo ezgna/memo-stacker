@@ -3,12 +3,14 @@ import { supabase } from "@/src/utils/supabase";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Image, Keyboard, ScrollView, TouchableOpacity, View } from "react-native";
-import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
+import { Alert, Image, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Text, themeColor } from "react-native-rapi-ui";
 import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign } from "@expo/vector-icons";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { themeColors } from "@/src/utils/theme";
 
 export default function () {
   const router = useRouter();
@@ -17,12 +19,12 @@ export default function () {
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
-  const [imageHeight, setImageHeight] = useState(240);
   // const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [resendCredentials, setResendCredentials] = useState({ email, password });
   const [isResended, setIsResended] = useState(false);
+  const { theme } = useThemeContext();
 
   const isValidUsername = (username: string) => {
     if (username === "") {
@@ -97,48 +99,19 @@ export default function () {
     }
   };
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
-      setImageHeight(0);
-    });
-    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
-      setImageHeight(240);
-    });
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
   return (
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        // marginTop: 30,
       }}
       scrollEnabled={false}
     >
       <View
         style={{
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Image
-          resizeMode="contain"
-          style={{
-            height: imageHeight,
-            aspectRatio: 1,
-          }}
-          source={require("@/src/assets/images/register.png")}
-        />
-      </View>
-      <View
-        style={{
           flex: 2,
           paddingHorizontal: 20,
           paddingBottom: 300,
-          backgroundColor: themeColor.white,
+          backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
         }}
       >
         <Text
@@ -147,6 +120,7 @@ export default function () {
           style={{
             alignSelf: "center",
             padding: 30,
+            color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
           {i18n.t("register")}
@@ -196,11 +170,18 @@ export default function () {
           </View>
         ) : (
           <>
-            {/* <Text style={{ marginBottom: 10 }}>{i18n.t("username")}</Text> */}
             <TextInput
-              containerStyle={{ paddingVertical: 5, marginBottom: 5 }}
-              borderColor={!isValidUsername(username) ? "red" : undefined}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+                  borderColor: !isValidUsername(username) ? "red" : theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+                  color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+                  marginBottom: 5,
+                },
+              ]}
               placeholder={i18n.t("username")}
+              placeholderTextColor={theme === "dark" ? undefined : "#999"}
               value={username}
               autoCapitalize="none"
               autoComplete="username"
@@ -216,11 +197,18 @@ export default function () {
                 </>
               )}
             </View>
-            {/* <Text style={{ marginTop: 15, marginBottom: 10 }}></Text> */}
             <TextInput
-              containerStyle={{ paddingVertical: 5, marginBottom: 20, marginTop: 15 }}
-              borderColor={!isEmailValid ? "red" : undefined}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+                  borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+                  color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+                  marginTop: 15,
+                },
+              ]}
               placeholder={i18n.t("email")}
+              placeholderTextColor={theme === "dark" ? undefined : "#999"}
               value={email}
               autoCapitalize="none"
               autoComplete="email"
@@ -229,20 +217,28 @@ export default function () {
               onChangeText={(text) => setEmail(text)}
             />
 
-            {/* <Text style={{ marginTop: 15, marginBottom: 10 }}>{i18n.t("password")}</Text> */}
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                borderWidth: 1,
-                borderRadius: 8,
-                borderColor: component["light"].textInput.borderColor,
-              }}
+              style={[
+                {
+                  paddingTop: 12.5,
+                  paddingBottom: 12.5,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  paddingLeft: 20,
+                  paddingRight: 15,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+                  borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+                  marginTop: 20,
+                },
+              ]}
             >
               <TextInput
-                borderWidth={0}
-                containerStyle={{ flex: 1, paddingVertical: 5 }}
+                style={{ width: "80%", color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}
                 placeholder={i18n.t("password")}
+                placeholderTextColor={theme === "dark" ? undefined : "#999"}
                 value={password}
                 autoCapitalize="none"
                 autoComplete="off"
@@ -250,7 +246,7 @@ export default function () {
                 secureTextEntry={showPassword}
                 onChangeText={(text) => setPassword(text)}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 15 }}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 5 }}>
                 <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
               </TouchableOpacity>
             </View>
@@ -269,11 +265,13 @@ export default function () {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginTop: 15,
+                marginTop: 25,
                 justifyContent: "center",
               }}
             >
-              <Text size="md">{i18n.t("already_have_account")}</Text>
+              <Text size="md" style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+                {i18n.t("already_have_account")}
+              </Text>
               <TouchableOpacity
                 onPress={() => {
                   router.replace("/settings/(auth)/login");
@@ -284,6 +282,7 @@ export default function () {
                   fontWeight="bold"
                   style={{
                     marginLeft: 5,
+                    color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                   }}
                 >
                   {i18n.t("loginHere")}
@@ -296,3 +295,14 @@ export default function () {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  input: {
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+  },
+});

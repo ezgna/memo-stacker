@@ -20,10 +20,10 @@ const subscriptionPlans = () => {
     try {
       setIsPurchasing(true);
       if (!session) {
-        Toast.show(i18n.t("upgradeRequiresLogin"), {
+        Toast.show(i18n.t("sign_up_required"), {
           position: Toast.positions.CENTER,
         });
-        router.push("/settings/(auth)/login");
+        router.push("/settings/(auth)/register");
         return;
       }
       if (!pkg) {

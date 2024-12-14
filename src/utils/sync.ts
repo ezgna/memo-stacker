@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 import * as SQLite from "expo-sqlite";
 import CryptoES from "crypto-es";
 import { jsonFormatter } from "./encryption";
+import * as Crypto from "expo-crypto";
 
 type OmittedEntry = Omit<Entry, "synced">;
 
@@ -50,7 +51,22 @@ export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatab
       } else {
         const { error } = await supabase.from("entries").insert([encryptedUnsyncedEntry]);
         if (error) {
-          console.error('supabase.from("entries").insert([encryptedUnsyncedEntry])', error);
+          if (error.message === 'duplicate key value violates unique constraint "entries_id_key"') {
+            const oldId = encryptedUnsyncedEntry.id;
+            const newId = Crypto.randomUUID()
+            const reGeneratedIdEncryptedEntry = {
+              ...encryptedUnsyncedEntry,
+              id: newId,
+            };
+            const { error: reGenerateError } = await supabase.from("entries").insert([reGeneratedIdEncryptedEntry]);
+            if (reGenerateError) {
+              console.error( supabase.from("entries").insert([reGeneratedIdEncryptedEntry]), reGenerateError);
+            } else {
+              await db.runAsync("UPDATE entries SET id = ? WHERE id = ?", [newId, oldId])
+            }
+          } else {
+            console.error('supabase.from("entries").insert([encryptedUnsyncedEntry])', error);
+          }
         }
       }
     }
@@ -113,85 +129,3 @@ export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId
     }
   }
 };
-
-
-
-
-// // when signout
-// export const updateLocalUserIdToNull = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
-//   if (!db || userId) return;
-//   try {
-//     await db.runAsync(`UPDATE entries SET user_id = ?;`, [null]);
-//   } catch (e) {
-//     console.error(e);
-//   }
-// };
-
-// // when subscribe
-// export const syncAllLocalDataWithSupabase = async (db: SQLite.SQLiteDatabase | null) => {
-//   if (!db) return;
-//   await db.runAsync(`UPDATE entries SET synced = 0 WHERE synced != 0;`); // I don't know this line is needed
-//   const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries");
-//   for (const entry of allEntries) {
-//     const { error } = await supabase.from("entries").insert([entry]);
-//     if (!error) {
-//       await db.runAsync(`UPDATE entries SET synced = 1 WHERE id = ?`, [entry.id]);
-//     } else {
-//       console.error(error);
-//     }
-//   }
-// };
-
-// // when unsubscribe
-// export const deleteAllSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null) => {
-//   if (!db || !userId) return;
-//   await supabase.from("entries").delete().eq("user_id", userId);
-// };
-
-// // when storeEntryByPaidUser
-// export const syncStoreEntry = async (db: SQLite.SQLiteDatabase | null, text: string) => {
-//   if (!db) return;
-//   const entry = await db.getFirstAsync("SELECT * FROM entries WHERE text = ?;", [text]);
-//   await supabase.from("entries").insert([entry]);
-// };
-
-// // when tap syncButton and open the app
-// export const syncAllDataFromSupabase = async (db: SQLite.SQLiteDatabase | null) => {
-//   if (!db) return;
-//   const latestLocalEntry: Entry | null = await db.getFirstAsync("SELECT created_at FROM entries ORDER BY created_at DESC");
-//   if (!latestLocalEntry) return;
-//   const latestCreatedAt = latestLocalEntry.created_at;
-//   const { data: newEntries } = await supabase.from("entries").select("*").gt("created_at", latestCreatedAt);
-//   if (!newEntries) return;
-//   const placeholders = newEntries.map(() => "(?,?,?,?,?,?)").join(",");
-//   const values = newEntries.reduce((acc, entry) => {
-//     return acc.concat([entry.created_at, entry.updated_at, entry.deleted_at, entry.date, entry.text, entry.user_id]);
-//   }, []);
-
-//   await db.withTransactionAsync(async () => {
-//     await db.runAsync(`INSERT INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES ${placeholders}`, values);
-//   });
-// };
-
-// // when edit
-// export const syncEditedData = async (db: SQLite.SQLiteDatabase | null) => {
-//   if (!db) return;
-//   const latestEditedEntry: Entry | null = await db.getFirstAsync("SELECT updated_at FROM entries ORDER BY updated_at DESC");
-//   if (!latestEditedEntry) return;
-//   const latestUpdatedAt = latestEditedEntry.updated_at;
-//   const { data: newEntries } = await supabase.from("entries").select("*").gt("updated_at", latestUpdatedAt);
-//   if (!newEntries) return;
-//   const placeholders = newEntries.map(() => "(?,?,?,?,?,?)").join(",");
-//   const values = newEntries.reduce((acc, entry) => {
-//     return acc.concat([entry.created_at, entry.updated_at, entry.deleted_at, entry.date, entry.text, entry.user_id]);
-//   }, []);
-//   await db.withTransactionAsync(async () => {
-//     await db.runAsync(`INSERT OR REPLACE INTO entries (created_at, updated_at, deleted_at, date, text, user_id) VALUES ${placeholders}`, values);
-//   });
-// };
-
-// // when delete
-// export const syncDeletedData = async (db: SQLite.SQLiteDatabase | null) => {
-//   if (!db) return;
-//   const { data: deletedEntries } = await supabase.from("entries").select("id, deleted_at").not("deleted_at", "is", null);
-// };

@@ -7,20 +7,23 @@ import { Alert, Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
 import * as SecureStore from "expo-secure-store";
 import Toast from "react-native-root-toast";
+import CryptoES from "crypto-es";
+import { jsonFormatter, generateKeyFromPassword } from "@/src/utils/encryption";
 
 export default function () {
   const router = useRouter();
   const { session } = useAuthContext();
-  const [password, setPassword] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { token_hash }: { token_hash: string } = useLocalSearchParams();
   const navigation = useNavigation();
   const [isPreventingRemove, setIsPrevengingRemove] = useState(true);
+  const userId = session?.user.id || null;
 
   async function reset() {
     setLoading(true);
     setIsPrevengingRemove(false);
-    const { data, error } = await supabase.auth.updateUser({ password });
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
       Alert.alert(error.message);
       setLoading(false);
@@ -28,13 +31,50 @@ export default function () {
       return;
     }
     if (data) {
-      await SecureStore.setItemAsync("password", password);
+      try {
+        if (!userId) {
+          console.error("No userId!");
+          return;
+        }
+        const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
+        if (error) {
+          console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
+        }
+        if (!(data && data.length > 0)) {
+          console.log("no data exist");
+          return;
+        }
+        const { master_key: encryptedMasterKey } = data[0];
+        const password = await SecureStore.getItemAsync("password");
+        if (!password) {
+          console.log("password not exist");
+          return;
+        }
+        const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, password, {
+          format: jsonFormatter,
+        }).toString(CryptoES.enc.Utf8);
+
+        const key: string = generateKeyFromPassword(newPassword);
+        setNewPassword(key);
+        const newEncryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(decryptedMasterKey, newPassword, {
+          format: jsonFormatter,
+        });
+        const formattedNewEncryptedMasterKey: string = jsonFormatter.stringify(newEncryptedMasterKey);
+        const { error: updateError } = await supabase.from("users").update({ master_key: formattedNewEncryptedMasterKey }).eq("user_id", userId);
+        if (updateError) {
+          console.error(updateError);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      await SecureStore.setItemAsync("password", newPassword);
       router.replace("/settings/account");
       Toast.show("Password updated successfully!", {
         position: Toast.positions.CENTER,
       });
     }
-    setPassword('');
+    setNewPassword("");
     setLoading(false);
   }
 
@@ -111,11 +151,11 @@ export default function () {
         <TextInput
           containerStyle={{ paddingVertical: 5 }}
           placeholder="Enter your new password"
-          value={password}
+          value={newPassword}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="visible-password"
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={(text) => setNewPassword(text)}
         />
         <Button
           text={loading ? "Loading" : "Reset password"}

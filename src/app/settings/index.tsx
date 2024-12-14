@@ -55,7 +55,7 @@ const SettingsScreen = () => {
         if (session) {
           router.push("/settings/account");
         } else {
-          router.push("/settings/(auth)/login");
+          router.push("/settings/(auth)/register");
         }
         break;
       case 2:
@@ -83,7 +83,7 @@ const SettingsScreen = () => {
           Alert.alert("database initialize error");
         } else {
           if (!session) {
-            Toast.show("You have to signup before exporting", {
+            Toast.show(i18n.t('sign_up_required'), {
               position: Toast.positions.CENTER,
             });
             router.push("/settings/(auth)/register");
@@ -97,10 +97,10 @@ const SettingsScreen = () => {
         break;
       case 7:
         if (!session) {
-          Toast.show("You have to login before importing", {
+          Toast.show(i18n.t('sign_up_required'), {
             position: Toast.positions.CENTER,
           });
-          router.push("/settings/(auth)/login");
+          router.push("/settings/(auth)/register");
         } else {
           const importedFiles = await ImportGDrive();
           if (importedFiles) {

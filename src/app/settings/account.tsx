@@ -14,7 +14,6 @@ let pkg: PurchasesPackage | undefined;
 
 const account = () => {
   const { session, isProUser } = useAuthContext();
-  const [isPurchasing, setIsPurchasing] = useState(false);
   const { message }: { message: string } = useLocalSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
@@ -59,35 +58,6 @@ const account = () => {
       router.push("/settings/changeUsername");
     }
   };
-
-  // const handlePressUpgrade = async (pkg: PurchasesPackage | undefined) => {
-  //   try {
-  //     setIsPurchasing(true);
-  //     if (!session) {
-  //       Toast.show(i18n.t("upgradeRequiresLogin"), {
-  //         position: Toast.positions.CENTER,
-  //       });
-  //       router.push("/settings/(auth)/login");
-  //       return;
-  //     }
-  //     if (!pkg) {
-  //       console.log("No pkg");
-  //       return;
-  //     }
-  //     const { customerInfo } = await Purchases.purchasePackage(pkg);
-  //     if (customerInfo.entitlements.active["pro"] !== undefined) {
-  //       Alert.alert("purchase successful");
-  //     }
-  //   } catch (e) {
-  //     if (e instanceof Error) {
-  //       Toast.show(e.message);
-  //     } else {
-  //       console.error(e);
-  //     }
-  //   } finally {
-  //     setIsPurchasing(false);
-  //   }
-  // };
 
   const LoggedIn = ({ type }: { type: string }) => {
     return (
