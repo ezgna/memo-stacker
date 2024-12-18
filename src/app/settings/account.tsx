@@ -18,7 +18,7 @@ const account = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
 
   const handlePressChangeOrReset = async (type: string, email?: string) => {
     if (type === "email") {
@@ -72,7 +72,7 @@ const account = () => {
             </Text>
           )}
           {type === "username" && (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username}</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username ? username : i18n.t('username_unset')}</Text>
           )}
         </View>
         <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
@@ -106,7 +106,7 @@ const account = () => {
         onPress: async () => {
           setIsSigningOut(true);
           await Purchases.logOut();
-          await SecureStore.deleteItemAsync("password");
+          // await SecureStore.deleteItemAsync("password");
           await supabase.auth.signOut();
           Toast.show("You signed out");
           setIsSigningOut(false);
@@ -122,7 +122,8 @@ const account = () => {
       pkg = offerings.current?.availablePackages[0];
       const { data, error } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
       if (error?.details === "The result contains 0 rows") {
-        return;
+        // console.error('no username exist')
+        setUsername(null)
       } else if (data) {
         setUsername(data.username);
       }

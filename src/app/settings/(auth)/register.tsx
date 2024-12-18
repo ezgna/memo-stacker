@@ -16,42 +16,42 @@ export default function () {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  // const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
-  // const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [resendCredentials, setResendCredentials] = useState({ email, password });
   const [isResended, setIsResended] = useState(false);
   const { theme } = useThemeContext();
 
-  const isValidUsername = (username: string) => {
-    if (username === "") {
-      return true;
-    }
-    const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
-    return usernameRegex.test(username);
-  };
+  // const isValidUsername = (username: string) => {
+  //   if (username === "") {
+  //     return true;
+  //   }
+  //   const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
+  //   return usernameRegex.test(username);
+  // };
 
   const register = async () => {
     try {
       setLoading(true);
-      if (!isValidUsername(username)) {
-        // setIsUsernameValid(false);
-        Toast.show("Invalid username");
-        return;
-      } else {
-        const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
-        if (data) {
-          Toast.show(i18n.t("username_already_taken"));
-          // setIsUsernameValid(false);
-          setUsername("");
-          return;
-        } else if (error.details === "The result contains 0 rows") {
-          // setIsUsernameValid(true);
-        }
-      }
+      // if (!isValidUsername(username)) {
+      //   // setIsUsernameValid(false);
+      //   Toast.show("Invalid username");
+      //   return;
+      // } else {
+      //   const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
+
+      //   if (data) {
+      //     Toast.show(i18n.t("username_already_taken"));
+      //     // setIsUsernameValid(false);
+      //     setUsername("");
+      //     return;
+      //   } else if (error.details === "The result contains 0 rows") {
+      //     // setIsUsernameValid(true);
+      //   }
+      // }
 
       const { data, error } = await supabase.from("users").select("user_id").eq("email", email).single();
       if (data) {
@@ -81,7 +81,7 @@ export default function () {
         return;
       }
       if (!session) {
-        await AsyncStorage.setItem("username", username);
+        // await AsyncStorage.setItem("username", username);
         // Alert.alert(i18n.t("email_verification_propmt"));
         // router.navigate("/");
         setIsRegistered(true);
@@ -91,7 +91,7 @@ export default function () {
       }
       setEmail("");
       setPassword("");
-      setUsername("");
+      // setUsername("");
     } catch (e) {
       console.error(e);
     } finally {
@@ -170,7 +170,7 @@ export default function () {
           </View>
         ) : (
           <>
-            <TextInput
+            {/* <TextInput
               style={[
                 styles.input,
                 {
@@ -184,7 +184,7 @@ export default function () {
               placeholderTextColor={theme === "dark" ? undefined : "#999"}
               value={username}
               autoCapitalize="none"
-              autoComplete="username"
+              autoComplete='username'
               autoCorrect={false}
               keyboardType="default"
               onChangeText={(text) => setUsername(text)}
@@ -196,7 +196,7 @@ export default function () {
                   <Text style={{ fontSize: 12, color: "red" }}>{i18n.t("username_requirement")}</Text>
                 </>
               )}
-            </View>
+            </View> */}
             <TextInput
               style={[
                 styles.input,
@@ -204,7 +204,7 @@ export default function () {
                   backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
                   borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
                   color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-                  marginTop: 15,
+                  // marginTop: 15,
                 },
               ]}
               placeholder={i18n.t("email")}

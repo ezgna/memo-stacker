@@ -1,16 +1,15 @@
 import { useAuthContext } from "@/src/contexts/AuthContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
-import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
 
 export default function () {
   const { session } = useAuthContext();
+  const userId = session?.user.id;
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isUsernameValid, setIsUsernameValid] = useState(true);
@@ -23,6 +22,10 @@ export default function () {
   async function changeUsername() {
     setLoading(true);
     try {
+      if (!userId) {
+        console.error("No userId");
+        return;
+      }
       if (!isValidUsername(username)) {
         setIsUsernameValid(false);
         setUsername("");
@@ -31,7 +34,33 @@ export default function () {
       } else {
         const { data: currentUsernameData, error: usernameFetchError } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
         if (usernameFetchError) {
-          console.error(usernameFetchError);
+          if (usernameFetchError.details === "The result contains 0 rows") {
+            const { error } = await supabase.from("users").insert({ user_id: userId, username });
+            if (error) {
+              console.error('supabase.from("users").insert({ user_id: userId, username })', error);
+              return;
+            } else {
+              const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
+              if (data) {
+                Toast.show(i18n.t("username_already_taken"));
+                setIsUsernameValid(false);
+                setUsername("");
+                return;
+              } else if (error.details === "The result contains 0 rows") {
+                setIsUsernameValid(true);
+                const { error } = await supabase.from("users").update({ username: username }).eq("user_id", session?.user.id);
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+                Toast.show("Username changed");
+                router.replace("/settings/account");
+                return;
+              }
+            }
+          }
+          console.error('supabase.from("users").select("username").eq("user_id", session?.user.id).single()', usernameFetchError);
+          return;
         } else if (currentUsernameData) {
           if (currentUsernameData.username === username) {
             setUsername("");
@@ -55,7 +84,7 @@ export default function () {
             return;
           }
           Toast.show("Username changed");
-          router.replace("/settings/account");
+          router.back();
         }
       }
     } catch (e) {

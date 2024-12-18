@@ -11,9 +11,10 @@ import { fetchSupabaseData, updateUnsyncedLocalDataWithSupabase } from "../utils
 import { supabase } from "../utils/supabase";
 import * as SecureStore from "expo-secure-store";
 import CryptoES from "crypto-es";
-import { jsonFormatter } from "../utils/encryption";
+import { generateKeyFromUserId, jsonFormatter } from "../utils/encryption";
 import { themeColors } from "../utils/theme";
 import { useThemeContext } from "../contexts/ThemeContext";
+import Constants from "expo-constants";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
@@ -27,25 +28,31 @@ export default function SearchBox() {
     if (isOnline && isProUser) {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
-        if (error) {
-          console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
+        // const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
+        // if (error) {
+        //   console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
+        // }
+        // if (!(data && data.length > 0)) {
+        //   console.log("no data exist");
+        //   return;
+        // }
+        // const { master_key: encryptedMasterKey } = data[0];
+        // const password = await SecureStore.getItemAsync("password");
+        // if (!password) {
+        //   console.log("password not exist");
+        //   return;
+        // }
+        const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
+        if (!kek || !userId) {
+          console.error('kek or userId not exist')
+          return
         }
-        if (!(data && data.length > 0)) {
-          console.log("no data exist");
-          return;
-        }
-        const { master_key: encryptedMasterKey } = data[0];
-        const password = await SecureStore.getItemAsync("password");
-        if (!password) {
-          console.log("password not exist");
-          return;
-        }
-        const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, password, {
-          format: jsonFormatter,
-        }).toString(CryptoES.enc.Utf8);
-        await updateUnsyncedLocalDataWithSupabase(db, userId, decryptedMasterKey);
-        await fetchSupabaseData(db, userId, decryptedMasterKey);
+        const masterKey = generateKeyFromUserId(userId, kek)
+        // const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, kek, {
+        //   format: jsonFormatter,
+        // }).toString(CryptoES.enc.Utf8);
+        await updateUnsyncedLocalDataWithSupabase(db, userId, masterKey);
+        await fetchSupabaseData(db, userId, masterKey);
       } catch (e) {
         console.error("handleSync try catch error", e);
       } finally {

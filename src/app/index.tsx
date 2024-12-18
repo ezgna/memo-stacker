@@ -14,10 +14,11 @@ import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useDatabase } from "../hooks/useDatabase";
-import { jsonFormatter } from "../utils/encryption";
+import { generateKeyFromUserId, jsonFormatter } from "../utils/encryption";
 import { supabase } from "../utils/supabase";
 import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
 import { themeColors } from "../utils/theme";
+import Constants from "expo-constants";
 
 export default function index() {
   const db = useDatabase();
@@ -168,23 +169,29 @@ export default function index() {
   useEffect(() => {
     // Check isOnline if it will automatically change when network state change
     const sync = async () => {
-      if (isOnline && isProUser) {
+      if (isOnline && isProUser && userId) {
         try {
-          const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
-          if (error) {
-            console.error(error);
+          // const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
+          // if (error) {
+          //   console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
+          // }
+          // if (!(data && data.length > 0)) return;
+          // const { master_key: encryptedMasterKey } = data[0];
+          // const password = await SecureStore.getItemAsync("password");
+          // if (!password) return;
+          const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
+          if (!kek) {
+            console.log("kek not exist");
           }
-          if (!(data && data.length > 0)) return;
-          const { master_key: encryptedMasterKey } = data[0];
-          const password = await SecureStore.getItemAsync("password");
-          if (!password) return;
-          const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, password, {
-            format: jsonFormatter,
-          }).toString(CryptoES.enc.Utf8);
-          await updateUnsyncedLocalDataWithSupabase(db, userId, decryptedMasterKey);
-          await fetchSupabaseData(db, userId, decryptedMasterKey);
+          const masterKey = generateKeyFromUserId(userId, kek);
+
+          // const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, kek, {
+          //   format: jsonFormatter,
+          // }).toString(CryptoES.enc.Utf8);
+          await updateUnsyncedLocalDataWithSupabase(db, userId, masterKey);
+          await fetchSupabaseData(db, userId, masterKey);
         } catch (e) {
-          console.error(e);
+          console.error("syncError", e);
         }
       }
     };
@@ -289,7 +296,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      {!isProUser && Platform.OS !== 'web' && (
+      {!isProUser && Platform.OS !== "web" && (
         <View>
           <BannerAd
             unitId="ca-app-pub-4363360791941587/8952562876"

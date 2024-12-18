@@ -1,5 +1,4 @@
 import { useThemeContext } from "@/src/contexts/ThemeContext";
-import { generateKeyFromPassword, generateMasterKey, jsonFormatter } from "@/src/utils/encryption";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { themeColors } from "@/src/utils/theme";
@@ -7,6 +6,7 @@ import { AntDesign } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoES from "crypto-es";
+import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
@@ -92,31 +92,36 @@ export default function () {
         }
         return;
       } else if (session) {
+        // ここ全部不要か？
         const userId = session.user.id;
         const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
         if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
         if (userIdInUsers && userIdInUsers.length > 0) {
           // console.log("userIdInUsers exists", userIdInUsers[0]);
         } else {
-          const masterKey: string = generateMasterKey();
-          const key: string = generateKeyFromPassword(password);
-          setPassword(key);
-          const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, password, {
-            format: jsonFormatter,
-          });
-          const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
-          const username = await AsyncStorage.getItem("username");
-          if (!username) {
-            console.error("no username");
-          }
-          const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email });
-          if (error) {
-            console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
-          }
+          // const masterKey: string = generateMasterKey();
+          // const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
+          // if (!kek) {
+          //   console.log('kek not exist')
+          // }
+
+          // const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, kek, {
+          //   format: jsonFormatter,
+          // });
+
+          // const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
+          // const username = await AsyncStorage.getItem("username");
+          // if (!username) {
+          //   console.error("no username");
+          // }
+          // const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email });
+          // if (error) {
+          //   console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
+          // }
         }
         router.navigate("/");
         Toast.show("you logged in!");
-        await SecureStore.setItemAsync("password", password);
+        // await SecureStore.setItemAsync("password", password);
       } else {
         console.log("session not exist");
       }

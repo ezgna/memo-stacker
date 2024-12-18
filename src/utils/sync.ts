@@ -16,13 +16,13 @@ export const updateLocalUserIdToUid = async (db: SQLite.SQLiteDatabase | null, u
   }
 };
 
-export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatabase | null, userId: string | null, decryptedMasterKey: string) => {
+export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatabase | null, userId: string | null, masterKey: string) => {
   if (!db || !userId) return;
   const unsyncedEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE synced = 0");
 
   if (unsyncedEntries.length > 0) {
     for (const unsyncedEntry of unsyncedEntries) {
-      const encryptedText: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(unsyncedEntry.text, decryptedMasterKey, {
+      const encryptedText: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(unsyncedEntry.text, masterKey, {
         format: jsonFormatter,
       });
       const formattedEncryptedText: string = jsonFormatter.stringify(encryptedText);
@@ -53,16 +53,16 @@ export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatab
         if (error) {
           if (error.message === 'duplicate key value violates unique constraint "entries_id_key"') {
             const oldId = encryptedUnsyncedEntry.id;
-            const newId = Crypto.randomUUID()
+            const newId = Crypto.randomUUID();
             const reGeneratedIdEncryptedEntry = {
               ...encryptedUnsyncedEntry,
               id: newId,
             };
             const { error: reGenerateError } = await supabase.from("entries").insert([reGeneratedIdEncryptedEntry]);
             if (reGenerateError) {
-              console.error( supabase.from("entries").insert([reGeneratedIdEncryptedEntry]), reGenerateError);
+              console.error(supabase.from("entries").insert([reGeneratedIdEncryptedEntry]), reGenerateError);
             } else {
-              await db.runAsync("UPDATE entries SET id = ? WHERE id = ?", [newId, oldId])
+              await db.runAsync("UPDATE entries SET id = ? WHERE id = ?", [newId, oldId]);
             }
           } else {
             console.error('supabase.from("entries").insert([encryptedUnsyncedEntry])', error);
@@ -75,49 +75,57 @@ export const updateUnsyncedLocalDataWithSupabase = async (db: SQLite.SQLiteDatab
   }
 };
 
-export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null, decryptedMasterKey: string) => {
+export const fetchSupabaseData = async (db: SQLite.SQLiteDatabase | null, userId: string | null, masterKey: string) => {
   if (!db || !userId) return;
   const { data, error } = await supabase.from("entries").select("*").eq("user_id", userId);
   if (error) {
-    console.error(error);
+    console.error(supabase.from("entries").select("*").eq("user_id", userId), error);
     return;
   }
   if (data) {
-    for (const entry of data) {
-      const decryptedText = CryptoES.AES.decrypt(entry.text, decryptedMasterKey, { format: jsonFormatter }).toString(CryptoES.enc.Utf8);
-      const localEntry: Entry | null = await db.getFirstAsync(`SELECT * FROM entries WHERE id = ?`, [entry.id]);
-      if (localEntry) {
-        if (new Date(entry.updated_at) > new Date(localEntry.updated_at)) {
-          await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, deleted_at = ?, synced = 1 WHERE id = ?`, [
+    try {
+      for (const entry of data) {
+        const decryptedText = CryptoES.AES.decrypt(entry.text, masterKey, { format: jsonFormatter }).toString(CryptoES.enc.Utf8);
+        if (!decryptedText) {
+          console.error("decryption error");
+          return;
+        }
+        const localEntry: Entry | null = await db.getFirstAsync(`SELECT * FROM entries WHERE id = ?`, [entry.id]);
+        if (localEntry) {
+          if (new Date(entry.updated_at) > new Date(localEntry.updated_at)) {
+            await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, deleted_at = ?, synced = 1 WHERE id = ?`, [
+              decryptedText,
+              entry.updated_at,
+              entry.deleted_at,
+              entry.id,
+            ]);
+          } else if (new Date(entry.updated_at) < new Date(localEntry.updated_at)) {
+            const encryptedText: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(localEntry.text, masterKey, { format: jsonFormatter });
+            const formattedEncryptedText: string = jsonFormatter.stringify(encryptedText);
+            await supabase
+              .from("entries")
+              .update({
+                text: formattedEncryptedText,
+                updated_at: localEntry.updated_at,
+                deleted_at: localEntry.deleted_at,
+              })
+              .eq("id", localEntry.id);
+          }
+        } else {
+          await db.runAsync(`INSERT INTO entries (id, text, date, created_at, updated_at, deleted_at, user_id, synced) VALUES (?,?,?,?,?,?,?,?)`, [
+            entry.id,
             decryptedText,
+            entry.date,
+            entry.created_at,
             entry.updated_at,
             entry.deleted_at,
-            entry.id,
+            entry.user_id,
+            1,
           ]);
-        } else if (new Date(entry.updated_at) < new Date(localEntry.updated_at)) {
-          const encryptedText: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(localEntry.text, decryptedMasterKey, { format: jsonFormatter });
-          const formattedEncryptedText: string = jsonFormatter.stringify(encryptedText);
-          await supabase
-            .from("entries")
-            .update({
-              text: formattedEncryptedText,
-              updated_at: localEntry.updated_at,
-              deleted_at: localEntry.deleted_at,
-            })
-            .eq("id", localEntry.id);
         }
-      } else {
-        await db.runAsync(`INSERT INTO entries (id, text, date, created_at, updated_at, deleted_at, user_id, synced) VALUES (?,?,?,?,?,?,?,?)`, [
-          entry.id,
-          decryptedText,
-          entry.date,
-          entry.created_at,
-          entry.updated_at,
-          entry.deleted_at,
-          entry.user_id,
-          1,
-        ]);
       }
+    } catch (e) {
+      console.error("fetchSupabaseDataError", e);
     }
   }
 

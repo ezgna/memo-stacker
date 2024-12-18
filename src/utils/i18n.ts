@@ -104,7 +104,8 @@ const i18n = new I18n({
     go_to_settings: "Go to settings↑",
     no_memo_yet: "No memo yet",
     registered_email: "Registered email address",
-    sign_up_required: "You need to sign up"
+    sign_up_required: "You need to sign up",
+    username_unset: 'Username not set'
   },
   ja: {
     search: "メモを検索",
@@ -208,7 +209,8 @@ const i18n = new I18n({
     go_to_settings: "設定に移動↑",
     no_memo_yet: "メモがありません😢",
     registered_email: '登録済みメールアドレス',
-    sign_up_required: "アカウント登録が必要です"
+    sign_up_required: "アカウント登録が必要です",
+    username_unset: 'ユーザーネームが未設定です'
   },
 });
 

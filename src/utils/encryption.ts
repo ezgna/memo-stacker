@@ -43,11 +43,12 @@ export const generateMasterKey = () => {
   return masterKey.toString(Base64);
 };
 
-export const generateKeyFromPassword = (password: string) => {
-  const salt = WordArray.random(16);
-  const key = CryptoES.PBKDF2(password, salt, {
-    keySize: 8,
-    iterations: 1000,
-  })
+export const generateKeyFromUserId = (userId: string, kek: string) => {
+  // const salt = WordArray.random(16);
+  // const key = CryptoES.PBKDF2(userId, salt, {
+  //   keySize: 8,
+  //   iterations: 1000,
+  // })
+  const key = CryptoES.HmacSHA256(userId, kek)
   return key.toString(Base64);
 };
