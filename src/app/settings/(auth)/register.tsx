@@ -25,34 +25,9 @@ export default function () {
   const [isResended, setIsResended] = useState(false);
   const { theme } = useThemeContext();
 
-  // const isValidUsername = (username: string) => {
-  //   if (username === "") {
-  //     return true;
-  //   }
-  //   const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
-  //   return usernameRegex.test(username);
-  // };
-
   const register = async () => {
     try {
       setLoading(true);
-      // if (!isValidUsername(username)) {
-      //   // setIsUsernameValid(false);
-      //   Toast.show("Invalid username");
-      //   return;
-      // } else {
-      //   const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
-
-      //   if (data) {
-      //     Toast.show(i18n.t("username_already_taken"));
-      //     // setIsUsernameValid(false);
-      //     setUsername("");
-      //     return;
-      //   } else if (error.details === "The result contains 0 rows") {
-      //     // setIsUsernameValid(true);
-      //   }
-      // }
-
       const { data, error } = await supabase.from("users").select("user_id").eq("email", email).single();
       if (data) {
         Toast.show(i18n.t("email_already_registered"));
@@ -130,10 +105,12 @@ export default function () {
             {isResended && (
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 30 }}>
                 <AntDesign name="exclamationcircleo" size={25} color="red" style={{ paddingRight: 15 }} />
-                <Text style={{ paddingRight: 30 }}>{i18n.t("email_not_received")}</Text>
+                <Text style={{ paddingRight: 30, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+                  {i18n.t("email_not_received")}
+                </Text>
               </View>
             )}
-            <Text style={{ marginBottom: 10 }}>{i18n.t("email_sent")}</Text>
+            <Text style={{ marginBottom: 10, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("email_sent")}</Text>
             <Button
               text={loading ? "Loading" : i18n.t("resend_email")}
               onPress={async () => {
@@ -146,7 +123,7 @@ export default function () {
                       data: {
                         language: i18n.locale,
                       },
-                      emailRedirectTo: "memologminute://settings/login?message=Email+Verified.+Login+here.",
+                      emailRedirectTo: "https://sites.google.com/view/memolog-minute/confirmation",
                     },
                   });
                   if (error) {

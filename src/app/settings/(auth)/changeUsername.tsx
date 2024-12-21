@@ -1,10 +1,13 @@
 import { useAuthContext } from "@/src/contexts/AuthContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
+import { themeColors } from "@/src/utils/theme";
+import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
-import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
+import { ScrollView, View, StyleSheet, TextInput } from "react-native";
+import { Button, Text, themeColor } from "react-native-rapi-ui";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -13,6 +16,8 @@ export default function () {
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [error, setError] = useState<string>("");
+  const { theme } = useThemeContext();
 
   const isValidUsername = (username: string) => {
     const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
@@ -32,75 +37,55 @@ export default function () {
         Toast.show("Invalid username");
         return;
       } else {
-        const { data: currentUsernameData, error: usernameFetchError } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
-        if (usernameFetchError) {
-          if (usernameFetchError.details === "The result contains 0 rows") {
-            const { error } = await supabase.from("users").insert({ user_id: userId, username });
-            if (error) {
-              console.error('supabase.from("users").insert({ user_id: userId, username })', error);
-              return;
-            } else {
-              const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
-              if (data) {
-                Toast.show(i18n.t("username_already_taken"));
-                setIsUsernameValid(false);
-                setUsername("");
-                return;
-              } else if (error.details === "The result contains 0 rows") {
-                setIsUsernameValid(true);
-                const { error } = await supabase.from("users").update({ username: username }).eq("user_id", session?.user.id);
-                if (error) {
-                  console.error(error);
-                  return;
-                }
-                Toast.show("Username changed");
-                router.replace("/settings/account");
+        const { error: insertError } = await supabase.from("users").insert({ user_id: userId, username });
+        if (insertError) {
+          // console.log("insertError:", insertError);
+          if (insertError.message === 'duplicate key value violates unique constraint "users_username_key"') {
+            const { data, error: selectError } = await supabase.from("users").select("username").eq("user_id", userId).single();
+            if (selectError) {
+              // console.log("selectError:", selectError);
+              if (selectError.details === "The result contains 0 rows") {
+                setError(selectError.details);
                 return;
               }
+              console.error("unknown error:", selectError);
+              return;
             }
-          }
-          console.error('supabase.from("users").select("username").eq("user_id", session?.user.id).single()', usernameFetchError);
-          return;
-        } else if (currentUsernameData) {
-          if (currentUsernameData.username === username) {
+            if (data.username === username) {
+              setError(insertError.message);
+              return;
+            }
+          } else if (insertError.message === 'duplicate key value violates unique constraint "users_pkey"') {
+            const { error: updateError } = await supabase.from("users").update({ username }).eq("user_id", session.user.id);
+            if (updateError) {
+              console.error("unknown error:", updateError);
+              return;
+            }
             setUsername("");
-            setIsUsernameValid(false);
-            Toast.show("The new username is the same as the current one.");
+            setError("");
+            router.back();
+            Toast.show("Username successfully changed");
             return;
           }
-        }
-
-        const { data, error } = await supabase.from("users").select("user_id").eq("username", username).single();
-        if (data) {
-          Toast.show(i18n.t("username_already_taken"));
-          setIsUsernameValid(false);
-          setUsername("");
+          console.error("unknown error", insertError);
           return;
-        } else if (error.details === "The result contains 0 rows") {
-          setIsUsernameValid(true);
-          const { error } = await supabase.from("users").update({ username: username }).eq("user_id", session?.user.id);
-          if (error) {
-            console.error(error);
-            return;
-          }
-          Toast.show("Username changed");
-          router.back();
         }
       }
+      setUsername("");
+      setError("");
+      router.back();
+      Toast.show("Username successfully set");
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-
-    setUsername("");
   }
 
   return (
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        marginTop: 150,
       }}
       scrollEnabled={false}
     >
@@ -109,7 +94,7 @@ export default function () {
           flex: 2,
           paddingHorizontal: 20,
           paddingBottom: 300,
-          backgroundColor: themeColor.white,
+          backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
         }}
       >
         <Text
@@ -118,23 +103,43 @@ export default function () {
           style={{
             alignSelf: "center",
             padding: 30,
+            color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
           Change Username
         </Text>
 
-        <Text style={{ marginBottom: 10 }}>New Username</Text>
+        <Text style={{ marginBottom: 10, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>New Username</Text>
         <TextInput
-          containerStyle={{ paddingVertical: 5 }}
-          borderColor={!isUsernameValid ? "red" : undefined}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+              borderColor: error ? "red" : theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+            },
+          ]}
           placeholder={i18n.t("username_requirement")}
+          placeholderTextColor={theme === "dark" ? undefined : "#999"}
           value={username}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="default"
           onChangeText={(text) => setUsername(text)}
         />
+        {error && (
+          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6 }}>
+            <AntDesign name="exclamationcircleo" size={12} color="red" style={{ paddingRight: 5 }} />
+
+            <Text style={{ fontSize: 12, color: "red" }}>
+              {error === 'duplicate key value violates unique constraint "users_username_key"'
+                ? i18n.t("username_already_in_use")
+                : error === "The result contains 0 rows"
+                  ? i18n.t("username_already_taken")
+                  : "Unknown error"}
+            </Text>
+          </View>
+        )}
 
         <Button
           text={loading ? "Loading" : "Continue"}
@@ -151,3 +156,14 @@ export default function () {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  input: {
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+  },
+});

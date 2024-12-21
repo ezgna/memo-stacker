@@ -40,13 +40,28 @@ export default function () {
           Toast.show("Invalid username");
           return;
         }
-        const { data, error } = await supabase.from("users").select("email").eq("username", identifier).single();
-        if (error) {
-          setIsInvalidUsername(true);
-          console.log(identifier);
-          return;
-        }
-        email = data.email;
+        // const { data, error } = await supabase.from("users").select('*');
+        // if (error) {
+        //   console.error(error)
+        // }
+        // console.log(data);
+        // console.log(identifier)
+        // const { data: fetchedUserId, error: userIdFetchError } = await supabase.from("users").select("user_id").eq("username", identifier).single();
+        // if (userIdFetchError) {
+        //   console.error('supabase.from("users").select("user_id").eq("username", identifier).single()', userIdFetchError);
+        //   return;
+        // }
+        // const { data: fetchedEmail, error: emailFetchError } = await supabase.from("auth.users").select("email").eq("id", fetchedUserId).single();
+        // if (emailFetchError) {
+        //   console.error(emailFetchError);
+        //   return;
+        // }
+        // if (error) {
+        //   setIsInvalidUsername(true);
+        //   console.log(identifier);
+        //   return;
+        // }
+        // email = fetchedEmail.email;
       }
       const {
         error,
@@ -104,11 +119,9 @@ export default function () {
           // if (!kek) {
           //   console.log('kek not exist')
           // }
-
           // const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, kek, {
           //   format: jsonFormatter,
           // });
-
           // const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
           // const username = await AsyncStorage.getItem("username");
           // if (!username) {

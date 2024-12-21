@@ -46,7 +46,7 @@ const i18n = new I18n({
     already_have_account: "Already have an account?",
     dont_have_account: "Don't have an account?",
     username_requirement: "4-16 characters, letters or numbers only",
-    username_already_taken: "This username is already taken. Please choose another one.",
+    username_already_taken: "This username is already taken.",
     email_already_registered: "This email address is already registered. Please use a different one.",
     confirmation_email_sent: "A confirmation email has been sent to your new address. Please check your inbox.",
     username: 'Username',
@@ -105,8 +105,9 @@ const i18n = new I18n({
     no_memo_yet: "No memo yet",
     registered_email: "Registered email address",
     sign_up_required: "You need to sign up",
-    username_unset: 'Username not set'
-  },
+    username_unset: 'Username not set',
+    username_already_in_use: "You’re already using this username!",
+    },
   ja: {
     search: "メモを検索",
     memolog: "メモログ",
@@ -151,7 +152,7 @@ const i18n = new I18n({
     already_have_account: "アカウントをお持ちですか？",
     dont_have_account: "アカウントをお持ちでないですか？",
     username_requirement: "4〜16文字、英字または数字のみ",
-    username_already_taken: "このユーザーネームは既に使用されています。他のものを選んでください。",
+    username_already_taken: "このユーザーネームは既に使用されています。",
     email_already_registered: "このメールアドレスは既に登録されています。他のメールアドレスを使用してください。",
     confirmation_email_sent: "確認メールが新しいアドレスに送信されました。受信ボックスをご確認ください。",
     username: 'ユーザーネーム',
@@ -210,7 +211,8 @@ const i18n = new I18n({
     no_memo_yet: "メモがありません😢",
     registered_email: '登録済みメールアドレス',
     sign_up_required: "アカウント登録が必要です",
-    username_unset: 'ユーザーネームが未設定です'
+    username_unset: 'ユーザーネームが未設定です',
+    username_already_in_use: "このユーザーネームはすでに使用中です！",
   },
 });
 

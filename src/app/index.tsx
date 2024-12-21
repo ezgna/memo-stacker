@@ -4,7 +4,7 @@ import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { Alert, AppState, Platform, StyleSheet, TextInput, View } from "react-native";
-import mobileAds, { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
+import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
 import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
@@ -298,11 +298,15 @@ export default function index() {
       </View>
       {!isProUser && Platform.OS !== "web" && (
         <View>
-          <BannerAd
-            unitId="ca-app-pub-4363360791941587/8952562876"
-            size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-            requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
-          />
+          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
+            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }} />
+          ) : (
+            <BannerAd
+              unitId="ca-app-pub-4363360791941587/8952562876"
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
+            />
+          )}
         </View>
       )}
     </>

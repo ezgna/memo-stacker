@@ -3,14 +3,14 @@ import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { themeColors } from "@/src/utils/theme";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import Toast from "react-native-root-toast";
 
-let pkg: PurchasesPackage | undefined;
+// let pkg: PurchasesPackage | undefined;
 
 const account = () => {
   const { session, isProUser } = useAuthContext();
@@ -18,7 +18,7 @@ const account = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState("");
 
   const handlePressChangeOrReset = async (type: string, email?: string) => {
     if (type === "email") {
@@ -72,7 +72,9 @@ const account = () => {
             </Text>
           )}
           {type === "username" && (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{username ? username : i18n.t('username_unset')}</Text>
+            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+              {username ? username : i18n.t("username_unset")}
+            </Text>
           )}
         </View>
         <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
@@ -115,20 +117,21 @@ const account = () => {
       },
     ]);
   };
-
+  const segments = useSegments();
+  
   useEffect(() => {
     (async () => {
-      const offerings = await Purchases.getOfferings();
-      pkg = offerings.current?.availablePackages[0];
+      // const offerings = await Purchases.getOfferings();
+      // pkg = offerings.current?.availablePackages[0];
       const { data, error } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
       if (error?.details === "The result contains 0 rows") {
         // console.error('no username exist')
-        setUsername(null)
+        setUsername("");
       } else if (data) {
         setUsername(data.username);
       }
     })();
-  }, [session]);
+  }, [session, segments]);
 
   useEffect(() => {
     (async () => {
