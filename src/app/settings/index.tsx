@@ -64,18 +64,36 @@ const SettingsScreen = () => {
       case 3:
         router.push("/settings/faq");
         break;
-      case 4: 
+      case 4:
         try {
-          await Linking.openURL('https://sites.google.com/view/memolog-minute/privacy-policy')
+          Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Continue",
+              onPress: async () => await Linking.openURL("https://sites.google.com/view/memolog-minute/privacy-policy"),
+            },
+          ]);
         } catch (e) {
-          console.error(e)
+          console.error(e);
         }
         break;
       case 5:
         try {
-          await Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')
+          Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Continue",
+              onPress: async () => await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
+            },
+          ]);
         } catch (e) {
-          console.error(e)
+          console.error(e);
         }
         break;
       case 6:
@@ -83,7 +101,7 @@ const SettingsScreen = () => {
           Alert.alert("database initialize error");
         } else {
           if (!session) {
-            Toast.show(i18n.t('sign_up_required'), {
+            Toast.show(i18n.t("sign_up_required"), {
               position: Toast.positions.CENTER,
             });
             router.push("/settings/(auth)/register");
@@ -97,7 +115,7 @@ const SettingsScreen = () => {
         break;
       case 7:
         if (!session) {
-          Toast.show(i18n.t('sign_up_required'), {
+          Toast.show(i18n.t("sign_up_required"), {
             position: Toast.positions.CENTER,
           });
           router.push("/settings/(auth)/register");
@@ -212,8 +230,8 @@ const SettingsScreen = () => {
   useEffect(() => {
     if (theme === "dark") {
       setStatusBarStyle("light");
-    } else if (theme === 'light') {
-      setStatusBarStyle('dark')
+    } else if (theme === "light") {
+      setStatusBarStyle("dark");
     }
   }, [theme]);
 
@@ -238,7 +256,7 @@ const SettingsScreen = () => {
         >
           <FontAwesome6 name="face-meh" size={50} color="#9E9E9E" />
           <View style={{ marginRight: 60 }}>
-            <Text style={{ fontSize: 14, fontWeight: "bold", }}>{i18n.t("freePlan")}</Text>
+            <Text style={{ fontSize: 14, fontWeight: "bold" }}>{i18n.t("freePlan")}</Text>
             {/* <Text style={{ fontSize: 12 }}>{i18n.t("monthlySubscription")}</Text> */}
           </View>
           <View style={{ backgroundColor: "white", paddingVertical: 10, paddingHorizontal: 15, borderRadius: 20, justifyContent: "center" }}>
