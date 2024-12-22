@@ -66,13 +66,13 @@ const SettingsScreen = () => {
         break;
       case 4:
         try {
-          Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
+          Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
             {
-              text: "Cancel",
+              text: i18n.t("cancel"),
               style: "cancel",
             },
             {
-              text: "Continue",
+              text: i18n.t("continue"),
               onPress: async () => await Linking.openURL("https://sites.google.com/view/memolog-minute/privacy-policy"),
             },
           ]);
@@ -84,11 +84,11 @@ const SettingsScreen = () => {
         try {
           Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
             {
-              text: "Cancel",
+              text: i18n.t("cancel"),
               style: "cancel",
             },
             {
-              text: "Continue",
+              text: i18n.t("continue"),
               onPress: async () => await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
             },
           ]);

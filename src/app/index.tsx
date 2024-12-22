@@ -19,6 +19,7 @@ import { supabase } from "../utils/supabase";
 import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
 import { themeColors } from "../utils/theme";
 import Constants from "expo-constants";
+import i18n from "../utils/i18n";
 
 export default function index() {
   const db = useDatabase();
@@ -54,7 +55,9 @@ export default function index() {
     if (!db) return;
     if (!text.trim()) {
       setText("");
-      Toast.show("Content cannot be empty");
+      Toast.show(i18n.t('content_cannot_be_empty'), {
+        position: Toast.positions.CENTER,
+      });
       return;
     }
     const localizedDateString = new Date().toLocaleDateString().replace(/\//g, "-");
@@ -92,14 +95,14 @@ export default function index() {
     try {
       if (!isProUser) {
         const confirmed = await new Promise((resolve) => {
-          Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
+          Alert.alert(i18n.t("confirm_deletion"), i18n.t("delete_entry_message"), [
             {
-              text: "Cancel",
+              text: i18n.t("cancel"),
               style: "cancel",
               onPress: () => resolve(false),
             },
             {
-              text: "Delete",
+              text: i18n.t("delete"),
               style: "destructive",
               onPress: () => resolve(true),
             },
@@ -127,7 +130,9 @@ export default function index() {
   const updateEntry = async () => {
     if (!db) return;
     if (!editingText.trim()) {
-      Toast.show("Content cannot be empty");
+      Toast.show(i18n.t('content_cannot_be_empty'), {
+        position: Toast.positions.CENTER,
+      });
       return;
     }
     try {
