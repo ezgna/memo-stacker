@@ -40,10 +40,30 @@ export default function () {
           Toast.show("Invalid username");
           return;
         }
-        // const { data, error } = await supabase.from("users").select('*');
-        // if (error) {
-        //   console.error(error)
+
+        const { data: selectedEmail, error: selectEmailError } = await supabase.from("profiles").select("email").eq("username", identifier).single();
+        if (selectEmailError) {
+          console.error("unknown selectEmailError:", selectEmailError);
+          return;
+        }
+
+        // const { data: fetchedUser_id, error: user_idFetchError } = await supabase.from("users").select("user_id").eq("username", identifier).single();
+        // if (user_idFetchError) {
+        //   console.error("user_idFetchError:", user_idFetchError);
         // }
+        // const { data: fetchedEmail, error: emailFetchError } = await supabase.from("auth.users").select("email").eq("id", fetchedUser_id?.user_id).single();
+
+        // const { data, error: getUserError } = await supabase.auth.getUser();
+        // if (getUserError) {
+        //   console.error("unknown error(getUserError):", getUserError);
+        //   return;
+        // }
+        // if (!data.user.email) {
+        //   console.error('unknown error: No data.user.email.')
+        //   return;
+        // }
+        // email = data.user.email;
+
         // console.log(data);
         // console.log(identifier)
         // const { data: fetchedUserId, error: userIdFetchError } = await supabase.from("users").select("user_id").eq("username", identifier).single();
@@ -61,7 +81,7 @@ export default function () {
         //   console.log(identifier);
         //   return;
         // }
-        // email = fetchedEmail.email;
+        email = selectedEmail?.email;
       }
       const {
         error,
@@ -132,7 +152,7 @@ export default function () {
           //   console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
           // }
         }
-        router.navigate("/");
+        router.back();
         Toast.show("you logged in!");
         // await SecureStore.setItemAsync("password", password);
       } else {

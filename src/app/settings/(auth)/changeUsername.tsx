@@ -6,8 +6,8 @@ import { themeColors } from "@/src/utils/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, View, StyleSheet, TextInput } from "react-native";
-import { Button, Text, themeColor } from "react-native-rapi-ui";
+import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Button, Text } from "react-native-rapi-ui";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -33,44 +33,72 @@ export default function () {
       }
       if (!isValidUsername(username)) {
         setIsUsernameValid(false);
-        setUsername("");
-        Toast.show("Invalid username");
+        setError("Invalid username");
+        Toast.show(i18n.t("invalid_username"));
         return;
       } else {
-        const { error: insertError } = await supabase.from("users").insert({ user_id: userId, username });
-        if (insertError) {
-          // console.log("insertError:", insertError);
-          if (insertError.message === 'duplicate key value violates unique constraint "users_username_key"') {
-            const { data, error: selectError } = await supabase.from("users").select("username").eq("user_id", userId).single();
-            if (selectError) {
-              // console.log("selectError:", selectError);
-              if (selectError.details === "The result contains 0 rows") {
-                setError(selectError.details);
-                return;
-              }
-              console.error("unknown error:", selectError);
-              return;
-            }
-            if (data.username === username) {
-              setError(insertError.message);
-              return;
-            }
-          } else if (insertError.message === 'duplicate key value violates unique constraint "users_pkey"') {
-            const { error: updateError } = await supabase.from("users").update({ username }).eq("user_id", session.user.id);
-            if (updateError) {
-              console.error("unknown error:", updateError);
-              return;
-            }
-            setUsername("");
-            setError("");
-            router.back();
-            Toast.show("Username successfully changed");
-            return;
-          }
-          console.error("unknown error", insertError);
+        const { data: currentUsername, error: selectError } = await supabase.from("profiles").select("username").eq("user_id", userId).single();
+        if (selectError) {
+          console.error("unknown select error:", selectError);
           return;
         }
+        if (currentUsername?.username === username) {
+          setError("username_already_in_use");
+          return;
+        }
+        const { error: updateError } = await supabase.from("profiles").update({ username }).eq("user_id", userId);
+        if (updateError) {
+          if (updateError.message === 'duplicate key value violates unique constraint "profile_username_key"') {
+            setError('duplicate key value violates unique constraint "profile_username_key"');
+            return;
+          }
+          console.error("unknown update error:", updateError);
+          return;
+
+          // if (updateError.message === 'duplicate key value violates unique constraint "users_username_key"') {
+          //   const { data, error: selectError } = await supabase.from("users").select("username").eq("user_id", userId).single();
+          //   if (selectError) {
+          //     console.log("selectError:", selectError);
+          //     if (selectError.details === "The result contains 0 rows") {
+          //       setError(selectError.details);
+          //       return;
+          //     }
+          //     console.error("unknown error(selectError):", selectError);
+          //     return;
+          //   }
+          //   if (data.username === username) {
+          //     setError(insertError.message);
+          //     return;
+          //   } else {
+          //     setError("The result contains 0 rows"); // for convenience
+          //     return;
+          //   }
+          // } else if (insertError.message === 'duplicate key value violates unique constraint "users_pkey"') {
+          //   const { error: updateError } = await supabase.from("users").update({ username }).eq("user_id", session.user.id);
+          //   if (updateError) {
+          //     console.error("unknown error(updateError):", updateError);
+          //     return;
+          //   }
+          //   setUsername("");
+          //   setError("");
+          //   router.back();
+          //   Toast.show("Username successfully changed");
+          //   return;
+          // }
+          // console.error("unknown error(insertError):", insertError);
+          // return;
+        }
       }
+      // const { data, error: getUserError } = await supabase.auth.getUser();
+      // if (getUserError) {
+      //   console.error("unknown error(getUserError):", getUserError);
+      //   return;
+      // }
+      // const { error: emailInsertError } = await supabase.from("users").update({ email: data.user.email }).eq("user_id", userId);
+      // if (emailInsertError) {
+      //   console.error("unknown error(emailInsertError):", emailInsertError);
+      //   return
+      // }
       setUsername("");
       setError("");
       router.back();
@@ -132,11 +160,13 @@ export default function () {
             <AntDesign name="exclamationcircleo" size={12} color="red" style={{ paddingRight: 5 }} />
 
             <Text style={{ fontSize: 12, color: "red" }}>
-              {error === 'duplicate key value violates unique constraint "users_username_key"'
-                ? i18n.t("username_already_in_use")
-                : error === "The result contains 0 rows"
-                  ? i18n.t("username_already_taken")
-                  : "Unknown error"}
+              {error === "Invalid username"
+                ? i18n.t("username_requirement")
+                : error === "username_already_in_use"
+                  ? i18n.t("username_already_in_use")
+                  : error === 'duplicate key value violates unique constraint "profile_username_key"'
+                    ? i18n.t("username_already_taken")
+                    : "Unknown error"}
             </Text>
           </View>
         )}

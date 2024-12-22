@@ -38,7 +38,8 @@ export default function () {
       console.log("session not exist");
       Toast.show("unknown error");
     }
-    const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "memologminute://settings/account?message=Email+Updated+Successfully!" });
+    // const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "memologminute://settings/account?message=Email+Updated+Successfully!" });
+    const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "https://sites.google.com/view/memolog-minute/confirmation" });
     if (error) {
       console.error(error);
       Toast.show(error.message, {

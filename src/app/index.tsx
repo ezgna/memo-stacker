@@ -2,7 +2,7 @@ import { Entry } from "@/types";
 import CryptoES from "crypto-es";
 import * as Crypto from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, AppState, Platform, StyleSheet, TextInput, View } from "react-native";
 import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
 import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
@@ -198,13 +198,13 @@ export default function index() {
     sync();
   }, [db, userId, isOnline, isProUser]);
 
-  // const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInput>(null);
 
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.focus();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (!db) return;
@@ -284,7 +284,7 @@ export default function index() {
                 borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
               },
             ]}
-            // ref={inputRef}
+            ref={inputRef}
             onChangeText={editingId ? setEditingText : setText}
             value={editingId ? editingText : text}
             multiline

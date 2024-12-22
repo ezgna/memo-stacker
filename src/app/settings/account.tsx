@@ -112,7 +112,7 @@ const account = () => {
           await supabase.auth.signOut();
           Toast.show("You signed out");
           setIsSigningOut(false);
-          router.push("/settings/");
+          router.back();
         },
       },
     ]);
@@ -121,15 +121,19 @@ const account = () => {
   
   useEffect(() => {
     (async () => {
-      // const offerings = await Purchases.getOfferings();
-      // pkg = offerings.current?.availablePackages[0];
-      const { data, error } = await supabase.from("users").select("username").eq("user_id", session?.user.id).single();
-      if (error?.details === "The result contains 0 rows") {
-        // console.error('no username exist')
-        setUsername("");
-      } else if (data) {
-        setUsername(data.username);
+      // if (!session?.user.id) return;
+      const { data, error } = await supabase.from("profiles").select("username").eq("user_id", session?.user.id).single();
+      if (error) {
+        console.error('supabase.from("profiles").select("username").eq("user_id", session?.user.id).single()', error)
       }
+      setUsername(data?.username)
+      // console.log(data, error)
+      // if (error?.details === "The result contains 0 rows") {
+      //   // console.error('no username exist')
+      //   setUsername("");
+      // } else if (data) {
+      //   setUsername(data.username);
+      // }
     })();
   }, [session, segments]);
 

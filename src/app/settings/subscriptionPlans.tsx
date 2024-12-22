@@ -32,7 +32,8 @@ const subscriptionPlans = () => {
       }
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       if (customerInfo.entitlements.active["pro"] !== undefined) {
-        Alert.alert("purchase successful");
+        // Alert.alert("purchase successful");
+        console.log('purchase successful')
       }
     } catch (e) {
       if (e instanceof Error) {

@@ -107,6 +107,7 @@ const i18n = new I18n({
     sign_up_required: "You need to sign up",
     username_unset: 'Username not set',
     username_already_in_use: "You’re already using this username!",
+    invalid_username: "Invalid username",
     },
   ja: {
     search: "メモを検索",
@@ -213,6 +214,7 @@ const i18n = new I18n({
     sign_up_required: "アカウント登録が必要です",
     username_unset: 'ユーザーネームが未設定です',
     username_already_in_use: "このユーザーネームはすでに使用中です！",
+    invalid_username: "無効なユーザー名です",
   },
 });
 
