@@ -1,16 +1,14 @@
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
+import { themeColors } from "@/src/utils/theme";
+import { AntDesign } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Image, Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Text, themeColor } from "react-native-rapi-ui";
-import { component } from "react-native-rapi-ui/constants/colors";
 import Toast from "react-native-root-toast";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AntDesign } from "@expo/vector-icons";
-import { useThemeContext } from "@/src/contexts/ThemeContext";
-import { themeColors } from "@/src/utils/theme";
 
 export default function () {
   const router = useRouter();

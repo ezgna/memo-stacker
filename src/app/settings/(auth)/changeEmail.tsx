@@ -1,12 +1,13 @@
 import { useAuthContext } from "@/src/contexts/AuthContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
+import { themeColors } from "@/src/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
-import { Button, Text, TextInput, themeColor } from "react-native-rapi-ui";
-import { component } from "react-native-rapi-ui/constants/colors";
+import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Text, themeColor } from "react-native-rapi-ui";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -15,6 +16,8 @@ export default function () {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
+  const { theme } = useThemeContext();
+  const [error, setError] = useState<string>("");
 
   async function changeEmail() {
     setLoading(true);
@@ -35,10 +38,10 @@ export default function () {
         return;
       }
     } else {
-      console.log("session not exist");
+      console.error("session not exist");
       Toast.show("unknown error");
+      return;
     }
-    // const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "memologminute://settings/account?message=Email+Updated+Successfully!" });
     const { data, error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "https://sites.google.com/view/memolog-minute/confirmation" });
     if (error) {
       console.error(error);
@@ -61,7 +64,6 @@ export default function () {
     <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        marginTop: 150,
       }}
       scrollEnabled={false}
     >
@@ -70,7 +72,7 @@ export default function () {
           flex: 2,
           paddingHorizontal: 20,
           paddingBottom: 300,
-          backgroundColor: themeColor.white,
+          backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
         }}
       >
         <Text
@@ -79,37 +81,52 @@ export default function () {
           style={{
             alignSelf: "center",
             padding: 30,
+            color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
           Change Email
         </Text>
 
-        <Text style={{ marginBottom: 10 }}>New email</Text>
         <TextInput
-          containerStyle={{ paddingVertical: 5 }}
-          placeholder="Enter your new email"
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+              borderColor: error ? "red" : theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+            },
+          ]}
+          placeholder={i18n.t("new_email")}
+          placeholderTextColor={theme === "dark" ? undefined : "#999"}
           value={email}
           autoCapitalize="none"
-          autoComplete="email"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="default"
           onChangeText={(text) => setEmail(text)}
         />
 
-        <Text style={{ marginTop: 15, marginBottom: 10 }}>Password</Text>
         <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            borderWidth: 1,
-            borderRadius: 8,
-            borderColor: component["light"].textInput.borderColor,
-          }}
+          style={[
+            {
+              paddingTop: 12.5,
+              paddingBottom: 12.5,
+              borderWidth: 1,
+              borderRadius: 8,
+              paddingLeft: 20,
+              paddingRight: 15,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+              borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              marginTop: 20,
+            },
+          ]}
         >
           <TextInput
-            borderWidth={0}
-            containerStyle={{ paddingVertical: 5, flex: 1 }}
-            placeholder="Enter your password"
+            style={{ width: "80%", color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}
+            placeholder={i18n.t("password")}
+            placeholderTextColor={theme === "dark" ? undefined : "#999"}
             value={password}
             autoCapitalize="none"
             autoComplete="off"
@@ -117,7 +134,7 @@ export default function () {
             secureTextEntry={showPassword}
             onChangeText={(text) => setPassword(text)}
           />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 15 }}>
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 5 }}>
             <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
           </TouchableOpacity>
         </View>
@@ -137,3 +154,14 @@ export default function () {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  input: {
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+  },
+});

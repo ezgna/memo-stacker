@@ -61,7 +61,7 @@ const account = () => {
 
   const LoggedIn = ({ type }: { type: string }) => {
     return (
-      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: 'center' }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
         {type === "email" && (
           <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
         )}
@@ -139,7 +139,6 @@ const account = () => {
         onPress: async () => {
           setIsSigningOut(true);
           await Purchases.logOut();
-          // await SecureStore.deleteItemAsync("password");
           await supabase.auth.signOut();
           Toast.show("You signed out");
           setIsSigningOut(false);
@@ -152,7 +151,6 @@ const account = () => {
 
   useEffect(() => {
     (async () => {
-      // if (!session?.user.id) return;
       if (!session) return;
       const { data, error } = await supabase.from("profiles").select("username").eq("user_id", session?.user.id).single();
       if (error) {
@@ -173,32 +171,13 @@ const account = () => {
 
   useEffect(() => {
     (async () => {
-      if (message) {
-        const { error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError) {
-          console.error(refreshError);
-          return;
-        }
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-        if (error) {
-          console.error(error);
-          return;
-        } else if (session) {
-          const { error } = await supabase.from("users").update({ email: session?.user.email }).eq("user_id", session?.user.id);
-          if (error) {
-            console.error(error);
-            return;
-          }
-        }
-        Toast.show(message, {
-          position: Toast.positions.CENTER,
-        });
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.error("refreshError:", refreshError);
+        return;
       }
     })();
-  }, [message]);
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
