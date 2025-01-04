@@ -2,13 +2,13 @@
   "expo": {
     "name": "memologminute",
     "slug": "memologminute",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.WEBP",
+    "icon": "./src/assets/images/icon.png",
     "scheme": "memologminute",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/images/icon.WEBP",
+      "image": "./src/assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#C7C8CA"
     },

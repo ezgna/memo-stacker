@@ -61,29 +61,60 @@ const account = () => {
 
   const LoggedIn = ({ type }: { type: string }) => {
     return (
-      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
-        <View style={{ flex: 1 }}>
-          {type === "email" && (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
-          )}
-          {type === "password" && (
-            <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
-              {i18n.t("password_reset_only")}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: 'center' }}>
+        {type === "email" && (
+          <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
+        )}
+        {type === "password" && (
+          <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+            {i18n.t("password_reset_only")}
+          </Text>
+        )}
+        {type === "username" && (
+          <Text
+            style={{
+              fontSize: username ? 17 : 13,
+              color:
+                theme === "dark"
+                  ? username
+                    ? themeColors.dark.primaryText
+                    : themeColors.dark.secondaryText
+                  : username
+                    ? themeColors.light.primaryText
+                    : themeColors.light.secondaryText,
+            }}
+          >
+            {username || i18n.t("username_unset")}
+          </Text>
+        )}
+        <TouchableOpacity
+          disabled={loading}
+          onPress={() => handlePressChangeOrReset(type, session?.user.email)}
+          style={{
+            width: 65,
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+            paddingVertical: 5,
+            borderRadius: 2,
+          }}
+        >
+          {type === "email" ? (
+            <Text
+              style={{
+                fontSize: 15,
+                color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+              }}
+            >
+              {i18n.t("change")}
             </Text>
-          )}
-          {type === "username" && (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-              {username ? username : i18n.t("username_unset")}
+          ) : type === "username" ? (
+            <Text style={{ fontSize: 15, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+              {username ? i18n.t("change") : i18n.t("setup")}
             </Text>
-          )}
-        </View>
-        <TouchableOpacity disabled={loading} onPress={() => handlePressChangeOrReset(type, session?.user.email)}>
-          {type === "email" || type === "username" ? (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("change")}</Text>
           ) : type === "password" && loading ? (
             <ActivityIndicator />
           ) : (
-            <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("reset")}</Text>
+            <Text style={{ fontSize: 15, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("reset")}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -118,15 +149,18 @@ const account = () => {
     ]);
   };
   const segments = useSegments();
-  
+
   useEffect(() => {
     (async () => {
       // if (!session?.user.id) return;
+      if (!session) return;
       const { data, error } = await supabase.from("profiles").select("username").eq("user_id", session?.user.id).single();
       if (error) {
-        console.error('supabase.from("profiles").select("username").eq("user_id", session?.user.id).single()', error)
+        console.error('supabase.from("profiles").select("username").eq("user_id", session?.user.id).single()', error);
+        return;
+      } else if (data.username) {
+        setUsername(data.username);
       }
-      setUsername(data?.username)
       // console.log(data, error)
       // if (error?.details === "The result contains 0 rows") {
       //   // console.error('no username exist')

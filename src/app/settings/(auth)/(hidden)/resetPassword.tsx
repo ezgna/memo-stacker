@@ -28,48 +28,6 @@ export default function () {
       return;
     }
     if (data) {
-      // try {
-      //   if (!userId) {
-      //     console.error("No userId!");
-      //     return;
-      //   }
-      //   const { data, error } = await supabase.from("users").select("master_key").eq("user_id", userId);
-      //   if (error) {
-      //     console.error('supabase.from("users").select("master_key").eq("user_id", userId)', error);
-      //   }
-      //   if (!(data && data.length > 0)) {
-      //     console.log("no data exist");
-      //     return;
-      //   }
-      //   const { master_key: encryptedMasterKey } = data[0];
-      //   const password = await SecureStore.getItemAsync("password");
-      //   if (!password) {
-      //     console.log("password not exist");
-      //     return;
-      //   }
-      //   const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
-      //   if (!kek) {
-      //     console.log('kek not exist')
-      //   }
-      //   const decryptedMasterKey: string = CryptoES.AES.decrypt(encryptedMasterKey, kek, {
-      //     format: jsonFormatter,
-      //   }).toString(CryptoES.enc.Utf8);
-
-      //   const key: string = generateKeyFromPassword(newPassword);
-      //   setNewPassword(key);
-      //   const newEncryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(decryptedMasterKey, newPassword, {
-      //     format: jsonFormatter,
-      //   });
-      //   const formattedNewEncryptedMasterKey: string = jsonFormatter.stringify(newEncryptedMasterKey);
-      //   const { error: updateError } = await supabase.from("users").update({ master_key: formattedNewEncryptedMasterKey }).eq("user_id", userId);
-      //   if (updateError) {
-      //     console.error(updateError);
-      //   }
-      // } catch (error) {
-      //   console.error(error);
-      // }
-
-      // await SecureStore.setItemAsync("password", newPassword);
       router.replace("/settings/account");
       Toast.show("Password updated successfully!", {
         position: Toast.positions.CENTER,

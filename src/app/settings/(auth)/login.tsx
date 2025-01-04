@@ -128,12 +128,12 @@ export default function () {
         return;
       } else if (session) {
         // ここ全部不要か？
-        const userId = session.user.id;
-        const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
-        if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
-        if (userIdInUsers && userIdInUsers.length > 0) {
+        // const userId = session.user.id;
+        // const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
+        // if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
+        // if (userIdInUsers && userIdInUsers.length > 0) {
           // console.log("userIdInUsers exists", userIdInUsers[0]);
-        } else {
+        // } else {
           // const masterKey: string = generateMasterKey();
           // const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
           // if (!kek) {
@@ -151,7 +151,7 @@ export default function () {
           // if (error) {
           //   console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
           // }
-        }
+        // }
         router.back();
         Toast.show("you logged in!");
         // await SecureStore.setItemAsync("password", password);

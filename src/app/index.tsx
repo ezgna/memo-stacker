@@ -304,7 +304,7 @@ export default function index() {
       {!isProUser && Platform.OS !== "web" && (
         <View>
           {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
-            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }} />
+            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
           ) : (
             <BannerAd
               unitId="ca-app-pub-4363360791941587/8952562876"

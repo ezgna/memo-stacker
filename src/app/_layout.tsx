@@ -20,7 +20,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       // SplashScreen.hideAsync();
-      // router.push('/settings/changeUsername')
+      // router.push('/settings/account')
     }
   }, [loaded]);
 
@@ -28,9 +28,9 @@ export default function RootLayout() {
     return null;
   }
 
-  if (Platform.OS === "web") {
-    return <></>;
-  }
+  // if (Platform.OS === "web") {
+  //   return <></>;
+  // }
 
   return (
     <AppProviders>
