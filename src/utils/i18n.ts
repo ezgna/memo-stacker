@@ -115,6 +115,7 @@ const i18n = new I18n({
     external_link: "External Link",
     external_link_message: "You are about to leave the app and visit an external site.",
     content_cannot_be_empty: "Content cannot be empty.",
+    incorrect_login_credentials: "Login credentials are incorrect",
     },
   ja: {
     search: "メモを検索",
@@ -229,6 +230,7 @@ const i18n = new I18n({
     external_link: "外部リンク",
     external_link_message: "アプリを離れ、外部サイトに移動しようとしています。",
     content_cannot_be_empty: "メモを入力してください",
+    incorrect_login_credentials: "ログイン情報が正しくありません。",
   },
 });
 

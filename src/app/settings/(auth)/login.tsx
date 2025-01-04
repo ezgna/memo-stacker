@@ -23,9 +23,9 @@ export default function () {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   // const { message }: { message: string } = useLocalSearchParams();
-  const [isInvalidUsername, setIsInvalidUsername] = useState(false);
   const [isNotConfirmed, setIsNotConfirmed] = useState(false);
   const { theme } = useThemeContext();
+  const [error, setError] = useState<string>("");
 
   const isValidUsername = (username: string) => {
     const usernameRegex = /^[a-zA-Z0-9]{4,16}$/;
@@ -35,52 +35,22 @@ export default function () {
   const login = async () => {
     try {
       setLoading(true);
+      setError("");
       if (!identifier.includes("@")) {
         if (!isValidUsername(identifier)) {
-          Toast.show("Invalid username");
+          setError("Invalid username");
           return;
         }
 
         const { data: selectedEmail, error: selectEmailError } = await supabase.from("profiles").select("email").eq("username", identifier).single();
         if (selectEmailError) {
+          if (selectEmailError.details === "The result contains 0 rows") {
+            setError("incorrect_login_credentials");
+            return;
+          }
           console.error("unknown selectEmailError:", selectEmailError);
           return;
         }
-
-        // const { data: fetchedUser_id, error: user_idFetchError } = await supabase.from("users").select("user_id").eq("username", identifier).single();
-        // if (user_idFetchError) {
-        //   console.error("user_idFetchError:", user_idFetchError);
-        // }
-        // const { data: fetchedEmail, error: emailFetchError } = await supabase.from("auth.users").select("email").eq("id", fetchedUser_id?.user_id).single();
-
-        // const { data, error: getUserError } = await supabase.auth.getUser();
-        // if (getUserError) {
-        //   console.error("unknown error(getUserError):", getUserError);
-        //   return;
-        // }
-        // if (!data.user.email) {
-        //   console.error('unknown error: No data.user.email.')
-        //   return;
-        // }
-        // email = data.user.email;
-
-        // console.log(data);
-        // console.log(identifier)
-        // const { data: fetchedUserId, error: userIdFetchError } = await supabase.from("users").select("user_id").eq("username", identifier).single();
-        // if (userIdFetchError) {
-        //   console.error('supabase.from("users").select("user_id").eq("username", identifier).single()', userIdFetchError);
-        //   return;
-        // }
-        // const { data: fetchedEmail, error: emailFetchError } = await supabase.from("auth.users").select("email").eq("id", fetchedUserId).single();
-        // if (emailFetchError) {
-        //   console.error(emailFetchError);
-        //   return;
-        // }
-        // if (error) {
-        //   setIsInvalidUsername(true);
-        //   console.log(identifier);
-        //   return;
-        // }
         email = selectedEmail?.email;
       }
       const {
@@ -108,7 +78,7 @@ export default function () {
                     data: {
                       language: i18n.locale,
                     },
-                    emailRedirectTo: "memologminute://settings/login?message=Email+Verified.+Login+here.",
+                    emailRedirectTo: "https://sites.google.com/view/memolog-minute/confirmation",
                   },
                 });
                 if (error) {
@@ -122,48 +92,25 @@ export default function () {
               },
             },
           ]);
+        } else if (error.message === "Invalid login credentials") {
+          setError("incorrect_login_credentials");
+          return;
         } else {
-          Alert.alert(error.message);
+          console.error("Unknown Error:", error);
         }
         return;
       } else if (session) {
-        // ここ全部不要か？
-        // const userId = session.user.id;
-        // const { data: userIdInUsers, error } = await supabase.from("users").select().eq("user_id", userId);
-        // if (error) console.error('supabase.from("users").select().eq("user_id", userId)', error);
-        // if (userIdInUsers && userIdInUsers.length > 0) {
-          // console.log("userIdInUsers exists", userIdInUsers[0]);
-        // } else {
-          // const masterKey: string = generateMasterKey();
-          // const kek = Constants.expoConfig?.extra?.KEY_WRAPPER;
-          // if (!kek) {
-          //   console.log('kek not exist')
-          // }
-          // const encryptedMasterKey: CryptoES.lib.CipherParams = CryptoES.AES.encrypt(masterKey, kek, {
-          //   format: jsonFormatter,
-          // });
-          // const formattedEncryptedMasterKey: string = jsonFormatter.stringify(encryptedMasterKey);
-          // const username = await AsyncStorage.getItem("username");
-          // if (!username) {
-          //   console.error("no username");
-          // }
-          // const { error } = await supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email });
-          // if (error) {
-          //   console.error('supabase.from("users").insert({ user_id: userId, master_key: formattedEncryptedMasterKey, username, email: session.user.email })', error);
-          // }
-        // }
+        setIdentifier("");
+        setPassword("");
         router.back();
         Toast.show("you logged in!");
-        // await SecureStore.setItemAsync("password", password);
       } else {
-        console.log("session not exist");
+        console.error("session not exist");
       }
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
-      setIdentifier("");
-      setPassword("");
       email = "";
     }
   };
@@ -180,7 +127,7 @@ export default function () {
         style={{
           flex: 2,
           paddingHorizontal: 20,
-          paddingBottom: 300,
+          // paddingBottom: 300,
           backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
         }}
       >
@@ -195,23 +142,30 @@ export default function () {
           size="h3"
           style={{
             alignSelf: "center",
-            padding: 30,
+            paddingVertical: 30,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
           {i18n.t("login")}
         </Text>
 
+        {error === "incorrect_login_credentials" && (
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
+            <AntDesign name="exclamationcircleo" size={14} color="red" style={{ paddingRight: 5 }} />
+            <Text style={{ fontSize: 14, color: "red" }}>{i18n.t("incorrect_login_credentials")}</Text>
+          </View>
+        )}
+
         <TextInput
           style={[
             styles.input,
             {
               backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
-              borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              borderColor: error ? "red" : theme === "dark" ? themeColors.dark.border : themeColors.light.border,
               color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
             },
           ]}
-          placeholder={isInvalidUsername ? "First time logging in? Use your email, not username" : i18n.t("email_or_username")}
+          placeholder={i18n.t("email_or_username")}
           placeholderTextColor={theme === "dark" ? undefined : "#999"}
           value={identifier}
           autoCapitalize="none"
@@ -219,6 +173,12 @@ export default function () {
           keyboardType="default"
           onChangeText={(text) => setIdentifier(text)}
         />
+        {error === "Invalid username" && (
+          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6 }}>
+            <AntDesign name="exclamationcircleo" size={12} color="red" style={{ paddingRight: 5 }} />
+            <Text style={{ fontSize: 12, color: "red" }}>{i18n.t("username_requirement")}</Text>
+          </View>
+        )}
 
         <View
           style={[
@@ -233,7 +193,7 @@ export default function () {
               alignItems: "center",
               justifyContent: "space-between",
               backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
-              borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              borderColor: error === "incorrect_login_credentials" ? "red" : theme === "dark" ? themeColors.dark.border : themeColors.light.border,
               marginTop: 20,
             },
           ]}
