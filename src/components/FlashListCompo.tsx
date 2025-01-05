@@ -1,11 +1,12 @@
-import { FlashList } from "@shopify/flash-list";
-import React, { FC, useCallback, useEffect } from "react";
-import { Platform, Text, TextInput, View } from "react-native";
-import { EditActionSheet } from "./EditActionSheet";
-import i18n, { isJapanese } from "@/src/utils/i18n";
+import i18n from "@/src/utils/i18n";
 import { Entry } from "@/types";
+import { FlashList } from "@shopify/flash-list";
+import React, { FC } from "react";
+import { Text, View } from "react-native";
+import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
+import { EditActionSheet } from "./EditActionSheet";
 
 interface FlashListCompoProps {
   data: Entry[];
@@ -18,6 +19,7 @@ interface FlashListCompoProps {
 
 export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpdate, editingId, isTrash, onRestore }) => {
   const { theme } = useThemeContext();
+  const { isJapanese } = useLanguageContext();
 
   const sortedData = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 

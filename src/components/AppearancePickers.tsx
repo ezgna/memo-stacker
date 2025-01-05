@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import React from "react";
 import { View } from "react-native";
 
-const AppearanceSettings = () => {
+const AppearancePickers = () => {
   const { theme, selectedTheme, toggleTheme } = useThemeContext();
 
   return (
@@ -17,4 +17,4 @@ const AppearanceSettings = () => {
   );
 };
 
-export default AppearanceSettings;
+export default AppearancePickers;

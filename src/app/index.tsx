@@ -20,6 +20,8 @@ import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithS
 import { themeColors } from "../utils/theme";
 import Constants from "expo-constants";
 import i18n from "../utils/i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSettingsContext } from "../contexts/SettingsContext";
 
 export default function index() {
   const db = useDatabase();
@@ -55,7 +57,7 @@ export default function index() {
     if (!db) return;
     if (!text.trim()) {
       setText("");
-      Toast.show(i18n.t('content_cannot_be_empty'), {
+      Toast.show(i18n.t("content_cannot_be_empty"), {
         position: Toast.positions.CENTER,
       });
       return;
@@ -130,7 +132,7 @@ export default function index() {
   const updateEntry = async () => {
     if (!db) return;
     if (!editingText.trim()) {
-      Toast.show(i18n.t('content_cannot_be_empty'), {
+      Toast.show(i18n.t("content_cannot_be_empty"), {
         position: Toast.positions.CENTER,
       });
       return;
@@ -204,12 +206,13 @@ export default function index() {
   }, [db, userId, isOnline, isProUser]);
 
   const inputRef = useRef<TextInput>(null);
+  const { autoFocus } = useSettingsContext();
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && autoFocus) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [autoFocus]);
 
   useEffect(() => {
     if (!db) return;

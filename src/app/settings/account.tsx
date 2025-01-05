@@ -13,8 +13,8 @@ import Toast from "react-native-root-toast";
 // let pkg: PurchasesPackage | undefined;
 
 const account = () => {
-  const { session, isProUser } = useAuthContext();
-  const { message }: { message: string } = useLocalSearchParams();
+  const { session } = useAuthContext();
+  // const { message }: { message: string } = useLocalSearchParams();
   const [loading, setLoading] = useState<boolean>(false);
   const { theme } = useThemeContext();
   const [isSigningOut, setIsSigningOut] = useState(false);

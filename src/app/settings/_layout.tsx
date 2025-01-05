@@ -31,6 +31,7 @@ const SettingsLayout = () => {
       <Stack.Screen name="(auth)" options={{ title: "" }} />
       <Stack.Screen name="faq" options={{ title: i18n.t("faq") }} />
       <Stack.Screen name="subscriptionPlans" options={{ title: i18n.t("subscriptionPlans") }} />
+      <Stack.Screen name="customization" options={{ title: i18n.t("customization") }} />
     </Stack>
   );
 };

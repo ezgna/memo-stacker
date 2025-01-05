@@ -116,6 +116,9 @@ const i18n = new I18n({
     external_link_message: "You are about to leave the app and visit an external site.",
     content_cannot_be_empty: "Content cannot be empty.",
     incorrect_login_credentials: "Login credentials are incorrect",
+    customization: 'Customization',
+    auto_show_keyboard: "Auto-Show Keyboard",
+    language: 'Language'
     },
   ja: {
     search: "メモを検索",
@@ -231,12 +234,17 @@ const i18n = new I18n({
     external_link_message: "アプリを離れ、外部サイトに移動しようとしています。",
     content_cannot_be_empty: "メモを入力してください",
     incorrect_login_credentials: "ログイン情報が正しくありません。",
+    customization: 'カスタマイズ',
+    auto_show_keyboard: 'キーボードの自動表示',
+    language: '言語',
   },
 });
 
-i18n.locale = getLocales()[0]?.languageCode ?? "en"; // webだとgetLocales()[0]がundefinedになってエラー？
-i18n.enableFallback = true;
+// i18n.locale = getLocales()[0]?.languageCode ?? "en";
+ // webだとgetLocales()[0]がundefinedになってエラー？
+// i18n.enableFallback = true;
 
-export const isJapanese = getLocales()[0]?.languageCode === "ja"; // webだとgetLocales()[0]がundefinedになってエラー？
+// export const isJapanese = getLocales()[0]?.languageCode === "ja";
+// webだとgetLocales()[0]がundefinedになってエラー？
 
 export default i18n;

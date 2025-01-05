@@ -8,10 +8,11 @@ import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
 import { useDatabase } from "../hooks/useDatabase";
-import i18n, { isJapanese } from "../utils/i18n";
+import i18n from "../utils/i18n";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useLanguageContext } from "../contexts/LanguageContext";
 
 interface Dates {
   date: string;
@@ -38,6 +39,7 @@ export default function CustomDrawer() {
   const [isTrash, setIsTrash] = useState(false);
   const { theme } = useThemeContext();
   const { isProUser } = useAuthContext();
+  const { isJapanese } = useLanguageContext();
 
   useEffect(() => {
     if (!db) return;
@@ -224,8 +226,8 @@ export default function CustomDrawer() {
       >
         <Text
           style={[
-            { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
-            isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" },
+            { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 22, fontFamily: "RocknRollOne" },
+            // isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" },
           ]}
         >
           {i18n.t("memolog")}
@@ -266,8 +268,21 @@ export default function CustomDrawer() {
         </>
       ) : (
         <>
-          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 16, textAlign: 'right', paddingRight: isJapanese ? 16 : 11 }]}>{i18n.t('go_to_settings')}</Text>
-          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 14, paddingTop: 15 }]}>{i18n.t('no_memo_yet')}</Text>
+          <Text
+            style={[
+              {
+                color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+                fontSize: 16,
+                textAlign: "right",
+                paddingRight: isJapanese ? 16 : 11,
+              },
+            ]}
+          >
+            {i18n.t("go_to_settings")}
+          </Text>
+          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 14, paddingTop: 15 }]}>
+            {i18n.t("no_memo_yet")}
+          </Text>
         </>
       )}
 

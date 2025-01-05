@@ -1,24 +1,25 @@
-import AppearanceSettings from "@/src/components/AppearanceSettings";
+import SettingsModal from "@/src/components/SettingModal";
 import { useAuthContext } from "@/src/contexts/AuthContext";
+import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDriveUtils";
-import i18n, { isJapanese } from "@/src/utils/i18n";
+import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import { Entry } from "@/types";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
+import { setStatusBarStyle } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Linking, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Alert, Linking, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { setStatusBarStyle } from "expo-status-bar";
 
 interface SettingsListType {
   id: number;
@@ -38,15 +39,21 @@ const SettingsScreen = () => {
   const { session, isProUser } = useAuthContext();
   const { theme } = useThemeContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { isJapanese } = useLanguageContext();
+
+  const handleClose = () => {
+    setIsModalVisible(false);
+  };
 
   const data = [
     { id: 1, label: `${i18n.t("account")}` },
-    { id: 2, label: `${i18n.t("theme")}` },
-    { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
-    { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
-    { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
-    { id: 6, label: `${i18n.t("export")}`, icon: "export" },
-    { id: 7, label: `${i18n.t("import")}`, icon: "import" },
+    { id: 2, label: `${i18n.t("customization")}` },
+    { id: 3, label: `${i18n.t("theme")}` },
+    { id: 4, label: `${i18n.t("faq")}`, icon: "question" },
+    { id: 5, label: `${i18n.t("privacy_policy")}`, icon: "link" },
+    { id: 6, label: `${i18n.t("terms_of_use")}`, icon: "link" },
+    { id: 7, label: `${i18n.t("export")}` },
+    { id: 8, label: `${i18n.t("import")}` },
   ];
 
   const handlePress = async (id: number) => {
@@ -59,12 +66,15 @@ const SettingsScreen = () => {
         }
         break;
       case 2:
-        setIsModalVisible(true);
+        router.push("/settings/customization");
         break;
       case 3:
-        router.push("/settings/faq");
+        setIsModalVisible(true);
         break;
       case 4:
+        router.push("/settings/faq");
+        break;
+      case 5:
         try {
           Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
             {
@@ -80,7 +90,7 @@ const SettingsScreen = () => {
           console.error(e);
         }
         break;
-      case 5:
+      case 6:
         try {
           Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
             {
@@ -96,7 +106,7 @@ const SettingsScreen = () => {
           console.error(e);
         }
         break;
-      case 6:
+      case 7:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
@@ -113,7 +123,7 @@ const SettingsScreen = () => {
           }
         }
         break;
-      case 7:
+      case 8:
         if (!session) {
           Toast.show(i18n.t("sign_up_required"), {
             position: Toast.positions.CENTER,
@@ -174,7 +184,23 @@ const SettingsScreen = () => {
               {item.id === 1 ? (
                 <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               ) : item.id === 2 ? (
+                <MaterialCommunityIcons name="wrench-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              ) : item.id === 3 ? (
                 <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              ) : item.id === 7 ? (
+                <FontAwesome6
+                  name="file-export"
+                  size={22}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 4 }}
+                />
+              ) : item.id === 8 ? (
+                <FontAwesome6
+                  name="file-import"
+                  size={22}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 4 }}
+                />
               ) : (
                 <Fontisto
                   name={item.icon}
@@ -219,7 +245,7 @@ const SettingsScreen = () => {
         </View>
       )
     );
-  };
+  };  
 
   useEffect(() => {
     if (!session) {
@@ -302,7 +328,7 @@ const SettingsScreen = () => {
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
         ListFooterComponent={ListFooterComponent()}
       />
-      <Modal visible={isModalVisible} transparent={true} onRequestClose={() => setIsModalVisible(false)} animationType="fade">
+      {/* <Modal visible={isModalVisible} transparent={true} onRequestClose={() => setIsModalVisible(false)} animationType="fade">
         <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
           <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
             <TouchableWithoutFeedback>
@@ -312,7 +338,8 @@ const SettingsScreen = () => {
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
-      </Modal>
+      </Modal> */}
+      <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type="appearance" />
     </View>
   );
 };

@@ -1,20 +1,18 @@
-import i18n, { isJapanese } from "@/src/utils/i18n";
+import i18n from "@/src/utils/i18n";
 import { MaterialIcons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Constants from "expo-constants";
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
-import { useDatabase } from "../hooks/useDatabase";
-import { fetchSupabaseData, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
-import { supabase } from "../utils/supabase";
-import * as SecureStore from "expo-secure-store";
-import CryptoES from "crypto-es";
-import { generateKeyFromUserId, jsonFormatter } from "../utils/encryption";
-import { themeColors } from "../utils/theme";
+import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
-import Constants from "expo-constants";
+import { useDatabase } from "../hooks/useDatabase";
+import { generateKeyFromUserId } from "../utils/encryption";
+import { fetchSupabaseData, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
+import { themeColors } from "../utils/theme";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
@@ -23,6 +21,8 @@ export default function SearchBox() {
   const { theme } = useThemeContext();
   const db = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
+    const { isJapanese } = useLanguageContext();
+  
 
   const handleSync = async () => {
     if (isOnline && isProUser) {
