@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "memologminute",
+    "name": "Memolog",
     "slug": "memologminute",
     "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "memologminute",
+    "scheme": "memolog",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./src/assets/images/icon.png",

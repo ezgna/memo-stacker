@@ -224,12 +224,7 @@ export default function CustomDrawer() {
           borderBottomColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
         }}
       >
-        <Text
-          style={[
-            { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 22, fontFamily: "RocknRollOne" },
-            // isJapanese ? { fontSize: 22, fontFamily: "RocknRollOne" } : { fontSize: 22, fontFamily: "Kanit" },
-          ]}
-        >
+        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 21, fontFamily: "RocknRollOne" }]}>
           {i18n.t("memolog")}
         </Text>
         <TouchableOpacity onPress={() => router.navigate("/settings")}>
@@ -237,7 +232,7 @@ export default function CustomDrawer() {
             name="settings-outline"
             size={24}
             color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText}
-            style={{ paddingLeft: 10 }}
+            style={[{ paddingLeft: 10 }, !isJapanese && { paddingLeft: 4 }]}
           />
         </TouchableOpacity>
       </View>

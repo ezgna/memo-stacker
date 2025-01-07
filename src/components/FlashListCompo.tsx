@@ -39,7 +39,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
       ]}
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, marginBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+        <Text style={{ fontSize: 12, marginBottom: 6, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
           {new Date(item.created_at).toLocaleString("ja-JP", {
             year: "numeric",
             month: "2-digit",
@@ -74,7 +74,16 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
           {item.text}
         </Text>
       )} */}
-      <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }} selectable={true}>
+      <Text
+        style={{
+          fontSize: 18,
+          color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+          // fontFamily: 'NotoSansJP',
+          // fontWeight: 'heavy',
+          // fontFamily: isJapanese ? "RobotoMono" : undefined,
+        }}
+        selectable={true}
+      >
         {item.text}
       </Text>
     </View>

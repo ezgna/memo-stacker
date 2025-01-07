@@ -3,9 +3,9 @@ import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { themeColors } from "@/src/utils/theme";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Image, ScrollView, TouchableOpacity, View, TextInput, StyleSheet } from "react-native";
-import { Button, Text, themeColor } from "react-native-rapi-ui";
+import React, { useState } from "react";
+import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { Button, Text } from "react-native-rapi-ui";
 
 export default function () {
   const router = useRouter();

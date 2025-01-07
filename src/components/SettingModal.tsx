@@ -5,11 +5,10 @@ import { useThemeContext } from "../contexts/ThemeContext";
 import AppearancePickers from "./AppearancePickers";
 import LanguagePickers from "./LanguagePickers";
 
-
 type SettingsModalProps = {
   isModalVisible: boolean;
   onClose: () => void;
-  type: string;
+  type: "language" | "theme";
 };
 
 const SettingsModal: FC<SettingsModalProps> = ({ isModalVisible, onClose, type }) => {
@@ -21,7 +20,7 @@ const SettingsModal: FC<SettingsModalProps> = ({ isModalVisible, onClose, type }
         <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <TouchableWithoutFeedback>
             <View style={{ height: "25%", backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
-              {type === "appearance" ? <AppearancePickers /> : type === "language" ? <LanguagePickers /> : null}
+              {type === "theme" ? <AppearancePickers /> : type === "language" ? <LanguagePickers /> : null}
             </View>
           </TouchableWithoutFeedback>
         </View>

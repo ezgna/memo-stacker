@@ -290,6 +290,7 @@ export default function index() {
               {
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                 borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+                
               },
             ]}
             ref={inputRef}

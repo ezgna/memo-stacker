@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
+import { router } from "expo-router";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { Appearance } from "react-native";
 import i18n from "../utils/i18n";
 
 type selectedLanguageType = "system" | "ja" | "en";
@@ -48,8 +48,6 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     i18n.locale = language;
-    // console.log(i18n.locale)
-    // console.log(language)
   }, [language]);
 
   const toggleLanguage = async (newLanguage: selectedLanguageType) => {

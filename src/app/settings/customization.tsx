@@ -14,9 +14,16 @@ const customization = () => {
   const { autoFocus, updateAutoFocus } = useSettingsContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { language } = useLanguageContext();
+  const [modalType, setModalType] = useState<"language" | "theme" | null>(null);
+
+  const handleOpen = (type: "language" | "theme") => {
+    setIsModalVisible(true);
+    setModalType(type);
+  };
 
   const handleClose = () => {
     setIsModalVisible(false);
+    setModalType(null);
   };
 
   // without session, users can't custom
@@ -35,7 +42,34 @@ const customization = () => {
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
         <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("language")}</Text>
         <TouchableOpacity
-          onPress={() => setIsModalVisible(true)}
+          onPress={() => handleOpen("language")}
+          style={{
+            width: 65,
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+            paddingVertical: 5,
+            borderRadius: 2,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 15,
+              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+            }}
+          >
+            {i18n.t("change")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const Theme = () => {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+        <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("theme")}</Text>
+        <TouchableOpacity
+          onPress={() => handleOpen("theme")}
           style={{
             width: 65,
             alignItems: "center",
@@ -60,6 +94,7 @@ const customization = () => {
   const data = [
     { id: 1, content: <AutoShowKeyboard /> },
     { id: 2, content: <Language /> },
+    { id: 3, content: <Theme /> },
   ];
 
   return (
@@ -73,7 +108,7 @@ const customization = () => {
           ))}
         </ScrollView>
       </View>
-      <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type="language" />
+      {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
     </View>
   );
 };

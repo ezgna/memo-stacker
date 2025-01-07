@@ -13,7 +13,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FlashList } from "@shopify/flash-list";
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Linking, StyleSheet, Text, View } from "react-native";
@@ -39,7 +39,7 @@ const SettingsScreen = () => {
   const { session, isProUser } = useAuthContext();
   const { theme } = useThemeContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { isJapanese } = useLanguageContext();
+  const { language } = useLanguageContext();
 
   const handleClose = () => {
     setIsModalVisible(false);
@@ -48,12 +48,12 @@ const SettingsScreen = () => {
   const data = [
     { id: 1, label: `${i18n.t("account")}` },
     { id: 2, label: `${i18n.t("customization")}` },
-    { id: 3, label: `${i18n.t("theme")}` },
-    { id: 4, label: `${i18n.t("faq")}`, icon: "question" },
-    { id: 5, label: `${i18n.t("privacy_policy")}`, icon: "link" },
-    { id: 6, label: `${i18n.t("terms_of_use")}`, icon: "link" },
-    { id: 7, label: `${i18n.t("export")}` },
-    { id: 8, label: `${i18n.t("import")}` },
+    // { id: 3, label: `${i18n.t("theme")}` },
+    { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
+    { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
+    { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
+    { id: 6, label: `${i18n.t("export")}` },
+    { id: 7, label: `${i18n.t("import")}` },
   ];
 
   const handlePress = async (id: number) => {
@@ -68,13 +68,13 @@ const SettingsScreen = () => {
       case 2:
         router.push("/settings/customization");
         break;
+      // case 3:
+      //   setIsModalVisible(true);
+      //   break;
       case 3:
-        setIsModalVisible(true);
-        break;
-      case 4:
         router.push("/settings/faq");
         break;
-      case 5:
+      case 4:
         try {
           Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
             {
@@ -90,7 +90,7 @@ const SettingsScreen = () => {
           console.error(e);
         }
         break;
-      case 6:
+      case 5:
         try {
           Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
             {
@@ -106,7 +106,7 @@ const SettingsScreen = () => {
           console.error(e);
         }
         break;
-      case 7:
+      case 6:
         if (!db) {
           Alert.alert("database initialize error");
         } else {
@@ -123,7 +123,7 @@ const SettingsScreen = () => {
           }
         }
         break;
-      case 8:
+      case 7:
         if (!session) {
           Toast.show(i18n.t("sign_up_required"), {
             position: Toast.positions.CENTER,
@@ -185,16 +185,15 @@ const SettingsScreen = () => {
                 <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               ) : item.id === 2 ? (
                 <MaterialCommunityIcons name="wrench-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-              ) : item.id === 3 ? (
-                <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-              ) : item.id === 7 ? (
+              ) : // <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              item.id === 6 ? (
                 <FontAwesome6
                   name="file-export"
                   size={22}
                   color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
                   style={{ paddingLeft: 4 }}
                 />
-              ) : item.id === 8 ? (
+              ) : item.id === 7 ? (
                 <FontAwesome6
                   name="file-import"
                   size={22}
@@ -202,22 +201,10 @@ const SettingsScreen = () => {
                   style={{ paddingLeft: 4 }}
                 />
               ) : (
-                <Fontisto
-                  name={item.icon}
-                  size={20}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 4 }}
-                />
+                <Fontisto name={item.icon} size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} style={{ paddingLeft: 4 }} />
               )}
             </View>
-            <Text
-              style={[
-                { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
-                isJapanese ? [styles.label, { fontFamily: "NotoSansJP" }] : styles.label,
-              ]}
-            >
-              {item.label}
-            </Text>
+            <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }, styles.label]}>{item.label}</Text>
           </View>
           <Entypo name="chevron-small-right" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText} />
         </View>
@@ -245,13 +232,15 @@ const SettingsScreen = () => {
         </View>
       )
     );
-  };  
+  };
+
+  const segments = useSegments();
 
   useEffect(() => {
     if (!session) {
       setFiles(null);
     }
-  }, [session]);
+  }, [session, segments]);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -339,7 +328,7 @@ const SettingsScreen = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal> */}
-      <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type="appearance" />
+      {/* <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type="appearance" /> */}
     </View>
   );
 };
