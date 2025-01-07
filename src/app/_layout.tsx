@@ -6,7 +6,7 @@ import { AppProviders } from "./app_layouts/AppProviders";
 import { router } from "expo-router";
 import { Platform } from "react-native";
 
-// SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -19,8 +19,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      // SplashScreen.hideAsync();
-      // router.push("/settings/customization");
+      SplashScreen.hideAsync();
+      // router.push("/settings/faq");
     }
   }, [loaded]);
 

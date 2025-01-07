@@ -14,11 +14,11 @@ const faq = () => {
     { id: 1, question: `${i18n.t("memoLog_overview_question")}`, answer: `${i18n.t("memoLog_overview_answer")}` },
     { id: 2, question: `${i18n.t("view_notes_home_question")}`, answer: `${i18n.t("view_notes_home_answer")}` },
     { id: 3, question: `${i18n.t("view_notes_tabs_question")}`, answer: `${i18n.t("view_notes_tabs_answer")}` },
-    { id: 4, question: `${i18n.t("edit_delete_notes_question")}`, answer: `${i18n.t("edit_delete_notes_answer")}` },
-    { id: 5, question: `${i18n.t("security_info_question")}`, answer: `${i18n.t("security_info_answer")}` },
-    { id: 6, question: `${i18n.t("device_transfer_question")}`, answer: `${i18n.t("device_transfer_answer")}` },
-    { id: 7, question: `${i18n.t("sign_up_login_question")}`, answer: `${i18n.t("sign_up_login_answer")}` },
-    { id: 8, question: `${i18n.t("platform_availability_question")}`, answer: `${i18n.t("platform_availability_answer")}` },
+    { id: 4, question: `${i18n.t("search_notes_question")}`, answer: `${i18n.t("search_notes_answer")}` },
+    { id: 5, question: `${i18n.t("edit_delete_notes_question")}`, answer: `${i18n.t("edit_delete_notes_answer")}` },
+    { id: 6, question: `${i18n.t("security_info_question")}`, answer: `${i18n.t("security_info_answer")}` },
+    { id: 7, question: `${i18n.t("device_transfer_question")}`, answer: `${i18n.t("device_transfer_answer")}` },
+    { id: 8, question: `${i18n.t("sign_up_login_question")}`, answer: `${i18n.t("sign_up_login_answer")}` },
     { id: 9, question: `${i18n.t("email_recovery_question")}`, answer: `${i18n.t("email_recovery_answer")}` },
     { id: 10, question: `${i18n.t("password_recovery_question")}`, answer: `${i18n.t("password_recovery_answer")}` },
     { id: 11, question: `${i18n.t("language_settings_question")}`, answer: `${i18n.t("language_settings_answer")}` },
@@ -38,9 +38,7 @@ const faq = () => {
     }));
   };
 
-  const CollapseIndicator = ({ id }: { id: number }) => (
-    <AntDesign name={collapsedItems[id] ? "down" : "up"} size={12} color={collapsedItems[id] ? "darkgray" : "#4169E1"} />
-  );
+  const CollapseIndicator = ({ id }: { id: number }) => <AntDesign name={collapsedItems[id] ? "down" : "up"} size={12} color={collapsedItems[id] ? "darkgray" : "#4169E1"} />;
 
   return (
     <View style={{ flex: 1, paddingTop: 10, paddingBottom: 50, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
