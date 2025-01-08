@@ -92,7 +92,7 @@ const SettingsScreen = () => {
         break;
       case 5:
         try {
-          Alert.alert("External Link", "You are about to leave the app and visit an external site.", [
+          Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
             {
               text: i18n.t("cancel"),
               style: "cancel",

@@ -118,7 +118,9 @@ const i18n = new I18n({
     incorrect_login_credentials: "Login credentials are incorrect",
     customization: 'Customization',
     auto_show_keyboard: "Auto-Show Keyboard",
-    language: 'Language'
+    language: 'Language',
+    memo_amount: "Memo amount",
+    used_days: "Used days",
     },
   ja: {
     search: "メモを検索",
@@ -237,6 +239,8 @@ const i18n = new I18n({
     customization: 'カスタマイズ',
     auto_show_keyboard: 'キーボードの自動表示',
     language: '言語',
+    memo_amount: "メモ数",
+    used_days: "書いた日数",
   },
 });
 

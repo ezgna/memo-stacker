@@ -1,8 +1,10 @@
 import { useAuthContext } from "@/src/contexts/AuthContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { useDatabase } from "@/src/hooks/useDatabase";
 import i18n from "@/src/utils/i18n";
 import { supabase } from "@/src/utils/supabase";
 import { themeColors } from "@/src/utils/theme";
+import { Entry } from "@/types";
 import { router, useLocalSearchParams, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
@@ -19,6 +21,9 @@ const account = () => {
   const { theme } = useThemeContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [username, setUsername] = useState("");
+  const db = useDatabase();
+  const [amount, setAmount] = useState(0);
+  const [days, setDays] = useState(0);
 
   const handlePressChangeOrReset = async (type: string, email?: string) => {
     if (type === "email") {
@@ -59,16 +64,14 @@ const account = () => {
     }
   };
 
-  const LoggedIn = ({ type }: { type: string }) => {
+  const Profile = ({ type }: { type: string }) => {
     return (
       <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
         {type === "email" && (
           <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{session?.user.email}</Text>
         )}
         {type === "password" && (
-          <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
-            {i18n.t("password_reset_only")}
-          </Text>
+          <Text style={{ fontSize: 13, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>{i18n.t("password_reset_only")}</Text>
         )}
         {type === "username" && (
           <Text
@@ -121,11 +124,39 @@ const account = () => {
     );
   };
 
-  const data = [
-    { id: 1, label: `${i18n.t("username")}`, content: session && <LoggedIn type="username" /> },
-    { id: 2, label: `${i18n.t("email")}`, content: session && <LoggedIn type="email" /> },
-    { id: 3, label: `${i18n.t("password")}`, content: session && <LoggedIn type="password" /> },
+  const Status = ({ type }: { type: string }) => {
+    return (
+      <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
+        {type === "amount" && <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{amount}</Text>}
+        {type === "days" && <Text style={{ fontSize: 17, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{days}</Text>}
+      </View>
+    );
+  };
+
+  const profileData = [
+    { id: 1, label: `${i18n.t("username")}`, content: session && <Profile type="username" /> },
+    { id: 2, label: `${i18n.t("email")}`, content: session && <Profile type="email" /> },
+    { id: 3, label: `${i18n.t("password")}`, content: session && <Profile type="password" /> },
   ];
+
+  const statusData = [
+    { id: 1, label: `${i18n.t("memo_amount")}`, content: session && <Status type="amount" /> },
+    { id: 2, label: `${i18n.t("used_days")}`, content: session && <Status type="days" /> },
+  ];
+
+  useEffect(() => {
+    (async () => {
+      if (!db) return;
+      try {
+        const amountResult: { count: number }[] = await db.getAllAsync("SELECT COUNT(*) AS count FROM entries WHERE deleted_at IS NULL");
+        setAmount(amountResult[0]?.count);
+        const daysResult: { unique_days: number }[] = await db.getAllAsync("SELECT COUNT(DISTINCT date) AS unique_days FROM entries WHERE deleted_at IS NULL;");
+        setDays(daysResult[0]?.unique_days);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, [db]);
 
   const signOut = async () => {
     Alert.alert(`${i18n.t("confirmSignOut")}`, "", [
@@ -183,13 +214,11 @@ const account = () => {
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       <View style={{ padding: 20 }}>
         <ScrollView scrollEnabled={false}>
-          {data.map(
+          <Text style={{ fontSize: 20, paddingLeft: 0 }}>Your profile</Text>
+          {profileData.map(
             (item) =>
               item.content && (
-                <View
-                  key={item.id}
-                  style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}
-                >
+                <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
                   <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
                     {item.label}
                   </Text>
@@ -200,6 +229,22 @@ const account = () => {
         </ScrollView>
       </View>
       <View>{isSigningOut ? <ActivityIndicator /> : <Button title={i18n.t("signOut")} onPress={() => signOut()} />}</View>
+      <View style={{ padding: 20 }}>
+        <ScrollView scrollEnabled={false}>
+          <Text style={{ fontSize: 20, paddingLeft: 0 }}>Your status</Text>
+          {statusData.map(
+            (item) =>
+              item.content && (
+                <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
+                  <Text style={{ fontSize: 14, paddingBottom: 10, color: theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText }}>
+                    {item.label}
+                  </Text>
+                  <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
+                </View>
+              )
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
