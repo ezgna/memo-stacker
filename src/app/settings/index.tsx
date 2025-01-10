@@ -1,6 +1,4 @@
-import SettingsModal from "@/src/components/SettingModal";
 import { useAuthContext } from "@/src/contexts/AuthContext";
-import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDriveUtils";
@@ -38,17 +36,10 @@ const SettingsScreen = () => {
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { session, isProUser } = useAuthContext();
   const { theme } = useThemeContext();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const { language } = useLanguageContext();
-
-  const handleClose = () => {
-    setIsModalVisible(false);
-  };
 
   const data = [
     { id: 1, label: `${i18n.t("account")}` },
     { id: 2, label: `${i18n.t("customization")}` },
-    // { id: 3, label: `${i18n.t("theme")}` },
     { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
     { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
     { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
@@ -68,9 +59,6 @@ const SettingsScreen = () => {
       case 2:
         router.push("/settings/customization");
         break;
-      // case 3:
-      //   setIsModalVisible(true);
-      //   break;
       case 3:
         router.push("/settings/faq");
         break;
@@ -317,18 +305,6 @@ const SettingsScreen = () => {
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
         ListFooterComponent={ListFooterComponent()}
       />
-      {/* <Modal visible={isModalVisible} transparent={true} onRequestClose={() => setIsModalVisible(false)} animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-          <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-            <TouchableWithoutFeedback>
-              <View style={{ height: "25%", backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
-                <AppearanceSettings />
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal> */}
-      {/* <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type="appearance" /> */}
     </View>
   );
 };

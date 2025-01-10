@@ -6,8 +6,7 @@ import { themeColors } from "@/src/utils/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
-import { Button, Text } from "react-native-rapi-ui";
+import { ScrollView, StyleSheet, TextInput, View, Text, Pressable } from "react-native";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -126,11 +125,10 @@ export default function () {
         }}
       >
         <Text
-          fontWeight="bold"
-          size="h3"
           style={{
             alignSelf: "center",
             padding: 30,
+            fontSize: 25,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
@@ -171,7 +169,7 @@ export default function () {
           </View>
         )}
 
-        <Button
+        {/* <Button
           text={loading ? "Loading" : "Continue"}
           onPress={() => {
             changeUsername();
@@ -181,7 +179,16 @@ export default function () {
           }}
           disabled={loading}
           textStyle={{ marginVertical: 3 }}
-        />
+        /> */}
+        <Pressable
+          onPress={() => {
+            changeUsername();
+          }}
+          disabled={loading}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>{loading ? "Loading" : i18n.t("continue")}</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );
@@ -195,5 +202,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
+  },
+  button: {
+    marginTop: 25,
+    backgroundColor: "#3399ff",
+    borderRadius: 6,
+  },
+  buttonText: {
+    padding: 16,
+    textAlign: "center",
+    fontSize: 15,
+    color: "081421",
+    fontWeight: "500",
   },
 });

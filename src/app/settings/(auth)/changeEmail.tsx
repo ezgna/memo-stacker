@@ -6,8 +6,7 @@ import { themeColors } from "@/src/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Button, Text, themeColor } from "react-native-rapi-ui";
+import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Text, Pressable } from "react-native";
 import Toast from "react-native-root-toast";
 
 export default function () {
@@ -76,11 +75,10 @@ export default function () {
         }}
       >
         <Text
-          fontWeight="bold"
-          size="h3"
           style={{
             alignSelf: "center",
             padding: 30,
+            fontSize: 25,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
@@ -135,11 +133,11 @@ export default function () {
             onChangeText={(text) => setPassword(text)}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 5 }}>
-            <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
+            <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={"gray"} />
           </TouchableOpacity>
         </View>
 
-        <Button
+        {/* <Button
           text={loading ? "Loading" : "Continue"}
           onPress={() => {
             changeEmail();
@@ -149,7 +147,16 @@ export default function () {
           }}
           disabled={loading}
           textStyle={{ marginVertical: 3 }}
-        />
+        /> */}
+        <Pressable
+          onPress={() => {
+            changeEmail();
+          }}
+          disabled={loading}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>{loading ? "Loading" : i18n.t("continue")}</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );
@@ -163,5 +170,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
+  },
+  button: {
+    marginTop: 25,
+    backgroundColor: "#3399ff",
+    borderRadius: 6,
+  },
+  buttonText: {
+    padding: 16,
+    textAlign: "center",
+    fontSize: 15,
+    color: "081421",
+    fontWeight: "500",
   },
 });

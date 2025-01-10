@@ -1,7 +1,6 @@
 import { Entry } from "@/types";
-import CryptoES from "crypto-es";
+import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, AppState, Platform, StyleSheet, TextInput, View } from "react-native";
 import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
@@ -12,16 +11,13 @@ import { FlashListCompo } from "../components/FlashListCompo";
 import SaveButton from "../components/SaveButton";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useDataContext } from "../contexts/DataContext";
+import { useSettingsContext } from "../contexts/SettingsContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useDatabase } from "../hooks/useDatabase";
-import { generateKeyFromUserId, jsonFormatter } from "../utils/encryption";
-import { supabase } from "../utils/supabase";
+import { generateKeyFromUserId } from "../utils/encryption";
+import i18n from "../utils/i18n";
 import { fetchSupabaseData, updateLocalUserIdToUid, updateUnsyncedLocalDataWithSupabase } from "../utils/sync";
 import { themeColors } from "../utils/theme";
-import Constants from "expo-constants";
-import i18n from "../utils/i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSettingsContext } from "../contexts/SettingsContext";
 
 export default function index() {
   const db = useDatabase();
@@ -253,7 +249,7 @@ export default function index() {
   useEffect(() => {
     (async () => {
       try {
-        if (!isAppActive) return;
+        if (!isAppActive || Platform.OS === "android") return;
         const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
         switch (result) {
           case RESULTS.GRANTED:
@@ -290,7 +286,6 @@ export default function index() {
               {
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                 borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
-                
               },
             ]}
             ref={inputRef}
@@ -305,7 +300,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      {!isProUser && Platform.OS !== "web" && (
+      {!isProUser && Platform.OS !== "android" && (
         <View>
           {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
             <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />

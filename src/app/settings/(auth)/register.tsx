@@ -6,15 +6,13 @@ import { AntDesign } from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Button, Text, themeColor } from "react-native-rapi-ui";
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Button, Pressable } from "react-native";
 import Toast from "react-native-root-toast";
 
 export default function () {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  // const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
@@ -88,10 +86,9 @@ export default function () {
         }}
       >
         <Text
-          fontWeight="bold"
-          size="h3"
           style={{
             alignSelf: "center",
+            fontSize: 25,
             padding: 30,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
@@ -109,8 +106,8 @@ export default function () {
               </View>
             )}
             <Text style={{ marginBottom: 10, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("email_sent")}</Text>
-            <Button
-              text={loading ? "Loading" : i18n.t("resend_email")}
+            {/* <Button
+              title={loading ? "Loading" : i18n.t("resend_email")}
               onPress={async () => {
                 try {
                   setLoading(true);
@@ -136,12 +133,8 @@ export default function () {
                   setLoading(false);
                 }
               }}
-              style={{
-                marginTop: 20,
-              }}
               disabled={loading}
-              textStyle={{ marginVertical: 3 }}
-            />
+            /> */}
           </View>
         ) : (
           <>
@@ -222,20 +215,18 @@ export default function () {
                 onChangeText={(text) => setPassword(text)}
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 5 }}>
-                <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
+                <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={"gray"} />
               </TouchableOpacity>
             </View>
-            <Button
-              text={loading ? "Loading" : i18n.t("createAnAccount")}
+            <Pressable
               onPress={() => {
                 register();
               }}
-              style={{
-                marginTop: 20,
-              }}
               disabled={loading}
-              textStyle={{ marginVertical: 3 }}
-            />
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>{loading ? "Loading" : i18n.t("createAnAccount")}</Text>
+            </Pressable>
             <View
               style={{
                 flexDirection: "row",
@@ -244,19 +235,15 @@ export default function () {
                 justifyContent: "center",
               }}
             >
-              <Text size="md" style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-                {i18n.t("already_have_account")}
-              </Text>
+              <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("already_have_account")}</Text>
               <TouchableOpacity
                 onPress={() => {
                   router.replace("/settings/(auth)/login");
                 }}
               >
                 <Text
-                  size="md"
-                  fontWeight="bold"
                   style={{
-                    marginLeft: 5,
+                    marginLeft: 10,
                     color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                   }}
                 >
@@ -279,5 +266,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
+  },
+  button: {
+    marginTop: 25,
+    backgroundColor: "#3399ff",
+    borderRadius: 6,
+  },
+  buttonText: {
+    padding: 16,
+    textAlign: "center",
+    fontSize: 15,
+    color: '081421',
+    fontWeight: '500'
   },
 });

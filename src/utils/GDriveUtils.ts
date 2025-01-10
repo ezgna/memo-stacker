@@ -1,7 +1,15 @@
 import { Entry } from "@/types";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { GDrive, MimeTypes } from "@robinbobin/react-native-google-drive-api-wrapper";
 import { SQLiteDatabase } from "expo-sqlite";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+// let GoogleSignin: any;
+
+// if ( Platform.OS === 'ios') {
+//   GoogleSignin = require('@react-native-google-signin/google-signin');
+// } else {
+//   console.log("Running on unsupported platform for native modules");
+// }
 
 export const initializeGdrive = async (accessToken: string) => {
   const gdrive = new GDrive();
@@ -32,18 +40,14 @@ export const signinGoogle = async () => {
 
 export const uploadFileToGoogleDrive = async (gdrive: GDrive, dataList: object) => {
   const jsonData = JSON.stringify(dataList);
-  const formattedDate = new Date()
-    .toLocaleString("ja-JP")
-    .replace(/\//g, "-")
-    .replace(/:/g, "-")
-    .replace(" ", "_");
+  const formattedDate = new Date().toLocaleString("ja-JP").replace(/\//g, "-").replace(/:/g, "-").replace(" ", "_");
   try {
     const response = await gdrive.files
       .newMultipartUploader()
       .setData(jsonData, MimeTypes.JSON)
       .setRequestBody({ name: `ExportedMemoLog_${formattedDate}` })
       .execute();
-      return response.name
+    return response.name;
   } catch (e) {
     console.error("Upload error", e);
   }

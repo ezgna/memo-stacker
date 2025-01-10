@@ -10,8 +10,7 @@ import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Button, Text, themeColor } from "react-native-rapi-ui";
+import { Alert, Pressable, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Text } from "react-native";
 import Toast from "react-native-root-toast";
 
 let email: string;
@@ -138,11 +137,10 @@ export default function () {
           </View>
         )}
         <Text
-          fontWeight="bold"
-          size="h3"
           style={{
             alignSelf: "center",
             paddingVertical: 30,
+            fontSize: 25,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
@@ -210,10 +208,10 @@ export default function () {
             onChangeText={(text) => setPassword(text)}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ marginRight: 5 }}>
-            <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={themeColor.gray} />
+            <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={"gray"} />
           </TouchableOpacity>
         </View>
-        <Button
+        {/* <Button
           text={loading ? "Loading" : i18n.t("continue")}
           onPress={() => {
             login();
@@ -223,7 +221,17 @@ export default function () {
           }}
           disabled={loading}
           textStyle={{ marginVertical: 3 }}
-        />
+        /> */}
+
+        <Pressable
+          onPress={() => {
+            login();
+          }}
+          disabled={loading}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>{loading ? "Loading" : i18n.t("continue")}</Text>
+        </Pressable>
 
         <View
           style={{
@@ -233,17 +241,13 @@ export default function () {
             justifyContent: "center",
           }}
         >
-          <Text size="md" style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-            {i18n.t("dont_have_account")}
-          </Text>
+          <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("dont_have_account")}</Text>
           <TouchableOpacity
             onPress={() => {
               router.replace("/settings/(auth)/register");
             }}
           >
             <Text
-              size="md"
-              fontWeight="bold"
               style={{
                 marginLeft: 5,
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
@@ -266,9 +270,7 @@ export default function () {
               router.replace("/settings/(auth)/forgetPassword");
             }}
           >
-            <Text size="md" fontWeight="bold" style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-              {i18n.t("forget_password")}
-            </Text>
+            <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{i18n.t("forget_password")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -284,5 +286,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
+  },
+  button: {
+    marginTop: 25,
+    backgroundColor: "#3399ff",
+    borderRadius: 6,
+  },
+  buttonText: {
+    padding: 16,
+    textAlign: "center",
+    fontSize: 15,
+    color: "081421",
+    fontWeight: "500",
   },
 });

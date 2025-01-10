@@ -4,8 +4,7 @@ import { supabase } from "@/src/utils/supabase";
 import { themeColors } from "@/src/utils/theme";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Button, Text } from "react-native-rapi-ui";
+import { Alert, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Text, Pressable } from "react-native";
 
 export default function () {
   const router = useRouter();
@@ -43,11 +42,10 @@ export default function () {
         }}
       >
         <Text
-          fontWeight="bold"
-          size="h3"
           style={{
             alignSelf: "center",
             padding: 30,
+            fontSize: 25,
             color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
           }}
         >
@@ -71,7 +69,7 @@ export default function () {
           keyboardType="email-address"
           onChangeText={(text) => setEmail(text)}
         />
-        <Button
+        {/* <Button
           text={loading ? "Loading" : i18n.t("send_email")}
           onPress={() => {
             forget();
@@ -81,7 +79,16 @@ export default function () {
           }}
           disabled={loading}
           textStyle={{ marginVertical: 3 }}
-        />
+        /> */}
+        <Pressable
+          onPress={() => {
+            forget();
+          }}
+          disabled={loading}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>{loading ? "Loading" : i18n.t("send_email")}</Text>
+        </Pressable>
 
         <View
           style={{
@@ -91,7 +98,7 @@ export default function () {
             justifyContent: "center",
           }}
         >
-          <Text size="md" style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+          <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
             {i18n.t("already_have_account")}
           </Text>
           <TouchableOpacity
@@ -100,8 +107,6 @@ export default function () {
             }}
           >
             <Text
-              size="md"
-              fontWeight="bold"
               style={{
                 marginLeft: 5,
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
@@ -124,5 +129,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 20,
+  },
+  button: {
+    marginTop: 25,
+    backgroundColor: "#3399ff",
+    borderRadius: 6,
+  },
+  buttonText: {
+    padding: 16,
+    textAlign: "center",
+    fontSize: 15,
+    color: "081421",
+    fontWeight: "500",
   },
 });
