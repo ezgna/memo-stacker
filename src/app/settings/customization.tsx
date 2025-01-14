@@ -5,7 +5,7 @@ import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 
 const customization = () => {
@@ -101,9 +101,14 @@ const customization = () => {
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
       <View style={{ padding: 20 }}>
         <ScrollView scrollEnabled={false}>
-          {data.map((item) => (
+          {/* {data.map((item) => (
             <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
               <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
+            </View>
+          ))} */}
+          {data.map((item) => (
+            <View key={item.id} style={{ paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray", }}>
+              {item.content}
             </View>
           ))}
         </ScrollView>
