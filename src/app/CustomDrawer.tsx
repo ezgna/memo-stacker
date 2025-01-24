@@ -3,7 +3,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
@@ -139,9 +139,7 @@ export default function CustomDrawer() {
                 onPress={() => handleEntryPress(dateItem.entries)}
                 style={{ paddingLeft: 13, borderLeftWidth: 2, borderLeftColor: "grey" }}
               >
-                <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>
-                  {dateItem.date.slice(7)}
-                </Text>
+                <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{dateItem.date.slice(7)}</Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -214,26 +212,31 @@ export default function CustomDrawer() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        marginTop: Platform.OS === "android" ? 40 : 60,
+        flex: 1,
+        backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+      }}
+    >
       <View
         style={{
           borderBottomWidth: 2,
-          marginBottom: 10,
+          marginBottom: Platform.OS === "android" ? 5 : 10,
           flexDirection: "row",
           alignItems: "center",
           borderBottomColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+          paddingBottom: 2,
+          paddingLeft: 2,
+          justifyContent: "space-between",
         }}
       >
-        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 21, fontFamily: "RocknRollOne" }]}>
+        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 21, fontFamily: "RocknRollOne", lineHeight: 26 }]}>
           {i18n.t("memolog")}
         </Text>
         <TouchableOpacity onPress={() => router.navigate("/settings")}>
-          <Ionicons
-            name="settings-outline"
-            size={24}
-            color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText}
-            style={[{ paddingLeft: 10 }, !isJapanese && { paddingLeft: 4 }]}
-          />
+          <Ionicons name="settings-outline" size={24} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
         </TouchableOpacity>
       </View>
       {fetchedData && fetchedData.length > 0 ? (
@@ -269,7 +272,7 @@ export default function CustomDrawer() {
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                 fontSize: 16,
                 textAlign: "right",
-                paddingRight: isJapanese ? 16 : 11,
+                paddingRight: 7,
               },
             ]}
           >
@@ -295,11 +298,6 @@ export default function CustomDrawer() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    marginTop: 60,
-    flex: 1,
-  },
   collapseButton: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,10 +1,8 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { AppContent } from "./app_layouts/AppContent";
 import { AppProviders } from "./app_layouts/AppProviders";
-import { router } from "expo-router";
-import { Platform } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,7 +18,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      router.push("/settings/customization");
+      // router.push("/settings/customization");
     }
   }, [loaded]);
 

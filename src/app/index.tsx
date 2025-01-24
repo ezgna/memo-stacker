@@ -246,34 +246,34 @@ export default function index() {
     };
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        if (!isAppActive || Platform.OS === "android") return;
-        const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-        switch (result) {
-          case RESULTS.GRANTED:
-            setNonPersonalized(false);
-            break;
-          case RESULTS.DENIED:
-            const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-            setNonPersonalized(requestResult !== RESULTS.GRANTED);
-            break;
-          case RESULTS.BLOCKED:
-            setNonPersonalized(true);
-            break;
-          default:
-            break;
-        }
-        if (!adsInitialized) {
-          await mobileAds().initialize();
-          setAdsInitialized(true);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [isAppActive]);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       if (!isAppActive || Platform.OS === "android") return;
+  //       const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+  //       switch (result) {
+  //         case RESULTS.GRANTED:
+  //           setNonPersonalized(false);
+  //           break;
+  //         case RESULTS.DENIED:
+  //           const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+  //           setNonPersonalized(requestResult !== RESULTS.GRANTED);
+  //           break;
+  //         case RESULTS.BLOCKED:
+  //           setNonPersonalized(true);
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //       if (!adsInitialized) {
+  //         await mobileAds().initialize();
+  //         setAdsInitialized(true);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   })();
+  // }, [isAppActive]);
 
   return (
     <>
