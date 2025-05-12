@@ -4,7 +4,7 @@ import { themeColors } from "@/src/utils/theme";
 import Feather from "@expo/vector-icons/Feather";
 import { router, Stack } from "expo-router";
 import React from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable, Text } from "react-native";
 
 const SettingsLayout = () => {
   const { theme } = useThemeContext();
@@ -14,6 +14,7 @@ const SettingsLayout = () => {
       screenOptions={{
         headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
         headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
+        headerShown: true
       }}
     >
       <Stack.Screen
@@ -21,16 +22,13 @@ const SettingsLayout = () => {
         options={{
           title: i18n.t("settings"),
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <Pressable onPress={() => router.back()}>
               <Feather name="x" size={20} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
-            </TouchableOpacity>
+            </Pressable>
           ),
         }}
       />
-      <Stack.Screen name="account" options={{ title: i18n.t("account") }} />
-      <Stack.Screen name="(auth)" options={{ title: "" }} />
       <Stack.Screen name="faq" options={{ title: i18n.t("faq") }} />
-      <Stack.Screen name="subscriptionPlans" options={{ title: i18n.t("subscriptionPlans") }} />
       <Stack.Screen name="customization" options={{ title: i18n.t("customization") }} />
     </Stack>
   );

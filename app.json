@@ -2,7 +2,7 @@
   "expo": {
     "name": "Memolog",
     "slug": "memologminute",
-    "version": "1.0.5",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "memolog",
@@ -16,7 +16,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ezgna.testthree",
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "We use this permission to provide personalized ads."
+        "NSUserTrackingUsageDescription": "We use this permission to provide personalized ads.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

@@ -1,4 +1,4 @@
-import { Entry } from "@/types";
+import { Entry } from "@/src/database/types";
 import { GDrive, MimeTypes } from "@robinbobin/react-native-google-drive-api-wrapper";
 import { SQLiteDatabase } from "expo-sqlite";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";

@@ -1,5 +1,4 @@
 import SettingsModal from "@/src/components/SettingModal";
-import { useAuthContext } from "@/src/contexts/AuthContext";
 import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
@@ -9,7 +8,6 @@ import React, { useState } from "react";
 import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 
 const customization = () => {
-  const { session } = useAuthContext();
   const { theme } = useThemeContext();
   const { autoFocus, updateAutoFocus } = useSettingsContext();
   const [isModalVisible, setIsModalVisible] = useState(false);

@@ -6,7 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import CustomDrawer from "../CustomDrawer";
 
-export const AppContent = () => {
+const AppContent = () => {
   const { theme } = useThemeContext();
 
   return (
@@ -30,3 +30,5 @@ export const AppContent = () => {
     </>
   );
 };
+
+export default AppContent;

@@ -1,5 +1,5 @@
 import i18n from "@/src/utils/i18n";
-import { Entry } from "@/types";
+import { Entry } from "@/src/database/types";
 import { FlashList } from "@shopify/flash-list";
 import React, { FC } from "react";
 import { Text, View } from "react-native";

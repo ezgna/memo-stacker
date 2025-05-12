@@ -1,8 +1,8 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { AppContent } from "./app_layouts/AppContent";
-import { AppProviders } from "./app_layouts/AppProviders";
+import AppContent from "./app_layouts/AppContent";
+import AppProviders from "./app_layouts/AppProviders";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,10 +25,6 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
-  // if (Platform.OS === "web") {
-  //   return <></>;
-  // }
 
   return (
     <AppProviders>

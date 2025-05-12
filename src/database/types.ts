@@ -5,6 +5,6 @@ export interface Entry {
   deleted_at: string | null;
   date: string;
   text: string;
-  user_id: string | null;
-  synced: number;
+  // user_id: string | null;
+  // synced: number;
 }

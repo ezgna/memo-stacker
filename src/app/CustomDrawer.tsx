@@ -1,4 +1,4 @@
-import { Entry } from "@/types";
+import { Entry } from "@/src/database/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
@@ -7,12 +7,11 @@ import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, 
 import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
-import { useDatabase } from "../hooks/useDatabase";
-import i18n from "../utils/i18n";
-import { useThemeContext } from "../contexts/ThemeContext";
-import { themeColors } from "../utils/theme";
-import { useAuthContext } from "../contexts/AuthContext";
 import { useLanguageContext } from "../contexts/LanguageContext";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { db, initDatabase } from "@/src/database/db";
+import i18n from "../utils/i18n";
+import { themeColors } from "../utils/theme";
 
 interface Dates {
   date: string;
@@ -30,7 +29,6 @@ interface GroupedData {
 }
 
 export default function CustomDrawer() {
-  const db = useDatabase();
   const { dataUpdated, setDataUpdated } = useDataContext();
   const [fetchedData, setFetchedData] = useState<GroupedData[]>([]);
   const [collapsedItems, setCollapsedItems] = useState<Record<string, boolean>>({});
@@ -38,13 +36,12 @@ export default function CustomDrawer() {
   const [selectedEntries, setSelectedEntries] = useState<Entry[]>([]);
   const [isTrash, setIsTrash] = useState(false);
   const { theme } = useThemeContext();
-  const { isProUser } = useAuthContext();
   const { isJapanese } = useLanguageContext();
 
   useEffect(() => {
     if (!db) return;
     const fetchData = async () => {
-      const allEntries: Entry[] = await db.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
+      const allEntries: Entry[] = await db!.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
       const groupedByYear = allEntries.reduce<Record<string, Record<string, Entry[]>>>((acc, entry) => {
         const year = entry.date.slice(0, 4);
         const month = entry.date.slice(5, 7);
@@ -151,26 +148,25 @@ export default function CustomDrawer() {
   const deleteEntry = async (id: string) => {
     if (!db) return;
     try {
-      if (!isProUser) {
-        const confirmed = await new Promise((resolve) => {
-          Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
-            {
-              text: "Cancel",
-              style: "cancel",
-              onPress: () => resolve(false),
-            },
-            {
-              text: "Delete",
-              style: "destructive",
-              onPress: () => resolve(true),
-            },
-          ]);
-        });
-        if (!confirmed) return;
-      }
+      const confirmed = await new Promise((resolve) => {
+        Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => resolve(false),
+          },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => resolve(true),
+          },
+        ]);
+      });
+      if (!confirmed) return;
+
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, deletedAt, id]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ? WHERE id = ?", [updateAt, deletedAt, id]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
     } catch (e) {
@@ -183,7 +179,7 @@ export default function CustomDrawer() {
     try {
       const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
-      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ?, synced = 0 WHERE id = ?`, [trimmedEditingText, updateAt, editingId]);
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ? WHERE id = ?`, [trimmedEditingText, updateAt, editingId]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.map((entry) => (entry.id === editingId ? { ...entry, text: editingText } : entry)));
     } catch (e) {
@@ -203,7 +199,7 @@ export default function CustomDrawer() {
     if (!db) return;
     try {
       const updateAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ?, synced = 0 WHERE id = ?", [updateAt, null, id]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ? WHERE id = ?", [updateAt, null, id]);
       setDataUpdated(!dataUpdated);
       setSelectedEntries((prev) => prev.filter((entry) => entry.id !== id));
     } catch (e) {
@@ -242,27 +238,25 @@ export default function CustomDrawer() {
       {fetchedData && fetchedData.length > 0 ? (
         <>
           <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
-          {isProUser && (
-            <View
+          <View
+            style={{
+              flex: 0.3,
+            }}
+          >
+            <TouchableOpacity
               style={{
-                flex: 0.3,
+                backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                justifyContent: "center",
+                alignItems: "center",
               }}
+              onPress={() => handleTrashPress()}
             >
-              <TouchableOpacity
-                style={{
-                  backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
-                  width: 50,
-                  height: 50,
-                  borderRadius: 25,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => handleTrashPress()}
-              >
-                <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
-              </TouchableOpacity>
-            </View>
-          )}
+              <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <>

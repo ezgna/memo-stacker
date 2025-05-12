@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { FlashListCompo } from "./FlashListCompo";
-import { Entry } from "@/types";
+import { Entry } from "@/src/database/types";
 import { useDataContext } from "../contexts/DataContext";
 import SaveButton from "./SaveButton";
 import CancelEditButton from "./CancelEditButton";

@@ -13,7 +13,8 @@
     },
     "production": {
       "autoIncrement": true,
-      "buildArtifactPaths": ["ios/build/*"]
+      "buildArtifactPaths": ["ios/build/*"],
+      "submit": true
     }
   },
   "submit": {

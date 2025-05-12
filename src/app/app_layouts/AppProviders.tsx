@@ -1,4 +1,3 @@
-import { AuthProvider } from "@/src/contexts/AuthContext";
 import { DataProvider } from "@/src/contexts/DataContext";
 import { SettingsProvider } from "@/src/contexts/SettingsContext";
 import { LanguageProvider } from "@/src/contexts/LanguageContext";
@@ -8,22 +7,22 @@ import { ReactNode } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
 
-export const AppProviders = ({ children }: { children: ReactNode }) => {
+const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
     <LanguageProvider>
       <SettingsProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <DataProvider>
-              <ActionSheetProvider>
-                <RootSiblingParent>
-                  <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
-                </RootSiblingParent>
-              </ActionSheetProvider>
-            </DataProvider>
-          </AuthProvider>
+          <DataProvider>
+            <ActionSheetProvider>
+              <RootSiblingParent>
+                <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
+              </RootSiblingParent>
+            </ActionSheetProvider>
+          </DataProvider>
         </ThemeProvider>
       </SettingsProvider>
     </LanguageProvider>
   );
 };
+
+export default AppProviders;
