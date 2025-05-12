@@ -17,7 +17,6 @@ import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
 import { db, initDatabase } from "@/src/database/db";
 
-
 interface SettingsListType {
   id: number;
   label: string;
@@ -36,7 +35,7 @@ const SettingsScreen = () => {
 
   const data = [
     { id: 2, label: `${i18n.t("customization")}` },
-    // { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
+    { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
     { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
     { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
     { id: 6, label: `${i18n.t("export")}` },
@@ -48,9 +47,9 @@ const SettingsScreen = () => {
       case 2:
         router.push("/settings/customization");
         break;
-      // case 3:
-      //   router.push("/settings/faq");
-      //   break;
+      case 3:
+        router.push("/settings/faq");
+        break;
       case 4:
         try {
           Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
@@ -113,7 +112,7 @@ const SettingsScreen = () => {
           [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
-          await db!.runAsync(`INSERT INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`, values);
+          await db!.runAsync(`INSERT OR IGNORE INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`, values);
         });
         setFiles(null);
         setDataUpdated(!dataUpdated);

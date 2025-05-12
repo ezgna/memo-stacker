@@ -18,9 +18,9 @@ const faq = () => {
     { id: 5, question: `${i18n.t("edit_delete_notes_question")}`, answer: `${i18n.t("edit_delete_notes_answer")}` },
     { id: 6, question: `${i18n.t("security_info_question")}`, answer: `${i18n.t("security_info_answer")}` },
     { id: 7, question: `${i18n.t("device_transfer_question")}`, answer: `${i18n.t("device_transfer_answer")}` },
-    { id: 8, question: `${i18n.t("sign_up_login_question")}`, answer: `${i18n.t("sign_up_login_answer")}` },
-    { id: 9, question: `${i18n.t("email_recovery_question")}`, answer: `${i18n.t("email_recovery_answer")}` },
-    { id: 10, question: `${i18n.t("password_recovery_question")}`, answer: `${i18n.t("password_recovery_answer")}` },
+    // { id: 8, question: `${i18n.t("sign_up_login_question")}`, answer: `${i18n.t("sign_up_login_answer")}` },
+    // { id: 9, question: `${i18n.t("email_recovery_question")}`, answer: `${i18n.t("email_recovery_answer")}` },
+    // { id: 10, question: `${i18n.t("password_recovery_question")}`, answer: `${i18n.t("password_recovery_answer")}` },
     { id: 11, question: `${i18n.t("language_settings_question")}`, answer: `${i18n.t("language_settings_answer")}` },
   ];
 

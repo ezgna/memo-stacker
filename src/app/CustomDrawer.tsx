@@ -3,7 +3,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, Pressable, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";

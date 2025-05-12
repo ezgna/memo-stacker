@@ -1,10 +1,10 @@
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
-import Feather from "@expo/vector-icons/Feather";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router, Stack } from "expo-router";
 import React from "react";
-import { Pressable, Text } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 const SettingsLayout = () => {
   const { theme } = useThemeContext();
@@ -14,7 +14,7 @@ const SettingsLayout = () => {
       screenOptions={{
         headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
         headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
-        headerShown: true
+        headerShown: true,
       }}
     >
       <Stack.Screen
@@ -22,9 +22,9 @@ const SettingsLayout = () => {
         options={{
           title: i18n.t("settings"),
           headerRight: () => (
-            <Pressable onPress={() => router.back()}>
-              <Feather name="x" size={20} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
-            </Pressable>
+            <TouchableOpacity onPress={() => router.replace("/")}>
+              <FontAwesome name="close" size={22} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
+            </TouchableOpacity>
           ),
         }}
       />
