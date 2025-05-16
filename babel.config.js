@@ -12,7 +12,6 @@ module.exports = function (api) {
             ? {
                 "react-native-google-mobile-ads": "./src/utils/EmptyStub.js",
                 "@react-native-google-signin/google-signin": "./src/utils/EmptyStub.js",
-                'react-native-permissions': "./src/utils/EmptyStub.js"
               }
             : {},
         },

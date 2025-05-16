@@ -16,7 +16,6 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ezgna.testthree",
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "We use this permission to provide personalized ads.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -34,11 +33,9 @@
     },
     "plugins": [
       [
-        "react-native-permissions",
+        "expo-tracking-transparency",
         {
-          "iosPermissions": [
-            "AppTrackingTransparency"
-          ]
+          "userTrackingPermission": "We use this permission to provide personalized ads."
         }
       ],
       "expo-router",
@@ -59,9 +56,8 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+          "androidAppId": "ca-app-pub-4363360791941587~3324694963",
           "iosAppId": "ca-app-pub-4363360791941587~3360620576",
-          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
             "4fzdc2evr5.skadnetwork",

@@ -4,7 +4,6 @@ import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, AppState, Platform, StyleSheet, TextInput, View } from "react-native";
 import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
-import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
 import { FlashListCompo } from "../components/FlashListCompo";
@@ -16,6 +15,7 @@ import i18n from "../utils/i18n";
 import { themeColors } from "../utils/theme";
 import { runMigrations } from "../database/migrations";
 import { db, initDatabase } from "@/src/database/db";
+import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 
 export default function index() {
   const [text, setText] = useState<string>("");
@@ -26,11 +26,11 @@ export default function index() {
   // useEffect(() => {
   //   const debugTables = async () => {
   //     if (__DEV__) {
-        // const allTables = await db!.getAllAsync(`SELECT name FROM sqlite_master WHERE type='table'`);
-        // console.log("Current tables:", allTables);
-        // const columns = (await db!.getAllAsync(`PRAGMA table_info(entries)`)) as { name: string }[];
-        // const columnNames = columns.map((col) => col.name);
-        // console.log("Column names in 'entries':", columnNames);
+  // const allTables = await db!.getAllAsync(`SELECT name FROM sqlite_master WHERE type='table'`);
+  // console.log("Current tables:", allTables);
+  // const columns = (await db!.getAllAsync(`PRAGMA table_info(entries)`)) as { name: string }[];
+  // const columnNames = columns.map((col) => col.name);
+  // console.log("Column names in 'entries':", columnNames);
   //     }
   //   };
   //   debugTables();
@@ -45,13 +45,16 @@ export default function index() {
       });
       return;
     }
-    const localizedDateString = new Date().toLocaleDateString().replace(/\//g, "-");
+
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+
     const data = {
       id: Crypto.randomUUID(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       deleted_at: null,
-      date: localizedDateString,
+      date: formattedDate,
       text: text.trim(),
     };
     try {
@@ -141,7 +144,6 @@ export default function index() {
   }, []);
 
   useEffect(() => {
-    // createTable();
     (async () => {
       if (!db) return;
       const deletedEntries: Entry[] = await db.getAllAsync(`SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`);
@@ -180,52 +182,67 @@ export default function index() {
     fetchAllEntries();
   }, [db, dataUpdated, searchQuery]);
 
-  const [isAppActive, setIsAppActive] = useState(AppState.currentState === "active");
+  // const [isAppActive, setIsAppActive] = useState(AppState.currentState === "active");
   const [nonPersonalized, setNonPersonalized] = useState(true);
   const [adsInitialized, setAdsInitialized] = useState(false);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (state) => {
-      if (state === "active") {
-        setIsAppActive(true);
-      } else {
-        setIsAppActive(false);
-      }
-    });
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", (state) => {
+  //     if (state === "active") {
+  //       setIsAppActive(true);
+  //     } else {
+  //       setIsAppActive(false);
+  //     }
+  //   });
 
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       if (!isAppActive || Platform.OS === "android") return;
+  //       const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+  //       switch (result) {
+  //         case RESULTS.GRANTED:
+  //           setNonPersonalized(false);
+  //           break;
+  //         case RESULTS.DENIED:
+  //           const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+  //           setNonPersonalized(requestResult !== RESULTS.GRANTED);
+  //           break;
+  //         case RESULTS.BLOCKED:
+  //           setNonPersonalized(true);
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  // if (!adsInitialized) {
+  //   await mobileAds().initialize();
+  //   setAdsInitialized(true);
+  // }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   })();
+  // }, [isAppActive]);
 
   useEffect(() => {
     (async () => {
-      try {
-        if (!isAppActive || Platform.OS === "android") return;
-        const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-        switch (result) {
-          case RESULTS.GRANTED:
-            setNonPersonalized(false);
-            break;
-          case RESULTS.DENIED:
-            const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-            setNonPersonalized(requestResult !== RESULTS.GRANTED);
-            break;
-          case RESULTS.BLOCKED:
-            setNonPersonalized(true);
-            break;
-          default:
-            break;
-        }
-        if (!adsInitialized) {
-          await mobileAds().initialize();
-          setAdsInitialized(true);
-        }
-      } catch (error) {
-        console.error(error);
+      if (Platform.OS === "android") return;
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === "granted") {
+        // console.log("Yay! I have user permission to track data");
+        setNonPersonalized(false);
+      }
+      if (!adsInitialized) {
+        await mobileAds().initialize();
+        setAdsInitialized(true);
       }
     })();
-  }, [isAppActive]);
+  }, []);
 
   return (
     <>
@@ -252,13 +269,25 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      {Platform.OS !== "android" && (
+      {Platform.OS == "ios" ? (
         <View>
           {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
             <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
           ) : (
             <BannerAd
               unitId="ca-app-pub-4363360791941587/8952562876"
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
+            />
+          )}
+        </View>
+      ) : (
+        <View>
+          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
+            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+          ) : (
+            <BannerAd
+              unitId="ca-app-pub-4363360791941587/4098720584"
               size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
               requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
             />

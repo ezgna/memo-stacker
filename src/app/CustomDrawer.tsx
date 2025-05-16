@@ -43,6 +43,9 @@ export default function CustomDrawer() {
     const fetchData = async () => {
       const allEntries: Entry[] = await db!.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
       const groupedByYear = allEntries.reduce<Record<string, Record<string, Entry[]>>>((acc, entry) => {
+        console.log(`[${Platform.OS}]`, entry.date)
+        // console.log(`[${Platform.OS}]`, entry.created_at)
+
         const year = entry.date.slice(0, 4);
         const month = entry.date.slice(5, 7);
         if (!acc[year]) {
