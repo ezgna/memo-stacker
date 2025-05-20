@@ -21,13 +21,17 @@ export const initializeGdrive = async (accessToken: string) => {
 export const signinGoogle = async () => {
   try {
     await GoogleSignin.configure({
-      scopes: ["https://www.googleapis.com/auth/drive.file"],
       iosClientId: "110368176913-u7anooc46iggk9n2ksi81pii7e5uqaas.apps.googleusercontent.com",
+      webClientId: "110368176913-a1dugf9t7o4dgi52q5bl3mj7qnntcklo.apps.googleusercontent.com",
     });
+
+    await GoogleSignin.hasPlayServices();
+
     const userInfo = await GoogleSignin.signIn();
     if (userInfo.type === "cancelled") {
       return;
     }
+
     const tokens = await GoogleSignin.getTokens();
     if (tokens.accessToken) {
       const gdrive = await initializeGdrive(tokens.accessToken);
@@ -92,6 +96,8 @@ export const ExportGDrive = async (db: SQLiteDatabase) => {
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    await GoogleSignin.signOut(); // iosだとこれなくても絶対毎回ログイン必要だが、androidエミュだとこれないと一度ログインしたらずっとそのアカウントで自動実行される
   }
 };
 
@@ -104,5 +110,7 @@ export const ImportGDrive = async () => {
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    await GoogleSignin.signOut();
   }
 };

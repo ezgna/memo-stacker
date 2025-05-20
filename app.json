@@ -24,7 +24,8 @@
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ezgna.memolog"
+      "package": "com.ezgna.memolog",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",

@@ -24,8 +24,6 @@ const customization = () => {
     setModalType(null);
   };
 
-  // without session, users can't custom
-
   const AutoShowKeyboard = () => {
     return (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>

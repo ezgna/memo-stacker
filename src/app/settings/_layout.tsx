@@ -3,8 +3,9 @@ import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router, Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { Platform, TouchableOpacity } from "react-native";
 
 const SettingsLayout = () => {
   const { theme } = useThemeContext();
@@ -15,6 +16,7 @@ const SettingsLayout = () => {
         headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
         headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
         headerShown: true,
+        headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
       }}
     >
       <Stack.Screen

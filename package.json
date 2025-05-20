@@ -55,7 +55,8 @@
     "react-native-root-siblings": "^5.0.1",
     "react-native-root-toast": "^3.6.0",
     "react-native-safe-area-context": "^5.4.0",
-    "react-native-screens": "~4.10.0"
+    "react-native-screens": "~4.10.0",
+    "react-native-edge-to-edge": "1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

@@ -39,9 +39,9 @@ export default function SearchBox() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    borderRadius: 3,
+    // borderRadius: 3,
     flexDirection: "row",
-    height: 40,
+    // height: 40,
     maxWidth: Platform.OS === "ios" ? undefined : 200,
     marginRight: Platform.OS === "ios" ? undefined : 10,
   },
@@ -50,14 +50,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingLeft: Platform.OS === "ios" ? 7 : 11,
     borderRadius: 3,
-    height: Platform.OS === "ios" ? "70%" : 36,
+    height: Platform.OS === "ios" ? 28 : 42,
     width: "100%",
     marginRight: 10,
   },
   textInput: {
     paddingLeft: 7,
-    marginRight: 7,
+    marginRight: 20,
     includeFontPadding: Platform.OS === "ios" ? undefined : false,
     fontSize: Platform.OS === "ios" ? undefined : 16,
+    height: '100%'
   },
 });

@@ -12,7 +12,7 @@ import { FlashList } from "@shopify/flash-list";
 import { router, useSegments } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
 import { db, initDatabase } from "@/src/database/db";
@@ -213,7 +213,13 @@ const SettingsScreen = () => {
   }, [theme]);
 
   return (
-    <View style={{ flex: 1, padding: 30, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+    <View
+      style={{
+        flex: 1,
+        padding: 30,
+        backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+      }}
+    >
       <FlashList
         data={data}
         renderItem={renderItem}

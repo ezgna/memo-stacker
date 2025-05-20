@@ -16,6 +16,7 @@ import { themeColors } from "../utils/theme";
 import { runMigrations } from "../database/migrations";
 import { db, initDatabase } from "@/src/database/db";
 import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
+import { StatusBar } from "expo-status-bar";
 
 export default function index() {
   const [text, setText] = useState<string>("");

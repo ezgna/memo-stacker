@@ -5,6 +5,7 @@ import Drawer from "expo-router/drawer";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import CustomDrawer from "../CustomDrawer";
+import { Platform } from "react-native";
 
 const AppContent = () => {
   const { theme } = useThemeContext();
@@ -15,6 +16,7 @@ const AppContent = () => {
         drawerContent={() => <CustomDrawer />}
         screenOptions={({ route }) => ({
           headerRight: () => <SearchBox />,
+          headerTintColor: Platform.OS === 'android' ? '#007AFF' : undefined,
           headerShown: !["settings", "(auth)"].includes(route.name),
           headerTitle: "",
           headerStyle: {
