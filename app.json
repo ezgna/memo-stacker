@@ -2,7 +2,7 @@
   "expo": {
     "name": "Memolog",
     "slug": "memologminute",
-    "version": "1.1.0",
+    "version": "1.2",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "memolog",
@@ -17,6 +17,15 @@
       "bundleIdentifier": "com.ezgna.testthree",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "locales": {
+      "ja": {
+        "ios": {
+          "infoPlist": {
+            "NSUserTrackingUsageDescription": "許可すると、あなたに合った広告が表示されるようになります。"
+          }
+        }
       }
     },
     "android": {
@@ -121,14 +130,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "eas": {
-        "projectId": "883709c0-cd67-4849-aad0-20c519e9a69d"
-      },
-      "router": {
-        "origin": false
-      }
     },
     "owner": "ezgna"
   }

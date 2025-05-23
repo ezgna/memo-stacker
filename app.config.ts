@@ -8,9 +8,6 @@ export default ({ config }: ConfigContext) => {
       eas: {
         projectId: "883709c0-cd67-4849-aad0-20c519e9a69d",
       },
-      router: {
-        origin: false,
-      },
     },
   };
 };

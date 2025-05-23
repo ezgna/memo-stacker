@@ -12,8 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "buildArtifactPaths": ["ios/build/*"]
+      "autoIncrement": true
     }
   },
   "submit": {

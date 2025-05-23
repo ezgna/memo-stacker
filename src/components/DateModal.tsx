@@ -1,13 +1,13 @@
+import { Entry } from "@/src/database/types";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { FC, useEffect, useState } from "react";
 import { Modal, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
-import { FlashListCompo } from "./FlashListCompo";
-import { Entry } from "@/src/database/types";
 import { useDataContext } from "../contexts/DataContext";
-import SaveButton from "./SaveButton";
-import CancelEditButton from "./CancelEditButton";
-import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import { themeColors } from "../utils/theme";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { themeColors } from "../utils/theme";
+import CancelEditButton from "./CancelEditButton";
+import { FlashListCompo } from "./FlashListCompo";
+import SaveButton from "./SaveButton";
 
 interface DateModalProps {
   onClose: () => void;

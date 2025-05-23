@@ -6,6 +6,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { themeColors } from "@/src/utils/theme";
 import i18n from "@/src/utils/i18n";
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 
 const faq = () => {
   const { theme } = useThemeContext();
@@ -41,36 +42,39 @@ const faq = () => {
   const CollapseIndicator = ({ id }: { id: number }) => <AntDesign name={collapsedItems[id] ? "down" : "up"} size={12} color={collapsedItems[id] ? "darkgray" : "#4169E1"} />;
 
   return (
-    <View style={{ flex: 1, paddingTop: 10, paddingBottom: 50, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
-      <ScrollView>
-        {data.map((item) => (
-          <TouchableOpacity
-            onPress={() => toggleCollapse(item.id)}
-            key={item.id}
-            style={[
-              {
-                paddingHorizontal: 20,
-                paddingVertical: 20,
-                borderBottomWidth: 1,
-                marginHorizontal: 20,
-                borderBottomColor: "gainsboro",
-              },
-              !collapsedItems[item.id] && { backgroundColor: theme === "dark" ? "#24313A" : "#EBF4FA" },
-            ]}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ fontSize: 18, color: "#6495ED" }}>{item.question}</Text>
-              <CollapseIndicator id={item.id} />
-            </View>
-            <Collapsible collapsed={collapsedItems[item.id]}>
-              <Text style={{ fontSize: 18, paddingTop: 20, lineHeight: 30, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-                {item.answer}
-              </Text>
-            </Collapsible>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+    <>
+      <View style={{ flex: 1, paddingTop: 10, paddingBottom: 50, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+        <ScrollView>
+          {data.map((item) => (
+            <TouchableOpacity
+              onPress={() => toggleCollapse(item.id)}
+              key={item.id}
+              style={[
+                {
+                  paddingHorizontal: 20,
+                  paddingVertical: 20,
+                  borderBottomWidth: 1,
+                  marginHorizontal: 20,
+                  borderBottomColor: "gainsboro",
+                },
+                !collapsedItems[item.id] && { backgroundColor: theme === "dark" ? "#24313A" : "#EBF4FA" },
+              ]}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 18, color: "#6495ED" }}>{item.question}</Text>
+                <CollapseIndicator id={item.id} />
+              </View>
+              <Collapsible collapsed={collapsedItems[item.id]}>
+                <Text style={{ fontSize: 18, paddingTop: 20, lineHeight: 30, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
+                  {item.answer}
+                </Text>
+              </Collapsible>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+      <PlatformBannerAd />
+    </>
   );
 };
 

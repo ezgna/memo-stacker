@@ -1,3 +1,4 @@
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import SettingsModal from "@/src/components/SettingModal";
 import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
@@ -94,23 +95,26 @@ const customization = () => {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
-      <View style={{ padding: 20 }}>
-        <ScrollView scrollEnabled={false}>
-          {/* {data.map((item) => (
+    <>
+      <View style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+        <View style={{ padding: 20 }}>
+          <ScrollView scrollEnabled={false}>
+            {/* {data.map((item) => (
             <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-              <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
+            <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
             </View>
-          ))} */}
-          {data.map((item) => (
-            <View key={item.id} style={{ paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray", }}>
-              {item.content}
-            </View>
-          ))}
-        </ScrollView>
+            ))} */}
+            {data.map((item) => (
+              <View key={item.id} style={{ paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
+                {item.content}
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+        {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
       </View>
-      {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
-    </View>
+      <PlatformBannerAd />
+    </>
   );
 };
 

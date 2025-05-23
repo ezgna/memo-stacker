@@ -16,6 +16,7 @@ import { Alert, Linking, Platform, Pressable, SafeAreaView, StatusBar, StyleShee
 import Toast from "react-native-root-toast";
 import { useDataContext } from "../../contexts/DataContext";
 import { db, initDatabase } from "@/src/database/db";
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 
 interface SettingsListType {
   id: number;
@@ -37,7 +38,7 @@ const SettingsScreen = () => {
     { id: 2, label: `${i18n.t("customization")}` },
     { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
     { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
-    { id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" },
+    ...(Platform.OS === "ios" ? [{ id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" }] : []),
     { id: 6, label: `${i18n.t("export")}` },
     { id: 7, label: `${i18n.t("import")}` },
   ];
@@ -213,22 +214,25 @@ const SettingsScreen = () => {
   }, [theme]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        padding: 30,
-        backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
-      }}
-    >
-      <FlashList
-        data={data}
-        renderItem={renderItem}
-        estimatedItemSize={60}
-        keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
-        ListFooterComponent={ListFooterComponent()}
-      />
-    </View>
+    <>
+      <View
+        style={{
+          flex: 1,
+          padding: 30,
+          backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
+        }}
+      >
+        <FlashList
+          data={data}
+          renderItem={renderItem}
+          estimatedItemSize={60}
+          keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
+          ListFooterComponent={ListFooterComponent()}
+        />
+      </View>
+      <PlatformBannerAd />
+    </>
   );
 };
 

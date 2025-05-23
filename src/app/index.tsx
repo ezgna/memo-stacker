@@ -1,22 +1,19 @@
+import { db, initDatabase } from "@/src/database/db";
 import { Entry } from "@/src/database/types";
-import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, AppState, Platform, StyleSheet, TextInput, View } from "react-native";
-import mobileAds, { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
+import { Alert, StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
 import CancelEditButton from "../components/CancelEditButton";
 import { FlashListCompo } from "../components/FlashListCompo";
+import PlatformBannerAd from "../components/PlatformBannerAd";
 import SaveButton from "../components/SaveButton";
 import { useDataContext } from "../contexts/DataContext";
 import { useSettingsContext } from "../contexts/SettingsContext";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { runMigrations } from "../database/migrations";
 import i18n from "../utils/i18n";
 import { themeColors } from "../utils/theme";
-import { runMigrations } from "../database/migrations";
-import { db, initDatabase } from "@/src/database/db";
-import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
-import { StatusBar } from "expo-status-bar";
 
 export default function index() {
   const [text, setText] = useState<string>("");
@@ -183,68 +180,6 @@ export default function index() {
     fetchAllEntries();
   }, [db, dataUpdated, searchQuery]);
 
-  // const [isAppActive, setIsAppActive] = useState(AppState.currentState === "active");
-  const [nonPersonalized, setNonPersonalized] = useState(true);
-  const [adsInitialized, setAdsInitialized] = useState(false);
-
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener("change", (state) => {
-  //     if (state === "active") {
-  //       setIsAppActive(true);
-  //     } else {
-  //       setIsAppActive(false);
-  //     }
-  //   });
-
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       if (!isAppActive || Platform.OS === "android") return;
-  //       const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-  //       switch (result) {
-  //         case RESULTS.GRANTED:
-  //           setNonPersonalized(false);
-  //           break;
-  //         case RESULTS.DENIED:
-  //           const requestResult = await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
-  //           setNonPersonalized(requestResult !== RESULTS.GRANTED);
-  //           break;
-  //         case RESULTS.BLOCKED:
-  //           setNonPersonalized(true);
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  // if (!adsInitialized) {
-  //   await mobileAds().initialize();
-  //   setAdsInitialized(true);
-  // }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   })();
-  // }, [isAppActive]);
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === "android") return;
-      const { status } = await requestTrackingPermissionsAsync();
-      if (status === "granted") {
-        // console.log("Yay! I have user permission to track data");
-        setNonPersonalized(false);
-      }
-      if (!adsInitialized) {
-        await mobileAds().initialize();
-        setAdsInitialized(true);
-      }
-    })();
-  }, []);
-
   return (
     <>
       <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
@@ -270,31 +205,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      {Platform.OS == "ios" ? (
-        <View>
-          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
-            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
-          ) : (
-            <BannerAd
-              unitId="ca-app-pub-4363360791941587/8952562876"
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
-            />
-          )}
-        </View>
-      ) : (
-        <View>
-          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
-            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
-          ) : (
-            <BannerAd
-              unitId="ca-app-pub-4363360791941587/4098720584"
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
-            />
-          )}
-        </View>
-      )}
+      <PlatformBannerAd />
     </>
   );
 }
