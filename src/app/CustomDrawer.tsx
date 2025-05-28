@@ -151,7 +151,7 @@ export default function CustomDrawer() {
     if (!db) return;
     try {
       const confirmed = await new Promise((resolve) => {
-        Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry? This action is permanent.", [
+        Alert.alert("Confirm Deletion", "Are you sure you want to delete your entry?", [
           {
             text: "Cancel",
             style: "cancel",

@@ -121,6 +121,8 @@ const i18n = new I18n({
     language: 'Language',
     memo_amount: "Memo amount",
     used_days: "Used days",
+    remove_ads: "Remove Ads",
+    restore_purchase: "Restore Purchase"
     },
   ja: {
     search: "メモを検索",
@@ -241,6 +243,8 @@ const i18n = new I18n({
     language: '言語',
     memo_amount: "メモ数",
     used_days: "書いた日数",
+    remove_ads: "広告削除",
+    restore_purchase: "購入復元"
   },
 });
 

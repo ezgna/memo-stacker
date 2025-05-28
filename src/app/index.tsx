@@ -14,12 +14,14 @@ import { useThemeContext } from "../contexts/ThemeContext";
 import { runMigrations } from "../database/migrations";
 import i18n from "../utils/i18n";
 import { themeColors } from "../utils/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function index() {
   const [text, setText] = useState<string>("");
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
   const { theme } = useThemeContext();
+  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
 
   // useEffect(() => {
   //   const debugTables = async () => {
@@ -34,6 +36,16 @@ export default function index() {
   //   debugTables();
   // }, []);
 
+  useEffect(() => {
+    const checkAdsStatus = async () => {
+      const value = await AsyncStorage.getItem("isAdsRemoved");
+      if (value === "true") {
+        setIsAdsRemoved(true);
+      }
+    };
+    checkAdsStatus();
+  }, []);
+
   const storeEntry = async (text: string) => {
     if (!db) return;
     if (!text.trim()) {
@@ -45,7 +57,10 @@ export default function index() {
     }
 
     const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, "0")}-${now
+      .getDate()
+      .toString()
+      .padStart(2, "0")}`;
 
     const data = {
       id: Crypto.randomUUID(),
@@ -57,14 +72,10 @@ export default function index() {
     };
     try {
       await db.withTransactionAsync(async () => {
-        await db!.runAsync(`INSERT INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES (?,?,?,?,?,?)`, [
-          data.id,
-          data.created_at,
-          data.updated_at,
-          data.deleted_at,
-          data.date,
-          data.text,
-        ]);
+        await db!.runAsync(
+          `INSERT INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES (?,?,?,?,?,?)`,
+          [data.id, data.created_at, data.updated_at, data.deleted_at, data.date, data.text]
+        );
       });
 
       setText("");
@@ -94,7 +105,11 @@ export default function index() {
       if (!confirmed) return;
       const updateAt = new Date().toISOString();
       const deletedAt = new Date().toISOString();
-      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ? WHERE id = ?", [updateAt, deletedAt, id]);
+      await db.runAsync("UPDATE entries SET updated_at = ?, deleted_at = ? WHERE id = ?", [
+        updateAt,
+        deletedAt,
+        id,
+      ]);
       setDataUpdated(!dataUpdated);
     } catch (e) {
       console.error(e);
@@ -120,7 +135,11 @@ export default function index() {
     try {
       const updateAt = new Date().toISOString();
       const trimmedEditingText = editingText.trim();
-      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ? WHERE id = ?`, [trimmedEditingText, updateAt, editingId]);
+      await db.runAsync(`UPDATE entries SET text = ?, updated_at = ? WHERE id = ?`, [
+        trimmedEditingText,
+        updateAt,
+        editingId,
+      ]);
       setEditingId(null);
       setEditingText("");
       setDataUpdated(!dataUpdated);
@@ -144,7 +163,9 @@ export default function index() {
   useEffect(() => {
     (async () => {
       if (!db) return;
-      const deletedEntries: Entry[] = await db.getAllAsync(`SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`);
+      const deletedEntries: Entry[] = await db.getAllAsync(
+        `SELECT id FROM entries WHERE deleted_at <= datetime('now', '-7 days')`
+      );
       if (deletedEntries) {
         for (const entry of deletedEntries) {
           await db.runAsync(`DELETE FROM entries WHERE id = ?`, [entry.id]);
@@ -166,11 +187,15 @@ export default function index() {
     if (!db) return;
     const fetchAllEntries = async () => {
       try {
-        const entries: Entry[] = await db!.getAllAsync("SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC");
+        const entries: Entry[] = await db!.getAllAsync(
+          "SELECT * FROM entries WHERE deleted_at IS NULL ORDER BY created_at DESC"
+        );
         setFetchedEntries(entries);
         // console.log(entries)
         if (searchQuery) {
-          const searchedEntries = entries.filter((entry) => entry.text?.toLowerCase().includes(searchQuery.toLowerCase()));
+          const searchedEntries = entries.filter((entry) =>
+            entry.text?.toLowerCase().includes(searchQuery.toLowerCase())
+          );
           setFetchedEntries(searchedEntries);
         }
       } catch (e) {
@@ -182,7 +207,12 @@ export default function index() {
 
   return (
     <>
-      <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background },
+        ]}
+      >
         {/* <ResetDatabase /> */}
         <View>
           <TextInput
@@ -205,7 +235,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
-      <PlatformBannerAd />
+      {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
 }

@@ -1,22 +1,24 @@
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { db } from "@/src/database/db";
+import { Entry } from "@/src/database/types";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDriveUtils";
 import i18n from "@/src/utils/i18n";
+import { removeAds, restorePurchase } from "@/src/utils/removeAds";
 import { themeColors } from "@/src/utils/theme";
-import { Entry } from "@/src/database/types";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlashList } from "@shopify/flash-list";
-import { router, useSegments } from "expo-router";
+import { router } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Linking, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
-import Toast from "react-native-root-toast";
+import { Alert, Linking, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useDataContext } from "../../contexts/DataContext";
-import { db, initDatabase } from "@/src/database/db";
-import PlatformBannerAd from "@/src/components/PlatformBannerAd";
+import { Foundation } from "@expo/vector-icons";
 
 interface SettingsListType {
   id: number;
@@ -33,6 +35,17 @@ const SettingsScreen = () => {
   const [files, setFiles] = useState<Files[] | null>(null);
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { theme } = useThemeContext();
+  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
+
+  useEffect(() => {
+    const checkAdsStatus = async () => {
+      const value = await AsyncStorage.getItem("isAdsRemoved");
+      if (value === "true") {
+        setIsAdsRemoved(true);
+      }
+    };
+    checkAdsStatus();
+  }, []);
 
   const data = [
     { id: 2, label: `${i18n.t("customization")}` },
@@ -41,6 +54,8 @@ const SettingsScreen = () => {
     ...(Platform.OS === "ios" ? [{ id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" }] : []),
     { id: 6, label: `${i18n.t("export")}` },
     { id: 7, label: `${i18n.t("import")}` },
+    ...(Platform.OS === "ios" ? [{ id: 8, label: `${i18n.t("remove_ads")}` }] : []),
+    ...(Platform.OS === "ios" ? [{ id: 9, label: `${i18n.t("restore_purchase")}` }] : []),
   ];
 
   const handlePress = async (id: number) => {
@@ -60,7 +75,7 @@ const SettingsScreen = () => {
             },
             {
               text: i18n.t("continue"),
-              onPress: async () => await Linking.openURL("https://sites.google.com/view/memolog-minute/privacy-policy"),
+              onPress: async () => await Linking.openURL("https://www.ezgna.com/privacypolicy"),
             },
           ]);
         } catch (e) {
@@ -76,7 +91,8 @@ const SettingsScreen = () => {
             },
             {
               text: i18n.t("continue"),
-              onPress: async () => await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
+              onPress: async () =>
+                await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
             },
           ]);
         } catch (e) {
@@ -99,6 +115,12 @@ const SettingsScreen = () => {
           setFiles(importedFiles);
         }
         break;
+      case 8:
+        removeAds();
+        break;
+      case 9:
+        restorePurchase();
+        break;
     }
   };
 
@@ -109,11 +131,15 @@ const SettingsScreen = () => {
       } else {
         const placeholders = dataList.map(() => "(?,?,?,?,?,?)").join(",");
         const values = dataList.reduce(
-          (acc, data) => acc.concat([data.id, data.created_at, data.updated_at, data.deleted_at, data.date, data.text]),
+          (acc, data) =>
+            acc.concat([data.id, data.created_at, data.updated_at, data.deleted_at, data.date, data.text]),
           [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
-          await db!.runAsync(`INSERT OR IGNORE INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`, values);
+          await db!.runAsync(
+            `INSERT OR IGNORE INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`,
+            values
+          );
         });
         setFiles(null);
         setDataUpdated(!dataUpdated);
@@ -144,12 +170,13 @@ const SettingsScreen = () => {
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View style={{ width: 30 }}>
-              {item.id === 1 ? (
-                <Feather name="user" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-              ) : item.id === 2 ? (
-                <MaterialCommunityIcons name="wrench-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-              ) : // <MaterialCommunityIcons name="theme-light-dark" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-              item.id === 6 ? (
+              {item.id === 2 ? (
+                <MaterialCommunityIcons
+                  name="wrench-outline"
+                  size={24}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                />
+              ) : item.id === 6 ? (
                 <FontAwesome6
                   name="file-export"
                   size={22}
@@ -161,15 +188,45 @@ const SettingsScreen = () => {
                   name="file-import"
                   size={22}
                   color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 1 }}
+                />
+              ) : item.id === 8 ? (
+                <Feather
+                  name="eye-off"
+                  size={22}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 3 }}
+                />
+              ) : item.id === 9 ? (
+                <Foundation
+                  name="refresh"
+                  size={24}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
                   style={{ paddingLeft: 4 }}
                 />
               ) : (
-                <Fontisto name={item.icon} size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} style={{ paddingLeft: 4 }} />
+                <Fontisto
+                  name={item.icon}
+                  size={20}
+                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+                  style={{ paddingLeft: 4 }}
+                />
               )}
             </View>
-            <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }, styles.label]}>{item.label}</Text>
+            <Text
+              style={[
+                { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+                styles.label,
+              ]}
+            >
+              {item.label}
+            </Text>
           </View>
-          <Entypo name="chevron-small-right" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText} />
+          <Entypo
+            name="chevron-small-right"
+            size={24}
+            color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText}
+          />
         </View>
       </Pressable>
     ),
@@ -231,7 +288,7 @@ const SettingsScreen = () => {
           ListFooterComponent={ListFooterComponent()}
         />
       </View>
-      <PlatformBannerAd />
+      {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
 };

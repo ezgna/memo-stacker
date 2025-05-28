@@ -23,6 +23,7 @@ export const signinGoogle = async () => {
     await GoogleSignin.configure({
       iosClientId: "110368176913-u7anooc46iggk9n2ksi81pii7e5uqaas.apps.googleusercontent.com",
       webClientId: "110368176913-a1dugf9t7o4dgi52q5bl3mj7qnntcklo.apps.googleusercontent.com",
+      scopes: ["https://www.googleapis.com/auth/drive.file"],
     });
 
     await GoogleSignin.hasPlayServices();
@@ -44,7 +45,11 @@ export const signinGoogle = async () => {
 
 export const uploadFileToGoogleDrive = async (gdrive: GDrive, dataList: object) => {
   const jsonData = JSON.stringify(dataList);
-  const formattedDate = new Date().toLocaleString("ja-JP").replace(/\//g, "-").replace(/:/g, "-").replace(" ", "_");
+  const formattedDate = new Date()
+    .toLocaleString("ja-JP")
+    .replace(/\//g, "-")
+    .replace(/:/g, "-")
+    .replace(" ", "_");
   try {
     const response = await gdrive.files
       .newMultipartUploader()
