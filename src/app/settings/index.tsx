@@ -6,25 +6,16 @@ import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDrive
 import i18n from "@/src/utils/i18n";
 import { removeAds, restorePurchase } from "@/src/utils/removeAds";
 import { themeColors } from "@/src/utils/theme";
-import Entypo from "@expo/vector-icons/Entypo";
+import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
-import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Linking, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useDataContext } from "../../contexts/DataContext";
-import { Foundation } from "@expo/vector-icons";
-
-interface SettingsListType {
-  id: number;
-  label: string;
-  icon?: any;
-}
 
 interface Files {
   name: string;
@@ -36,6 +27,7 @@ const SettingsScreen = () => {
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { theme } = useThemeContext();
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkAdsStatus = async () => {
@@ -45,84 +37,7 @@ const SettingsScreen = () => {
       }
     };
     checkAdsStatus();
-  }, []);
-
-  const data = [
-    { id: 2, label: `${i18n.t("customization")}` },
-    { id: 3, label: `${i18n.t("faq")}`, icon: "question" },
-    { id: 4, label: `${i18n.t("privacy_policy")}`, icon: "link" },
-    ...(Platform.OS === "ios" ? [{ id: 5, label: `${i18n.t("terms_of_use")}`, icon: "link" }] : []),
-    { id: 6, label: `${i18n.t("export")}` },
-    { id: 7, label: `${i18n.t("import")}` },
-    ...(Platform.OS === "ios" ? [{ id: 8, label: `${i18n.t("remove_ads")}` }] : []),
-    ...(Platform.OS === "ios" ? [{ id: 9, label: `${i18n.t("restore_purchase")}` }] : []),
-  ];
-
-  const handlePress = async (id: number) => {
-    switch (id) {
-      case 2:
-        router.push("/settings/customization");
-        break;
-      case 3:
-        router.push("/settings/faq");
-        break;
-      case 4:
-        try {
-          Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
-            {
-              text: i18n.t("cancel"),
-              style: "cancel",
-            },
-            {
-              text: i18n.t("continue"),
-              onPress: async () => await Linking.openURL("https://www.ezgna.com/privacypolicy"),
-            },
-          ]);
-        } catch (e) {
-          console.error(e);
-        }
-        break;
-      case 5:
-        try {
-          Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
-            {
-              text: i18n.t("cancel"),
-              style: "cancel",
-            },
-            {
-              text: i18n.t("continue"),
-              onPress: async () =>
-                await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
-            },
-          ]);
-        } catch (e) {
-          console.error(e);
-        }
-        break;
-      case 6:
-        if (!db) {
-          Alert.alert("database initialize error");
-        } else {
-          const exportedFileName = await ExportGDrive(db);
-          if (exportedFileName) {
-            Alert.alert(i18n.t("exportFinished", { fileName: exportedFileName }));
-          }
-        }
-        break;
-      case 7:
-        const importedFiles = await ImportGDrive();
-        if (importedFiles) {
-          setFiles(importedFiles);
-        }
-        break;
-      case 8:
-        removeAds();
-        break;
-      case 9:
-        restorePurchase();
-        break;
-    }
-  };
+  }, [isAdsRemoved]);
 
   const restoreDatabase = async (dataList: Entry[]) => {
     try {
@@ -131,15 +46,11 @@ const SettingsScreen = () => {
       } else {
         const placeholders = dataList.map(() => "(?,?,?,?,?,?)").join(",");
         const values = dataList.reduce(
-          (acc, data) =>
-            acc.concat([data.id, data.created_at, data.updated_at, data.deleted_at, data.date, data.text]),
+          (acc, data) => acc.concat([data.id, data.created_at, data.updated_at, data.deleted_at, data.date, data.text]),
           [] as (string | number | null)[]
         );
         await db.withTransactionAsync(async () => {
-          await db!.runAsync(
-            `INSERT OR IGNORE INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`,
-            values
-          );
+          await db!.runAsync(`INSERT OR IGNORE INTO entries (id, created_at, updated_at, deleted_at, date, text) VALUES ${placeholders}`, values);
         });
         setFiles(null);
         setDataUpdated(!dataUpdated);
@@ -153,114 +64,13 @@ const SettingsScreen = () => {
     const importedDataList = await handleFileSelect(id);
     if (importedDataList) {
       restoreDatabase(importedDataList);
-      Alert.alert(i18n.t("importFinished", { fileName: name }));
+      if (Platform.OS === "android") {
+        Alert.alert(i18n.t("importFinishedAndroid", { fileName: name }));
+      } else {
+        Alert.alert(i18n.t("importFinished", { fileName: name }));
+      }
     }
   };
-
-  const renderItem = useCallback(
-    ({ item }: { item: SettingsListType }) => (
-      <Pressable onPress={() => handlePress(item.id)} style={{ paddingLeft: 10 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingRight: 10,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View style={{ width: 30 }}>
-              {item.id === 2 ? (
-                <MaterialCommunityIcons
-                  name="wrench-outline"
-                  size={24}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                />
-              ) : item.id === 6 ? (
-                <FontAwesome6
-                  name="file-export"
-                  size={22}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 4 }}
-                />
-              ) : item.id === 7 ? (
-                <FontAwesome6
-                  name="file-import"
-                  size={22}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 1 }}
-                />
-              ) : item.id === 8 ? (
-                <Feather
-                  name="eye-off"
-                  size={22}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 3 }}
-                />
-              ) : item.id === 9 ? (
-                <Foundation
-                  name="refresh"
-                  size={24}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 4 }}
-                />
-              ) : (
-                <Fontisto
-                  name={item.icon}
-                  size={20}
-                  color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
-                  style={{ paddingLeft: 4 }}
-                />
-              )}
-            </View>
-            <Text
-              style={[
-                { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
-                styles.label,
-              ]}
-            >
-              {item.label}
-            </Text>
-          </View>
-          <Entypo
-            name="chevron-small-right"
-            size={24}
-            color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.secondaryText}
-          />
-        </View>
-      </Pressable>
-    ),
-    [handlePress]
-  );
-
-  const ListFooterComponent = () => {
-    return (
-      files && (
-        <View style={{ borderTopWidth: 1, borderBottomWidth: 1, borderColor: "silver", flex: 1 }}>
-          <FlashList
-            data={files}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
-                <MaterialCommunityIcons name="file-document" size={24} color="#4285F4" />
-                <Text style={{ paddingLeft: 5 }}>{item.name}</Text>
-              </Pressable>
-            )}
-            estimatedItemSize={15}
-            keyExtractor={(item) => item.id.toString()}
-            ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
-          />
-        </View>
-      )
-    );
-  };
-
-  // const segments = useSegments();
-
-  // useEffect(() => {
-  //   if (!session) {
-  //     setFiles(null);
-  //   }
-  // }, [session, segments]);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -270,24 +80,160 @@ const SettingsScreen = () => {
     }
   }, [theme]);
 
+  const openCustomization = () => {
+    router.push("/settings/customization");
+  };
+
+  const openFAQ = () => {
+    router.push("/settings/faq");
+  };
+
+  const openPrivacyPolicy = () => {
+    Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
+      {
+        text: i18n.t("cancel"),
+        style: "cancel",
+      },
+      {
+        text: i18n.t("continue"),
+        onPress: async () => await Linking.openURL("https://www.ezgna.com/privacypolicy"),
+      },
+    ]);
+  };
+
+  const openTermsOfUse = () => {
+    Alert.alert(i18n.t("external_link"), i18n.t("external_link_message"), [
+      {
+        text: i18n.t("cancel"),
+        style: "cancel",
+      },
+      {
+        text: i18n.t("continue"),
+        onPress: async () => await Linking.openURL("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"),
+      },
+    ]);
+  };
+
+  const handleExport = async () => {
+    if (!db) {
+      console.error("database initialize error");
+      return;
+    } else {
+      const exportedFileName = await ExportGDrive(db);
+      if (exportedFileName) {
+        if (Platform.OS === "android") {
+          Alert.alert(i18n.t("exportFinishedAndroid", { fileName: exportedFileName }));
+        } else {
+          Alert.alert(i18n.t("exportFinished", { fileName: exportedFileName }));
+        }
+      }
+    }
+  };
+
+  const handleImport = async () => {
+    const importedFiles = await ImportGDrive();
+    if (importedFiles) {
+      setFiles(importedFiles);
+    }
+  };
+
+  const handleRemoveAds = async () => {
+    setLoading(true);
+    const success = await removeAds();
+    if (success) {
+      setIsAdsRemoved(true);
+      Alert.alert(i18n.t("purchase_success"));
+      console.log("The ads were removed!");
+    }
+    setLoading(false);
+  };
+
+  const handleRestoreAds = async () => {
+    setLoading(true);
+    const success = await restorePurchase();
+    if (success) {
+      setIsAdsRemoved(true);
+      Alert.alert(i18n.t("restore_success"));
+      console.log("Restored successfully! Ads will be removed.");
+    }
+    setLoading(false);
+  };
+
   return (
     <>
-      <View
-        style={{
-          flex: 1,
-          padding: 30,
-          backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
-        }}
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}
+        showsVerticalScrollIndicator={false}
       >
-        <FlashList
-          data={data}
-          renderItem={renderItem}
-          estimatedItemSize={60}
-          keyExtractor={(item) => item.id.toString()}
-          ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "silver" }} />}
-          ListFooterComponent={ListFooterComponent()}
-        />
-      </View>
+        <View style={styles.optionContainer}>
+          <Pressable style={styles.option} onPress={openCustomization}>
+            <Ionicons name="options-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("customization")}</Text>
+          </Pressable>
+
+          <Pressable style={styles.option} onPress={openFAQ}>
+            <MaterialCommunityIcons name="frequently-asked-questions" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("faq")}</Text>
+          </Pressable>
+
+          <Pressable style={styles.option} onPress={openPrivacyPolicy}>
+            <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("privacy_policy")}</Text>
+          </Pressable>
+
+          <Pressable style={styles.option} onPress={openTermsOfUse}>
+            <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("terms_of_use")}</Text>
+          </Pressable>
+
+          <Pressable style={styles.option} onPress={handleExport}>
+            <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("export")}</Text>
+          </Pressable>
+
+          <Pressable style={[styles.option, isAdsRemoved && { borderBottomWidth: 0 }]} onPress={handleImport}>
+            <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("import")}</Text>
+          </Pressable>
+
+          {!isAdsRemoved && (
+            <Pressable style={styles.option} onPress={handleRemoveAds} disabled={loading}>
+              <MaterialIcons name="highlight-remove" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              {loading ? (
+                <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
+              ) : (
+                <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("remove_ads")} </Text>
+              )}
+            </Pressable>
+          )}
+
+          {!isAdsRemoved && (
+            <Pressable style={[styles.option, { borderBottomWidth: 0 }]} onPress={handleRestoreAds} disabled={loading}>
+              <MaterialCommunityIcons name="refresh" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              {loading ? (
+                <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
+              ) : (
+                <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("restore_purchase")}</Text>
+              )}
+            </Pressable>
+          )}
+
+          {files && (
+            <>
+              <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 20, marginVertical: 10 }}>
+                Tap the file you want to import
+              </Text>
+              {files.map((item) => (
+                <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
+                  <MaterialCommunityIcons name="file-document" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+                  <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{item.name}</Text>
+                </Pressable>
+              ))}
+            </>
+          )}
+        </View>
+      </ScrollView>
+
       {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
@@ -296,14 +242,32 @@ const SettingsScreen = () => {
 export default SettingsScreen;
 
 const styles = StyleSheet.create({
-  label: {
+  container: {
+    flex: 1,
+    padding: 28,
+  },
+  optionContainer: {
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 18,
+    borderBottomColor: "#ddd",
+    borderBottomWidth: 1,
+  },
+  optionText: {
+    marginLeft: 20,
     fontSize: 16,
-    paddingVertical: 20,
-    paddingHorizontal: 15,
   },
   file: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 3,
+    paddingVertical: 8,
   },
 });

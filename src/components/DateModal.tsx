@@ -41,7 +41,7 @@ export const DateModal: FC<DateModalProps> = ({ onClose, modalVisible, selectedE
   }, [dataUpdated]);
 
   return (
-    <Modal visible={modalVisible} transparent={true} animationType="slide">
+    <Modal visible={modalVisible} transparent animationType="slide">
       <ActionSheetProvider>
         <View style={styles.container}>
           <TouchableWithoutFeedback onPress={onClose}>

@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 import Purchases from "react-native-purchases";
+import { useDataContext } from "../contexts/DataContext";
 
 const APIKeys = {
   apple: "appl_gwbtLmaQvxoHsyGTjTgYuxyakov",
@@ -9,7 +10,6 @@ const APIKeys = {
 
 export const removeAds = async () => {
   try {
-    // RevenueCat初期化
     const apiKey = Platform.OS === "android" ? APIKeys.google : APIKeys.apple;
     await Purchases.configure({ apiKey });
 
@@ -19,7 +19,7 @@ export const removeAds = async () => {
 
     if (!currentOffering || currentOffering.availablePackages.length === 0) {
       console.warn("No available packages found.");
-      return;
+      return false;
     }
 
     // 最初のパッケージで購入
@@ -28,9 +28,10 @@ export const removeAds = async () => {
 
     if (customerInfo.entitlements.active["remove_ads_access"]) {
       await AsyncStorage.setItem("isAdsRemoved", "true");
-      console.log("It worked!");
+      return true;
     } else {
       console.warn("Purchase succeeded but entitlement is missing.");
+      return false;
     }
   } catch (error: any) {
     if (error.userCancelled) {
@@ -38,6 +39,7 @@ export const removeAds = async () => {
     } else {
       console.error("Purchase failed:", error);
     }
+    return false;
   }
 };
 
@@ -50,12 +52,14 @@ export const restorePurchase = async () => {
 
     if (customerInfo.entitlements.active["remove_ads_access"]) {
       await AsyncStorage.setItem("isAdsRemoved", "true");
-      console.log("Restored successfully! Ads will be removed.");
+      return true;
     } else {
       await AsyncStorage.setItem("isAdsRemoved", "false");
       console.warn("No active entitlement found for remove_ads_access.");
+      return false;
     }
   } catch (error: any) {
     console.error("Restore failed:", error);
+    return false;
   }
 };

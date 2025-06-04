@@ -143,7 +143,7 @@ const customization = () => {
         </View>
         {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
       </View>
-      {!isAdsRemoved && <PlatformBannerAd />}
+      {/* {!isAdsRemoved && <PlatformBannerAd />} */}
     </>
   );
 };

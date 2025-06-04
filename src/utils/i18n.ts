@@ -26,7 +26,9 @@ const i18n = new I18n({
     cancelEdit: "Cancel Edit",
     upgrade: "upgrade",
     exportFinished: 'The file "{{fileName}}" has been successfully saved to your Google Drive. Please import it on your new device.',
-    importFinished: 'The file "${{fileName}}" has been successfully imported to this device.',
+    importFinished: 'The file "{{fileName}}" has been successfully imported to this device.',
+    exportFinishedAndroid: 'Saved "{{fileName}}" to Google Drive.',
+    importFinishedAndroid: 'Imported "{{fileName}}" to device.',
     upgradeRequiresLogin: "You need to login before upgrading.",
     register: "Register",
     createAnAccount: "Create an account",
@@ -122,7 +124,9 @@ const i18n = new I18n({
     memo_amount: "Memo amount",
     used_days: "Used days",
     remove_ads: "Remove Ads",
-    restore_purchase: "Restore Purchase"
+    restore_purchase: "Restore Purchase",
+    purchase_success: "Purchase successful",
+    restore_success: "Restore successful"
     },
   ja: {
     search: "メモを検索",
@@ -244,7 +248,9 @@ const i18n = new I18n({
     memo_amount: "メモ数",
     used_days: "書いた日数",
     remove_ads: "広告削除",
-    restore_purchase: "購入復元"
+    restore_purchase: "購入復元",
+    purchase_success: "購入に成功しました",
+    restore_success: "復元に成功しました",
   },
 });
 
