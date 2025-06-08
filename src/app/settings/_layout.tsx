@@ -1,19 +1,25 @@
+import { useFontContext } from "@/src/contexts/FontContext";
+import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Platform, TouchableOpacity } from "react-native";
 
 const SettingsLayout = () => {
   const { theme } = useThemeContext();
+  const { isJapanese } = useLanguageContext();
+  const { fontFamilyStyle } = useFontContext();
 
   return (
     <Stack
       screenOptions={{
-        headerTitleStyle: { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText },
+        headerTitleStyle: {
+          color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+          ...(isJapanese ? fontFamilyStyle : {}),
+        },
         headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
         headerShown: true,
         headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,

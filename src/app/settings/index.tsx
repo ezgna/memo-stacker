@@ -16,6 +16,7 @@ import { setStatusBarStyle } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useDataContext } from "../../contexts/DataContext";
+import CustomText from "@/src/components/CustomText";
 
 interface Files {
   name: string;
@@ -155,6 +156,9 @@ const SettingsScreen = () => {
       setIsAdsRemoved(true);
       Alert.alert(i18n.t("restore_success"));
       console.log("Restored successfully! Ads will be removed.");
+    } else {
+      console.log("No active entitlement found for remove_ads_access.");
+      Alert.alert(i18n.t("restore_false"));
     }
     setLoading(false);
   };
@@ -165,35 +169,45 @@ const SettingsScreen = () => {
         style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.optionContainer}>
+        <View
+          style={[
+            styles.optionContainer,
+            {
+              backgroundColor: theme === "dark" ? "#2a2a2a" : "#fff",
+              shadowOpacity: theme === "dark" ? 0.2 : 0.1,
+            },
+          ]}
+        >
           <Pressable style={styles.option} onPress={openCustomization}>
             <Ionicons name="options-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("customization")}</Text>
+            <CustomText style={styles.optionText}>{i18n.t("customization")}</CustomText>
           </Pressable>
 
           <Pressable style={styles.option} onPress={openFAQ}>
             <MaterialCommunityIcons name="frequently-asked-questions" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("faq")}</Text>
+            <CustomText style={styles.optionText}>{i18n.t("faq")}</CustomText>
           </Pressable>
 
           <Pressable style={styles.option} onPress={openPrivacyPolicy}>
             <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("privacy_policy")}</Text>
+            <CustomText style={styles.optionText}>{i18n.t("privacy_policy")}</CustomText>
           </Pressable>
 
-          <Pressable style={styles.option} onPress={openTermsOfUse}>
-            <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("terms_of_use")}</Text>
-          </Pressable>
+          {Platform.OS === "ios" && (
+            <Pressable style={styles.option} onPress={openTermsOfUse}>
+              <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              <CustomText style={styles.optionText}>{i18n.t("terms_of_use")}</CustomText>
+            </Pressable>
+          )}
 
           <Pressable style={styles.option} onPress={handleExport}>
             <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("export")}</Text>
+            <CustomText style={styles.optionText}>{i18n.t("export")}</CustomText>
           </Pressable>
 
           <Pressable style={[styles.option, isAdsRemoved && { borderBottomWidth: 0 }]} onPress={handleImport}>
             <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-            <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("import")}</Text>
+            <CustomText style={styles.optionText}>{i18n.t("import")}</CustomText>
           </Pressable>
 
           {!isAdsRemoved && (
@@ -202,7 +216,7 @@ const SettingsScreen = () => {
               {loading ? (
                 <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
               ) : (
-                <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("remove_ads")} </Text>
+                <CustomText style={styles.optionText}>{i18n.t("remove_ads")}</CustomText>
               )}
             </Pressable>
           )}
@@ -213,25 +227,24 @@ const SettingsScreen = () => {
               {loading ? (
                 <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
               ) : (
-                <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{i18n.t("restore_purchase")}</Text>
+                <CustomText style={styles.optionText}>{i18n.t("restore_purchase")}</CustomText>
               )}
             </Pressable>
           )}
-
-          {files && (
-            <>
-              <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 20, marginVertical: 10 }}>
-                Tap the file you want to import
-              </Text>
-              {files.map((item) => (
-                <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
-                  <MaterialCommunityIcons name="file-document" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-                  <Text style={[styles.optionText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{item.name}</Text>
-                </Pressable>
-              ))}
-            </>
-          )}
         </View>
+        {files && (
+          <>
+            <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 20, marginVertical: 10 }}>
+              Tap the file you want to import
+            </Text>
+            {files.map((item) => (
+              <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
+                <MaterialCommunityIcons name="file-document" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+                <CustomText style={styles.optionText}>{item.name}</CustomText>
+              </Pressable>
+            ))}
+          </>
+        )}
       </ScrollView>
 
       {!isAdsRemoved && <PlatformBannerAd />}
@@ -244,15 +257,15 @@ export default SettingsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 28,
+    padding: 18,
   },
   optionContainer: {
+    paddingHorizontal: 16,
     borderRadius: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   option: {
     flexDirection: "row",
@@ -263,11 +276,11 @@ const styles = StyleSheet.create({
   },
   optionText: {
     marginLeft: 20,
-    fontSize: 16,
+    fontSize: 18,
   },
   file: {
     flexDirection: "row",
-    alignItems: "center",
+    // alignItems: "center",
     paddingVertical: 8,
   },
 });

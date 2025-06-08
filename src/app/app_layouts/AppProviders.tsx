@@ -7,24 +7,27 @@ import { ReactNode } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { AdsProvider } from "@/src/contexts/AdsContext";
+import { FontProvider } from "@/src/contexts/FontContext";
 
 const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
-    <AdsProvider>
-      <LanguageProvider>
-        <SettingsProvider>
-          <ThemeProvider>
-            <DataProvider>
-              <ActionSheetProvider>
-                <RootSiblingParent>
-                  <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
-                </RootSiblingParent>
-              </ActionSheetProvider>
-            </DataProvider>
-          </ThemeProvider>
-        </SettingsProvider>
-      </LanguageProvider>
-    </AdsProvider>
+    <FontProvider>
+      <AdsProvider>
+        <LanguageProvider>
+          <SettingsProvider>
+            <ThemeProvider>
+              <DataProvider>
+                <ActionSheetProvider>
+                  <RootSiblingParent>
+                    <GestureHandlerRootView style={{ flex: 1 }}>{children}</GestureHandlerRootView>
+                  </RootSiblingParent>
+                </ActionSheetProvider>
+              </DataProvider>
+            </ThemeProvider>
+          </SettingsProvider>
+        </LanguageProvider>
+      </AdsProvider>
+    </FontProvider>
   );
 };
 

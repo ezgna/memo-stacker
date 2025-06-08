@@ -7,6 +7,7 @@ import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
 import { EditActionSheet } from "./EditActionSheet";
+import CustomText from "./CustomText";
 
 interface FlashListCompoProps {
   data: Entry[];
@@ -19,7 +20,6 @@ interface FlashListCompoProps {
 
 export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpdate, editingId, isTrash, onRestore }) => {
   const { theme } = useThemeContext();
-  const { isJapanese } = useLanguageContext();
 
   const sortedData = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -33,9 +33,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
           paddingVertical: 12,
           paddingHorizontal: 15,
         },
-        editingId === item.id
-          ? { borderColor: theme === "dark" ? "darkgray" : "dimgray" }
-          : { borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border },
+        editingId === item.id ? { borderColor: theme === "dark" ? "darkgray" : "dimgray" } : { borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border },
       ]}
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -63,7 +61,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
           scrollEnabled={false}
           style={
             isJapanese
-              ? { fontSize: 18, color: "raisinblack", fontFamily: "NotoSansJP" }
+              ? { fontSize: 18, color: "raisinblack" }
               : { fontSize: 18, color: "raisinblack" }
           }
         >
@@ -74,18 +72,9 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
           {item.text}
         </Text>
       )} */}
-      <Text
-        style={{
-          fontSize: 18,
-          color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-          // fontFamily: 'NotoSansJP',
-          // fontWeight: 'heavy',
-          // fontFamily: isJapanese ? "RobotoMono" : undefined,
-        }}
-        selectable={true}
-      >
+      <CustomText style={{ fontSize: 18 }} selectable={true}>
         {item.text}
-      </Text>
+      </CustomText>
     </View>
   );
 

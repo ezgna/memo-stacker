@@ -1,12 +1,19 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
 import i18n from "../utils/i18n";
+import CustomText from "./CustomText";
 
 const SaveButton = ({ onPress, editingId }: { onPress: () => void; editingId: string | null }) => {
   return (
-    <TouchableOpacity style={styles.saveButton} onPress={onPress} activeOpacity={0.5}>
-      <Text style={styles.saveText}>{editingId ? `${i18n.t('done')}` : `${i18n.t('save')}`}</Text>
-    </TouchableOpacity>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.saveButton,
+        { opacity: pressed ? 0.6 : 1 },
+      ]}
+    >
+      <CustomText style={styles.saveText}>{editingId ? `${i18n.t("done")}` : `${i18n.t("save")}`}</CustomText>
+    </Pressable>
   );
 };
 

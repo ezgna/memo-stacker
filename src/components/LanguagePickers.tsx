@@ -1,6 +1,6 @@
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { Picker } from "@react-native-picker/picker";
-import React, { useEffect } from "react";
+import React from "react";
 import { Platform, View } from "react-native";
 import { useLanguageContext } from "../contexts/LanguageContext";
 import { themeColors } from "../utils/theme";

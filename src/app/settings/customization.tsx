@@ -1,31 +1,21 @@
-import PlatformBannerAd from "@/src/components/PlatformBannerAd";
+import CustomText from "@/src/components/CustomText";
 import SettingsModal from "@/src/components/SettingModal";
+import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
-import { ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Pressable, ScrollView, Switch, View } from "react-native";
 
 const customization = () => {
   const { theme } = useThemeContext();
   const { autoFocus, updateAutoFocus } = useSettingsContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<"language" | "theme" | null>(null);
-  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
+  const [modalType, setModalType] = useState<"language" | "theme" | "font" | null>(null);
+  const { isJapanese } = useLanguageContext();
 
-  useEffect(() => {
-    const checkAdsStatus = async () => {
-      const value = await AsyncStorage.getItem("isAdsRemoved");
-      if (value === "true") {
-        setIsAdsRemoved(true);
-      }
-    };
-    checkAdsStatus();
-  }, []);
-
-  const handleOpen = (type: "language" | "theme") => {
+  const handleOpen = (type: "language" | "theme" | "font") => {
     setIsModalVisible(true);
     setModalType(type);
   };
@@ -38,9 +28,7 @@ const customization = () => {
   const AutoShowKeyboard = () => {
     return (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-        <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-          {i18n.t("auto_show_keyboard")}
-        </Text>
+        <CustomText style={{ fontSize: 16 }}>{i18n.t("auto_show_keyboard")}</CustomText>
         <Switch value={autoFocus} onValueChange={updateAutoFocus} />
       </View>
     );
@@ -49,10 +37,8 @@ const customization = () => {
   const Language = () => {
     return (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-        <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-          {i18n.t("language")}
-        </Text>
-        <TouchableOpacity
+        <CustomText style={{ fontSize: 16 }}>{i18n.t("language")}</CustomText>
+        <Pressable
           onPress={() => handleOpen("language")}
           style={{
             width: 65,
@@ -62,15 +48,8 @@ const customization = () => {
             borderRadius: 2,
           }}
         >
-          <Text
-            style={{
-              fontSize: 15,
-              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-            }}
-          >
-            {i18n.t("change")}
-          </Text>
-        </TouchableOpacity>
+          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
+        </Pressable>
       </View>
     );
   };
@@ -78,11 +57,29 @@ const customization = () => {
   const Theme = () => {
     return (
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-        <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>
-          {i18n.t("theme")}
-        </Text>
-        <TouchableOpacity
+        <CustomText style={{ fontSize: 16 }}>{i18n.t("theme")}</CustomText>
+        <Pressable
           onPress={() => handleOpen("theme")}
+          style={{
+            width: 65,
+            alignItems: "center",
+            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+            paddingVertical: 4,
+            borderRadius: 2,
+          }}
+        >
+          <CustomText style={{ fontSize: 16, }}>{i18n.t("change")}</CustomText>
+        </Pressable>
+      </View>
+    );
+  };
+
+  const Font = () => {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+        <CustomText style={{ fontSize: 16 }}>{i18n.t("font")}</CustomText>
+        <Pressable
+          onPress={() => handleOpen("font")}
           style={{
             width: 65,
             alignItems: "center",
@@ -91,24 +88,13 @@ const customization = () => {
             borderRadius: 2,
           }}
         >
-          <Text
-            style={{
-              fontSize: 15,
-              color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-            }}
-          >
-            {i18n.t("change")}
-          </Text>
-        </TouchableOpacity>
+          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
+        </Pressable>
       </View>
     );
   };
 
-  const data = [
-    { id: 1, content: <AutoShowKeyboard /> },
-    { id: 2, content: <Language /> },
-    { id: 3, content: <Theme /> },
-  ];
+  const data = [{ id: 1, content: <AutoShowKeyboard /> }, { id: 2, content: <Language /> }, { id: 3, content: <Theme /> }, ...(isJapanese ? [{ id: 4, content: <Font /> }] : [])];
 
   return (
     <>
@@ -120,11 +106,6 @@ const customization = () => {
       >
         <View style={{ padding: 20 }}>
           <ScrollView scrollEnabled={false}>
-            {/* {data.map((item) => (
-            <View key={item.id} style={{ flex: 1, paddingVertical: 16, paddingHorizontal: 10, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <Text style={{ fontSize: 18, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{item.content}</Text>
-            </View>
-            ))} */}
             {data.map((item) => (
               <View
                 key={item.id}
@@ -143,7 +124,6 @@ const customization = () => {
         </View>
         {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
       </View>
-      {/* {!isAdsRemoved && <PlatformBannerAd />} */}
     </>
   );
 };

@@ -1,19 +1,18 @@
 import i18n from "@/src/utils/i18n";
-import { MaterialIcons } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Constants from "expo-constants";
-import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, View, TextInput, Platform } from "react-native";
+import React from "react";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { useDataContext } from "../contexts/DataContext";
 import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
+import { useFontContext } from "../contexts/FontContext";
 
 export default function SearchBox() {
   const { searchQuery, setSearchQuery } = useDataContext();
   const { theme } = useThemeContext();
-  const [isLoading, setIsLoading] = useState(false);
   const { isJapanese } = useLanguageContext();
+  const { fontFamilyStyle } = useFontContext();
 
   return (
     <View style={styles.container}>
@@ -25,7 +24,7 @@ export default function SearchBox() {
           // style={{ paddingBottom: 3 }}
         />
         <TextInput
-          style={[styles.textInput, isJapanese && { fontFamily: "NotoSansJP" }, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}
+          style={[styles.textInput, isJapanese && fontFamilyStyle, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}
           placeholder={i18n.t("search")}
           placeholderTextColor={theme === "dark" ? "gray" : "darkgray"}
           onChangeText={setSearchQuery}
@@ -59,6 +58,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     includeFontPadding: Platform.OS === "ios" ? undefined : false,
     fontSize: Platform.OS === "ios" ? undefined : 16,
-    height: '100%'
+    height: "100%",
   },
 });
