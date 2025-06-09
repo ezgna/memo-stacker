@@ -178,40 +178,40 @@ const SettingsScreen = () => {
             },
           ]}
         >
-          <Pressable style={styles.option} onPress={openCustomization}>
+          <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={openCustomization}>
             <Ionicons name="options-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             <CustomText style={styles.optionText}>{i18n.t("customization")}</CustomText>
           </Pressable>
 
-          <Pressable style={styles.option} onPress={openFAQ}>
+          <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={openFAQ}>
             <MaterialCommunityIcons name="frequently-asked-questions" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             <CustomText style={styles.optionText}>{i18n.t("faq")}</CustomText>
           </Pressable>
 
-          <Pressable style={styles.option} onPress={openPrivacyPolicy}>
+          <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={openPrivacyPolicy}>
             <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             <CustomText style={styles.optionText}>{i18n.t("privacy_policy")}</CustomText>
           </Pressable>
 
           {Platform.OS === "ios" && (
-            <Pressable style={styles.option} onPress={openTermsOfUse}>
+            <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={openTermsOfUse}>
               <Feather name="external-link" size={22} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               <CustomText style={styles.optionText}>{i18n.t("terms_of_use")}</CustomText>
             </Pressable>
           )}
 
-          <Pressable style={styles.option} onPress={handleExport}>
+          <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={handleExport}>
             <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             <CustomText style={styles.optionText}>{i18n.t("export")}</CustomText>
           </Pressable>
 
-          <Pressable style={[styles.option, isAdsRemoved && { borderBottomWidth: 0 }]} onPress={handleImport}>
+          <Pressable style={({ pressed }) => [styles.option, isAdsRemoved && { borderBottomWidth: 0 }, { opacity: pressed ? 0.6 : 1 }]} onPress={handleImport}>
             <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
             <CustomText style={styles.optionText}>{i18n.t("import")}</CustomText>
           </Pressable>
 
           {!isAdsRemoved && (
-            <Pressable style={styles.option} onPress={handleRemoveAds} disabled={loading}>
+            <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={handleRemoveAds} disabled={loading}>
               <MaterialIcons name="highlight-remove" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               {loading ? (
                 <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
@@ -222,7 +222,7 @@ const SettingsScreen = () => {
           )}
 
           {!isAdsRemoved && (
-            <Pressable style={[styles.option, { borderBottomWidth: 0 }]} onPress={handleRestoreAds} disabled={loading}>
+            <Pressable style={({ pressed }) => [styles.option, { borderBottomWidth: 0, opacity: pressed ? 0.6 : 1 }]} onPress={handleRestoreAds} disabled={loading}>
               <MaterialCommunityIcons name="refresh" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               {loading ? (
                 <ActivityIndicator size="small" color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} style={{ marginLeft: 20 }} />
@@ -234,13 +234,11 @@ const SettingsScreen = () => {
         </View>
         {files && (
           <>
-            <Text style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 20, marginVertical: 10 }}>
-              Tap the file you want to import
-            </Text>
+            <CustomText style={{ fontSize: 16, marginTop: 24, marginBottom: 6 }}>{i18n.t("import_file_prompt")}</CustomText>
             {files.map((item) => (
-              <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={styles.file}>
-                <MaterialCommunityIcons name="file-document" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-                <CustomText style={styles.optionText}>{item.name}</CustomText>
+              <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={({ pressed }) => [styles.file, { opacity: pressed ? 0.6 : 1 }]}>
+                <MaterialCommunityIcons name="file-document" size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+                <CustomText style={{marginLeft: 10, fontSize: 16, lineHeight: 22,}}>{item.name}</CustomText>
               </Pressable>
             ))}
           </>
@@ -280,7 +278,7 @@ const styles = StyleSheet.create({
   },
   file: {
     flexDirection: "row",
-    // alignItems: "center",
+    alignItems: "center",
     paddingVertical: 8,
   },
 });

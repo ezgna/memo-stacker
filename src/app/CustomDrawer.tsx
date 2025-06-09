@@ -4,7 +4,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, Pressable, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { DateModal } from "../components/DateModal";
 import { useDataContext } from "../contexts/DataContext";
@@ -12,6 +12,7 @@ import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import i18n from "../utils/i18n";
 import { themeColors } from "../utils/theme";
+import CustomText from "../components/CustomText";
 
 interface Dates {
   date: string;
@@ -133,11 +134,7 @@ export default function CustomDrawer() {
         <Collapsible collapsed={!collapsedItems[item.month]}>
           {item.dates.map((dateItem) => (
             <View style={{ paddingLeft: 23, borderLeftWidth: 2, borderLeftColor: "gray", marginLeft: 7 }} key={dateItem.date}>
-              <TouchableOpacity
-                key={dateItem.date}
-                onPress={() => handleEntryPress(dateItem.entries)}
-                style={{ paddingLeft: 13, borderLeftWidth: 2, borderLeftColor: "grey" }}
-              >
+              <TouchableOpacity key={dateItem.date} onPress={() => handleEntryPress(dateItem.entries)} style={{ paddingLeft: 13, borderLeftWidth: 2, borderLeftColor: "grey" }}>
                 <Text style={[styles.titleText, { color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }]}>{dateItem.date.slice(7)}</Text>
               </TouchableOpacity>
             </View>
@@ -214,7 +211,7 @@ export default function CustomDrawer() {
       style={{
         paddingHorizontal: 20,
         marginTop: Platform.OS === "android" ? 40 : 60,
-        flex: 1,
+        // flex: 1,
         backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
       }}
     >
@@ -239,46 +236,31 @@ export default function CustomDrawer() {
       </View>
       {fetchedData && fetchedData.length > 0 ? (
         <>
-          <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} style={{ flex: 0.7 }} />
-          <View
-            style={{
-              flex: 0.3,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={() => handleTrashPress()}
-            >
-              <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
-            </TouchableOpacity>
-          </View>
+          <SectionList sections={sections} renderSectionHeader={renderSectionHeader} renderItem={renderItem} />
         </>
       ) : (
         <>
-          <Text
-            style={[
-              {
-                color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-                fontSize: 16,
-                textAlign: "right",
-                paddingRight: 7,
-              },
-            ]}
-          >
-            {i18n.t("go_to_settings")}
-          </Text>
-          <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 14, paddingTop: 15 }]}>
-            {i18n.t("no_memo_yet")}
-          </Text>
+          <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10, }}>{i18n.t("go_to_settings")}</CustomText>
+          <CustomText>{i18n.t("no_memo_yet")}</CustomText>
         </>
       )}
+      {/* <Pressable
+        style={({ pressed }) => [
+          {
+            backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 20,
+            opacity: pressed ? 0.6 : 1,
+          },
+        ]}
+        onPress={() => handleTrashPress()}
+      >
+        <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
+      </Pressable> */}
 
       <DateModal
         onClose={() => setModalVisible(false)}

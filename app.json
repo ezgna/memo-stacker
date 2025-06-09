@@ -7,11 +7,6 @@
     "icon": "./src/assets/images/icon.png",
     "scheme": "memolog",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./src/assets/images/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#C7C8CA"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ezgna.testthree",
@@ -42,6 +37,14 @@
       "favicon": "./src/assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#232323",
+          "image": "./src/assets/images/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-tracking-transparency",
         {
@@ -125,8 +128,6 @@
       "expo-font",
       "expo-asset",
       "expo-secure-store",
-      "expo-tracking-transparency",
-      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true

@@ -235,6 +235,7 @@ export default function index() {
         </View>
         <FlashListCompo data={fetchedEntries} onDelete={deleteEntry} onUpdate={handleEdit} editingId={editingId} />
       </View>
+      
       {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );

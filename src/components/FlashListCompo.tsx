@@ -1,13 +1,12 @@
-import i18n from "@/src/utils/i18n";
 import { Entry } from "@/src/database/types";
+import i18n from "@/src/utils/i18n";
 import { FlashList } from "@shopify/flash-list";
 import React, { FC } from "react";
 import { Text, View } from "react-native";
-import { useLanguageContext } from "../contexts/LanguageContext";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { themeColors } from "../utils/theme";
-import { EditActionSheet } from "./EditActionSheet";
 import CustomText from "./CustomText";
+import { EditActionSheet } from "./EditActionSheet";
 
 interface FlashListCompoProps {
   data: Entry[];
@@ -81,9 +80,7 @@ export const FlashListCompo: FC<FlashListCompoProps> = ({ data, onDelete, onUpda
   return (
     <View style={{ flex: 1 }}>
       {isTrash && data.length === 0 ? (
-        <Text style={{ textAlign: "center", fontSize: 16, color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }}>{`${i18n.t(
-          "trashEmpty"
-        )}`}</Text>
+        <CustomText style={{ textAlign: "center", fontSize: 20 }}>{i18n.t("trashEmpty")}</CustomText>
       ) : (
         <FlashList
           data={sortedData}

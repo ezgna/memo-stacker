@@ -40,13 +40,16 @@ const customization = () => {
         <CustomText style={{ fontSize: 16 }}>{i18n.t("language")}</CustomText>
         <Pressable
           onPress={() => handleOpen("language")}
-          style={{
-            width: 65,
-            alignItems: "center",
-            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
-            paddingVertical: 5,
-            borderRadius: 2,
-          }}
+          style={({ pressed }) => [
+            {
+              width: 65,
+              alignItems: "center",
+              backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              paddingVertical: 5,
+              borderRadius: 2,
+              opacity: pressed ? 0.6 : 1,
+            },
+          ]}
         >
           <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
         </Pressable>
@@ -60,15 +63,18 @@ const customization = () => {
         <CustomText style={{ fontSize: 16 }}>{i18n.t("theme")}</CustomText>
         <Pressable
           onPress={() => handleOpen("theme")}
-          style={{
-            width: 65,
-            alignItems: "center",
-            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
-            paddingVertical: 4,
-            borderRadius: 2,
-          }}
+          style={({ pressed }) => [
+            {
+              width: 65,
+              alignItems: "center",
+              backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              paddingVertical: 4,
+              borderRadius: 2,
+              opacity: pressed ? 0.6 : 1,
+            },
+          ]}
         >
-          <CustomText style={{ fontSize: 16, }}>{i18n.t("change")}</CustomText>
+          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
         </Pressable>
       </View>
     );
@@ -80,13 +86,16 @@ const customization = () => {
         <CustomText style={{ fontSize: 16 }}>{i18n.t("font")}</CustomText>
         <Pressable
           onPress={() => handleOpen("font")}
-          style={{
-            width: 65,
-            alignItems: "center",
-            backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
-            paddingVertical: 5,
-            borderRadius: 2,
-          }}
+          style={({ pressed }) => [
+            {
+              width: 65,
+              alignItems: "center",
+              backgroundColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,
+              paddingVertical: 5,
+              borderRadius: 2,
+              opacity: pressed ? 0.6 : 1,
+            },
+          ]}
         >
           <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
         </Pressable>
