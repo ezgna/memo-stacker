@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/utils/resetDatabase.tsx", "src/stub/GoogleMobileAdsStub.js", "app.config.ts"  ]
+, "src/utils/resetDatabase.tsx", "src/stub/GoogleMobileAdsStub.js", "app.config.ts", "plugins/with-ja-info-strings.js"  ]
 }

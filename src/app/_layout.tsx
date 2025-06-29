@@ -1,6 +1,6 @@
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 import AppContent from "./app_layouts/AppContent";
@@ -9,8 +9,14 @@ import { router } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
 
+SplashScreen.setOptions({
+  duration: 400,
+  fade: true,
+});
+
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [appReady, setAppReady] = useState(false);
+  const [fontsLoaded] = useFonts({
     RobotoMono: require("../assets/fonts/RobotoMono-VariableFont_wght.ttf"),
     ZenMaruGothic: require("../assets/fonts/ZenMaruGothic-Medium.ttf"),
     ZenOldMincho: require("../assets/fonts/ZenOldMincho-SemiBold.ttf"),
@@ -26,25 +32,26 @@ export default function RootLayout() {
   const initializeRevenueCat = async () => {
     const apiKey = Platform.OS === "android" ? APIKeys.google : APIKeys.apple;
     await Purchases.configure({ apiKey });
-
-    // let uuid = await AsyncStorage.getItem("user_uuid");
-    // if (!uuid) {
-    //   uuid = Crypto.randomUUID();
-    //   await AsyncStorage.setItem("user_uuid", uuid);
-    // }
-    // console.log(uuid)
-    // await Purchases.logIn(uuid);
   };
 
   useEffect(() => {
-    if (loaded) {
-      initializeRevenueCat();
-      SplashScreen.hideAsync();
-      // router.push("/settings/customization");
+    async function prepare() {
+      try {
+        if (!fontsLoaded) return;
+        await initializeRevenueCat();
+        // await new Promise((r) => setTimeout(r, 600));
+        SplashScreen.hideAsync();
+        setAppReady(true);
+        // router.push("/settings/customization");
+      } catch (e) {
+        console.warn(e);
+      }
     }
-  }, [loaded]);
+    prepare();
+  }, [fontsLoaded]);
 
-  if (!loaded) {
+  if (!appReady) {
+    // Keeps splash screen visible until preparation is done
     return null;
   }
 

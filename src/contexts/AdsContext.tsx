@@ -9,6 +9,8 @@ interface AdsContextProps {
 
 const AdsContext = createContext<AdsContextProps | undefined>(undefined);
 
+const TEST_DEVICE_IDS = ["5EB7F05E-6DBC-4FFA-86EC-6F75B2C2FFFE"];
+
 export const AdsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [nonPersonalized, setNonPersonalized] = useState(true);
   const [adsInitialized, setAdsInitialized] = useState(false);
