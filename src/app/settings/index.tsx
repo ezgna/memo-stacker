@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useDataContext } from "../../contexts/DataContext";
 import CustomText from "@/src/components/CustomText";
+import { getStep, setStep } from "@/src/utils/onboarding";
+import { useAdsContext } from "@/src/contexts/AdsContext";
 
 interface Files {
   name: string;
@@ -29,6 +31,56 @@ const SettingsScreen = () => {
   const { theme } = useThemeContext();
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { initializeAds } = useAdsContext();
+
+  useEffect(() => {
+    (async () => {
+      const s = await getStep();
+      if (s === 3) {
+        const title = i18n.t("onboarding.step4.title");
+        const lines = i18n.t("onboarding.step4.description", { returnObjects: true }) as string[];
+        const message = lines.join("\n");
+        setTimeout(() => {
+          Alert.alert(
+            title,
+            message,
+            [
+              {
+                text: "OK",
+                onPress: async () => {
+                  await setStep(4);
+
+                  setTimeout(() => {
+                    const nextTitle = i18n.t("onboarding.step5.title");
+                    const nextLines = i18n.t("onboarding.step5.description", { returnObjects: true }) as string[];
+                    const nextMessage = nextLines.join("\n");
+
+                    Alert.alert(
+                      nextTitle,
+                      nextMessage,
+                      [
+                        {
+                          text: "OK",
+                          onPress: async () => {
+                            setTimeout(async () => {
+                              await setStep(5);
+                              await initializeAds();
+                            }, 500);
+                          },
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }, 500);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        }, 1000);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const checkAdsStatus = async () => {
@@ -238,7 +290,7 @@ const SettingsScreen = () => {
             {files.map((item) => (
               <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={({ pressed }) => [styles.file, { opacity: pressed ? 0.6 : 1 }]}>
                 <MaterialCommunityIcons name="file-document" size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
-                <CustomText style={{marginLeft: 10, fontSize: 16, lineHeight: 22,}}>{item.name}</CustomText>
+                <CustomText style={{ marginLeft: 10, fontSize: 16, lineHeight: 22 }}>{item.name}</CustomText>
               </Pressable>
             ))}
           </>

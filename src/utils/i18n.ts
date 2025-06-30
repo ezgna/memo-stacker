@@ -132,6 +132,45 @@ const i18n = new I18n({
     restore_false: "No purchases to restore",
     font: "Font",
     import_file_prompt: "Tap the file you want to import",
+    onboarding: {
+      step1: {
+        title: "Step 1: Save a note",
+        description: [
+          "Thank you for downloading!",
+          "Anything goes—just write a quick note to get started!"
+        ]
+      },
+      step2: {
+        title: "Step 2: View your notes",
+        description: [
+          "Your notes are automatically organized by date.",
+          "Tap the three-line menu icon in the top left!"
+        ]
+      },
+      step3: {
+        title: "Step 3: Explore notes by date",
+        description: [
+          "Tap the year, month, and day in order to see your notes.",
+          "Finally, tap the settings icon at the top right."
+        ]
+      },
+      step4: {
+        title: "Step 4: Customize your settings",
+        description: [
+          "You can change theme, language, fonts, and more.",
+          "If you have questions, check the FAQ section."
+        ]
+      },
+      step5: {
+        title: "Step 5: Ad personalization settings",
+        description: [
+          "This app displays ads.",
+          "If you enable tracking on the next screen, you’ll see ads that are more relevant to you.",
+          "Enabling tracking will not grant access to any of your personal information.",
+          "Even if you decline, the app will continue to work normally."
+        ]
+      }
+    },
   },
   ja: {
     search: "メモを検索",
@@ -261,6 +300,50 @@ const i18n = new I18n({
     restore_false: "復元できる購入履歴がありません",
     font: "フォント",
     import_file_prompt: "インポートしたいファイルをタップしてください",
+    onboarding: {
+      step1: {
+        title: "Step 1: メモを保存しよう",
+      "description": [
+        "ダウンロードありがとうございます！",
+        "内容はなんでもいいので、",
+        "まずは一言書いてみましょう！"
+      ]
+      },
+      step2: {
+        title: "Step 2: メモを見てみよう",
+        description: [
+          "メモは自動で日付ごとに整理されます。",
+          "左上の3本線ボタンを押してみましょう！"
+        ]
+      },
+      step3: {
+        title: "Step 3: 日ごとのメモを確認しよう",
+        description: [
+          "年、月、日を順にタップして",
+          "メモを開いてみましょう。",
+          "そして最後に上部の設定アイコンを",
+          "押してみましょう！"
+        ]
+      },
+      step4: {
+        title: "Step 4: 設定を変更しよう",
+        description: [
+          "テーマ、言語、フォントなどを",
+          "変更できます。",
+          "不明な点はよくある質問から",
+          "確認してください。"
+        ]
+      },
+      step5: {
+        title: "トラッキングについて",
+        description: [
+          "このアプリでは広告を表示します。",
+          "次の画面でトラッキングを許可すると、関連性の高い広告が表示されるようになります。",
+          "許可しても個人情報等にはアクセスされませんのでご安心ください。",
+          "また許可しなくてもアプリの機能に影響はありません。"
+        ]
+      }
+    },
   },
 });
 

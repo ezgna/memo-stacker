@@ -18,9 +18,7 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "ryonetyoki2@icloud.com",
         "ascAppId": "6736639271",
-        "appleTeamId": "T665NUF5CP"
       }
     }
   }

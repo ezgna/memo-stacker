@@ -2,7 +2,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
-import Purchases from "react-native-purchases";
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import AppContent from "./app_layouts/AppContent";
 import AppProviders from "./app_layouts/AppProviders";
 import { router } from "expo-router";
@@ -30,6 +30,7 @@ export default function RootLayout() {
     google: "goog_FYVDlcrZsZQgYklkuxQbpbgIBnr",
   };
   const initializeRevenueCat = async () => {
+    Purchases.setLogLevel(LOG_LEVEL.WARN);
     const apiKey = Platform.OS === "android" ? APIKeys.google : APIKeys.apple;
     await Purchases.configure({ apiKey });
   };

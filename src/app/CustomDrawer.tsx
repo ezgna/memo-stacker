@@ -13,6 +13,8 @@ import { useThemeContext } from "../contexts/ThemeContext";
 import i18n from "../utils/i18n";
 import { themeColors } from "../utils/theme";
 import CustomText from "../components/CustomText";
+import { getStep, setStep } from "../utils/onboarding";
+import { useDrawerStatus } from "@react-navigation/drawer";
 
 interface Dates {
   date: string;
@@ -37,7 +39,33 @@ export default function CustomDrawer() {
   const [selectedEntries, setSelectedEntries] = useState<Entry[]>([]);
   const [isTrash, setIsTrash] = useState(false);
   const { theme } = useThemeContext();
-  const { isJapanese } = useLanguageContext();
+  const isDrawerOpen = useDrawerStatus() === "open";
+
+  useEffect(() => {
+    (async () => {
+      const s = await getStep();
+      if (isDrawerOpen && s === 2) {
+        const title = i18n.t("onboarding.step3.title");
+        const lines = i18n.t("onboarding.step3.description", { returnObjects: true }) as string[];
+        const message = lines.join("\n");
+        setTimeout(() => {
+          Alert.alert(
+            title,
+            message,
+            [
+              {
+                text: "OK",
+                onPress: async () => {
+                  await setStep(3);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        }, 500);
+      }
+    })();
+  }, [isDrawerOpen]);
 
   useEffect(() => {
     if (!db) return;
@@ -240,7 +268,7 @@ export default function CustomDrawer() {
         </>
       ) : (
         <>
-          <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10, }}>{i18n.t("go_to_settings")}</CustomText>
+          <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10 }}>{i18n.t("go_to_settings")}</CustomText>
           <CustomText>{i18n.t("no_memo_yet")}</CustomText>
         </>
       )}

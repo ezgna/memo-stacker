@@ -1,4 +1,5 @@
 import CustomText from "@/src/components/CustomText";
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import SettingsModal from "@/src/components/SettingModal";
 import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
@@ -14,6 +15,7 @@ const customization = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"language" | "theme" | "font" | null>(null);
   const { isJapanese } = useLanguageContext();
+  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
 
   const handleOpen = (type: "language" | "theme" | "font") => {
     setIsModalVisible(true);
@@ -133,6 +135,7 @@ const customization = () => {
         </View>
         {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
       </View>
+      {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
 };

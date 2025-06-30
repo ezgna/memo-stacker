@@ -5,6 +5,7 @@ import mobileAds from "react-native-google-mobile-ads";
 
 interface AdsContextProps {
   nonPersonalized: boolean;
+  initializeAds: () => Promise<void>;
 }
 
 const AdsContext = createContext<AdsContextProps | undefined>(undefined);
@@ -15,23 +16,21 @@ export const AdsProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [nonPersonalized, setNonPersonalized] = useState(true);
   const [adsInitialized, setAdsInitialized] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === "ios") {
-        const { status } = await requestTrackingPermissionsAsync();
-        // console.log("現在のトラッキング許可状態:", status);
-        if (status === "granted") {
-          setNonPersonalized(false);
-        }
-      }
-      if (!adsInitialized) {
-        await mobileAds().initialize();
-        setAdsInitialized(true);
-      }
-    })();
-  }, []);
+  const initializeAds = async () => {
+    if (adsInitialized) return;
 
-  return <AdsContext.Provider value={{ nonPersonalized }}>{children}</AdsContext.Provider>;
+    if (Platform.OS === "ios") {
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === "granted") {
+        setNonPersonalized(false);
+      }
+    }
+
+    await mobileAds().initialize();
+    setAdsInitialized(true);
+  };
+
+  return <AdsContext.Provider value={{ nonPersonalized, initializeAds }}>{children}</AdsContext.Provider>;
 };
 
 export const useAdsContext = () => {
