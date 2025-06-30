@@ -4,18 +4,17 @@ import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
-import CancelEditButton from "../components/CancelEditButton";
-import { FlashListCompo } from "../components/FlashListCompo";
-import PlatformBannerAd from "../components/PlatformBannerAd";
-import SaveButton from "../components/SaveButton";
-import { useDataContext } from "../contexts/DataContext";
-import { useSettingsContext } from "../contexts/SettingsContext";
-import { useThemeContext } from "../contexts/ThemeContext";
-import { runMigrations } from "../database/migrations";
-import i18n from "../utils/i18n";
-import { themeColors } from "../utils/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getStep, setStep } from "../utils/onboarding";
+import CancelEditButton from "@/src/components/CancelEditButton";
+import { useDataContext } from "@/src/contexts/DataContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { getStep, setStep } from "@/src/utils/onboarding";
+import i18n from "@/src/utils/i18n";
+import { runMigrations } from "@/src/database/migrations";
+import { useSettingsContext } from "@/src/contexts/SettingsContext";
+import { themeColors } from "@/src/utils/theme";
+import SaveButton from "@/src/components/SaveButton";
+import { FlashListCompo } from "@/src/components/FlashListCompo";
 
 export default function index() {
   const [text, setText] = useState<string>("");

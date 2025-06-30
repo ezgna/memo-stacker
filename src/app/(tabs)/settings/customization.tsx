@@ -6,7 +6,8 @@ import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
-import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import { Pressable, ScrollView, Switch, View } from "react-native";
 
 const customization = () => {
@@ -16,6 +17,16 @@ const customization = () => {
   const [modalType, setModalType] = useState<"language" | "theme" | "font" | null>(null);
   const { isJapanese } = useLanguageContext();
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
+
+  useEffect(() => {
+    const checkAdsStatus = async () => {
+      const value = await AsyncStorage.getItem("isAdsRemoved");
+      if (value === "true") {
+        setIsAdsRemoved(true);
+      }
+    };
+    checkAdsStatus();
+  }, []);
 
   const handleOpen = (type: "language" | "theme" | "font") => {
     setIsModalVisible(true);

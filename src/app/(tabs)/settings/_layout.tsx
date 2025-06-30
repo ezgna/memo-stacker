@@ -15,15 +15,16 @@ const SettingsLayout = () => {
 
   return (
     <Stack
-      screenOptions={{
-        headerTitleStyle: {
-          color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-          ...(isJapanese ? fontFamilyStyle : {}),
-        },
-        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
-        headerShown: true,
-        headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
-      }}
+      screenOptions={
+        {
+          // headerTitleStyle: {
+          //   color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+          //   ...(isJapanese ? fontFamilyStyle : {}),
+          // },
+          // headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
+          // headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
+        }
+      }
     >
       <Stack.Screen
         name="index"
@@ -34,10 +35,11 @@ const SettingsLayout = () => {
               <FontAwesome name="close" size={22} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
             </TouchableOpacity>
           ),
+          headerShown: false,
         }}
       />
-      <Stack.Screen name="faq" options={{ title: i18n.t("faq") }} />
-      <Stack.Screen name="customization" options={{ title: i18n.t("customization") }} />
+      <Stack.Screen name="faq" options={{ title: i18n.t("faq"), headerShown: true }} />
+      <Stack.Screen name="customization" options={{ title: i18n.t("customization"), headerShown: true }} />
     </Stack>
   );
 };

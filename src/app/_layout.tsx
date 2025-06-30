@@ -5,7 +5,9 @@ import { Platform } from "react-native";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import AppContent from "./app_layouts/AppContent";
 import AppProviders from "./app_layouts/AppProviders";
-import { router } from "expo-router";
+import { router, Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +26,7 @@ export default function RootLayout() {
     BIZUDMincho: require("../assets/fonts/BIZUDMincho-Regular.ttf"),
     Mochiy: require("../assets/fonts/MochiyPopPOne-Regular.ttf"),
   });
+  // const { theme } = useThemeContext();
 
   const APIKeys = {
     apple: "appl_gwbtLmaQvxoHsyGTjTgYuxyakov",
@@ -58,7 +61,9 @@ export default function RootLayout() {
 
   return (
     <AppProviders>
-      <AppContent />
+      <Slot />
+      {/* <AppContent /> */}
+      {/* <StatusBar style={theme === "dark" ? "light" : "dark"} /> */}
     </AppProviders>
   );
 }

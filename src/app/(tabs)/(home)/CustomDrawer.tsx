@@ -1,20 +1,17 @@
+import CustomText from "@/src/components/CustomText";
+import { DateModal } from "@/src/components/DateModal";
+import { useDataContext } from "@/src/contexts/DataContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { db } from "@/src/database/db";
 import { Entry } from "@/src/database/types";
+import i18n from "@/src/utils/i18n";
+import { getStep, setStep } from "@/src/utils/onboarding";
+import { themeColors } from "@/src/utils/theme";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Platform, Pressable, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Collapsible from "react-native-collapsible";
-import { DateModal } from "../components/DateModal";
-import { useDataContext } from "../contexts/DataContext";
-import { useLanguageContext } from "../contexts/LanguageContext";
-import { useThemeContext } from "../contexts/ThemeContext";
-import i18n from "../utils/i18n";
-import { themeColors } from "../utils/theme";
-import CustomText from "../components/CustomText";
-import { getStep, setStep } from "../utils/onboarding";
 import { useDrawerStatus } from "@react-navigation/drawer";
+import React, { useEffect, useState } from "react";
+import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Collapsible from "react-native-collapsible";
 
 interface Dates {
   date: string;
@@ -66,6 +63,32 @@ export default function CustomDrawer() {
       }
     })();
   }, [isDrawerOpen]);
+
+  useEffect(() => {
+    (async () => {
+      const s = await getStep();
+      if (modalVisible && s === 3) {
+        const title = i18n.t("onboarding.step4.title");
+        const lines = i18n.t("onboarding.step4.description", { returnObjects: true }) as string[];
+        const message = lines.join("\n");
+        setTimeout(() => {
+          Alert.alert(
+            title,
+            message,
+            [
+              {
+                text: "OK",
+                onPress: async () => {
+                  await setStep(4);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        }, 500);
+      }
+    })();
+  }, [modalVisible]);
 
   useEffect(() => {
     if (!db) return;
@@ -239,7 +262,6 @@ export default function CustomDrawer() {
       style={{
         paddingHorizontal: 20,
         marginTop: Platform.OS === "android" ? 40 : 60,
-        // flex: 1,
         backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
       }}
     >
@@ -255,12 +277,12 @@ export default function CustomDrawer() {
           justifyContent: "space-between",
         }}
       >
-        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 21, fontFamily: "RocknRollOne", lineHeight: 26 }]}>
-          {i18n.t("memolog")}
+        <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 18, fontFamily: "ZenMaruGothic", lineHeight: 26 }]}>
+          MemoStacker
         </Text>
-        <TouchableOpacity onPress={() => router.navigate("/settings")}>
+        {/* <TouchableOpacity onPress={() => router.navigate("/settings")}>
           <Ionicons name="settings-outline" size={24} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {fetchedData && fetchedData.length > 0 ? (
         <>
@@ -268,27 +290,10 @@ export default function CustomDrawer() {
         </>
       ) : (
         <>
-          <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10 }}>{i18n.t("go_to_settings")}</CustomText>
+          {/* <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10 }}>{i18n.t("go_to_settings")}</CustomText> */}
           <CustomText>{i18n.t("no_memo_yet")}</CustomText>
         </>
       )}
-      {/* <Pressable
-        style={({ pressed }) => [
-          {
-            backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "gainsboro",
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
-            opacity: pressed ? 0.6 : 1,
-          },
-        ]}
-        onPress={() => handleTrashPress()}
-      >
-        <Ionicons name="trash-outline" size={26} color={theme === "dark" ? "silver" : "#333"} />
-      </Pressable> */}
 
       <DateModal
         onClose={() => setModalVisible(false)}

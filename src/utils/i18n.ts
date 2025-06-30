@@ -1,10 +1,10 @@
-import { getLocales } from "expo-localization";
 import { I18n } from "i18n-js";
 
 const i18n = new I18n({
   en: {
     search: "Search your notes",
     memolog: "Memolog",
+    memoStacker: "MemoStacker",
     export: "Export",
     import: "Import",
     settings: "Settings",
@@ -53,30 +53,35 @@ const i18n = new I18n({
     email_already_registered: "This email address is already registered. Please use a different one.",
     confirmation_email_sent: "A confirmation email has been sent to your new address. Please check your inbox.",
     username: "Username",
-    memoLog_overview_question: "About this app",
-    memoLog_overview_answer: "MemoLog is a memo app optimized for easy browsing.\nMemos are saved in chronological order, so it can also be used like a diary.",
-    view_notes_home_question: "How to view notes (Home screen)",
-    view_notes_home_answer: "On the home screen (the first screen when you open the app), you can swipe to view all your memos in reverse chronological order.",
-    view_notes_tabs_question: "How to view notes (Tabs)",
+
+    memoLog_overview_question: "About This App",
+    memoLog_overview_answer:
+      "Memo Stacker is a note-taking app focused on browsing ease, where you stack notes like building blocks.\nNotes are automatically organized and saved in chronological order.\nYou can use it to jot down sudden ideas or as a diary.",
+    view_notes_home_question: "Viewing Notes (Home)",
+    view_notes_home_answer:
+      "On the Home screen, swipe up to scroll through all your notes in reverse chronological order.",
+    view_notes_tabs_question: "Viewing Notes (Sidebar)",
     view_notes_tabs_answer:
-      "By tapping the three-line icon at the top left of the home screen, year, month, and day folders will automatically appear under 'MemoLog' (folders without memos are not shown).\nTap year, then month, and then day to view memos for a specific date.",
-    search_notes_question: "Search Notes",
+      "Tap the three-line menu icon at the top-left of the Home screen to reveal automatically generated folders by year, month, and day under the app name (hidden if there are no notes).\nTap through each folder in sequence to view the notes for that date.",
+    search_notes_question: "Searching Notes",
     search_notes_answer:
-      "You can search for notes by entering keywords in the search bar on the home screen.\nThe search will display notes that match the keywords in the title or body.\nIn English, uppercase and lowercase letters are treated the same (e.g., searching for 'A' will display memos containing both 'a' and 'A').",
-    edit_delete_notes_question: "Editing and deleting notes",
+      "Use the search bar at the top-right of the Home screen to find notes containing specific keywords.\nIn English, searches are case-insensitive (e.g., searching for “A” returns notes with both “a” and “A”).",
+    edit_delete_notes_question: "Editing & Deleting Notes",
     edit_delete_notes_answer:
-      "By tapping the three-dot menu at the top right of each note, you can edit or delete the note.\nDeleted notes are stored in the trash for 7 days and can be restored at any time from there.\nAfter 7 days, they will be permanently deleted from the device and cannot be recovered.\nTo restore a note from the trash, tap the three-dot menu in the same way.",
-    security_info_question: "Is it secure?",
+      "Tap the three-dot menu in the top-right corner of a note to edit or delete it. Deleted notes cannot be restored, so please be careful.",
+    security_info_question: "Is My Data Secure?",
     security_info_answer:
-      "Notes are stored only on your device. Unless your device is physically accessed by a third party, the contents of your notes will not be exposed.\nIf you’re concerned, you can add a lock to the app by long-pressing the app icon and selecting Require Face ID.",
-    device_transfer_question: "How to transfer data",
+      "All notes are stored locally on your device, so they remain private and secure.\nYou can also lock the app by long-pressing its icon and enabling Face ID.",
+    device_transfer_question: "Transferring Devices",
     device_transfer_answer:
-      "Supports both iOS and Android.\nYou can export your past diary entries from the Settings page (a Google account is required as Google Drive is used).\nAfter exporting, make sure the file is saved in your Google Drive, then import it on your new device (be sure to select the same Google account).\nYou may be prompted to log in multiple times—this is normal behavior (make sure to select the same account each time).",
-    language_settings_question: "Language settings",
-    language_settings_answer: "Both Japanese and English are supported.\nYou can change the language from Settings → Customization → Language.",
-    remove_ads_question: "Ad Removal",
+      "Memo Stacker works on both iOS and Android.\nYou can export all notes from the Settings tab (using Google Drive, which requires a Google account).\nAfter exporting, open the app on your new device and import from the Settings tab (make sure to select the same Google account).\nYou may see multiple login prompts—that’s normal; just choose the same account each time.",
+    language_settings_question: "Language Settings",
+    language_settings_answer:
+      "Supports both Japanese and English.\nGo to Settings → Customize → Language to switch.",
+    remove_ads_question: "Removing Ads",
     remove_ads_answer:
-      "You can permanently remove all ads with a one-time purchase from the Settings page.\nAfter purchasing, ads will be hidden on all devices using the same Apple or Google account (you may need to restore your purchase). You may need to restart the app.\nHowever, if you switch between iOS and Android, the purchase cannot be restored, and you will need to purchase it again.",
+      "A one-time purchase in the Settings tab permanently removes all ads.\nAfter purchase, ads are hidden on all devices using the same Apple/Google account (you may need to restore purchases).\nA restart of the app may be required for changes to take effect.\nPlease note: if you switch between iOS and Android, you cannot transfer your purchase—you’ll need to repurchase.",
+
     freePlan: "Free Plan",
     manualBackup: "✔︎ Manual Backup",
     manualDataTransfer: "✔︎ Manual Data Transfer",
@@ -141,33 +146,42 @@ const i18n = new I18n({
         ]
       },
       step2: {
-        title: "Step 2: View your notes",
+        title: "Step 2: Check Out the Sidebar",
         description: [
-          "Your notes are automatically organized by date.",
-          "Tap the three-line menu icon in the top left!"
+          "Your notes are automatically grouped by date.",
+          "Tap the three-line menu icon in the top-left corner!"
         ]
       },
       step3: {
-        title: "Step 3: Explore notes by date",
+        title: "Step 3: Open Today’s Date",
         description: [
-          "Tap the year, month, and day in order to see your notes.",
-          "Finally, tap the settings icon at the top right."
+          "Tap the year, then the month, then the day",
+          "to view the note you just wrote."
         ]
       },
       step4: {
-        title: "Step 4: Customize your settings",
+        title: "Step 4: Check Out the Settings Tab",
         description: [
-          "You can change theme, language, fonts, and more.",
-          "If you have questions, check the FAQ section."
+          "Great work!",
+          "This is how your notes are organized by day.",
+          "Finally, tap the settings icon at the bottom."
         ]
       },
       step5: {
-        title: "Step 5: Ad personalization settings",
+        title: "Step 5: Customize Your Experience",
+        description: [
+          "You can change the theme, language, and font.",
+          "If you have any questions,",
+          "check the FAQ section."
+        ]
+      },
+      step6: {
+        title: "About Tracking Permissions",
         description: [
           "This app displays ads.",
-          "If you enable tracking on the next screen, you’ll see ads that are more relevant to you.",
-          "Enabling tracking will not grant access to any of your personal information.",
-          "Even if you decline, the app will continue to work normally."
+          "If you allow tracking on the next screen, you’ll see ads that are more relevant to you.",
+          "Even if you allow tracking, no personal data is accessed, so don’t worry.",
+          "And if you choose not to allow tracking, the app will still work just fine."
         ]
       }
     },
@@ -175,6 +189,7 @@ const i18n = new I18n({
   ja: {
     search: "メモを検索",
     memolog: "メモログ",
+    memoStacker: "メモスタッカー",
     export: "エクスポート",
     import: "インポート",
     settings: "設定",
@@ -223,28 +238,28 @@ const i18n = new I18n({
     username: "ユーザーネーム",
     memoLog_overview_question: "このアプリについて",
     memoLog_overview_answer:
-      "メモログは、ブロックを積むようにメモができる、見やすさにフォーカスを当てたメモアプリです。\nメモは時系列順に保存されるため、日記のように使うこともできます。",
+      "メモスタッカーはブロックを積むようにメモができる、閲覧性にフォーカスを当てたメモアプリです。\nメモは時系列ごとに自動で整理、保存されます。\nふとした瞬間のアイデアを書き連ねたり、日記用途としても使えるアプリです。",
     view_notes_home_question: "メモの閲覧（ホーム画面）",
-    view_notes_home_answer: "ホーム画面（アプリを開いた際の最初の画面）で上にスワイプすると、すべてのメモを遡って見ることができます。",
-    view_notes_tabs_question: "メモの閲覧（タブ）",
+    view_notes_home_answer: "ホーム画面で上にスワイプすると、すべてのメモを遡って見ることができます。",
+    view_notes_tabs_question: "メモの閲覧（サイドバー）",
     view_notes_tabs_answer:
-      "ホーム画面左上の三本線アイコンをタップすると、「メモログ」の下に年・月・日のフォルダが自動で表示されます（メモがない場合は非表示）。\n順にタップしていくと、指定の日付のメモが一覧で表示されます。",
+      "ホーム画面左上の三本線アイコンをタップすると、アプリ名の下に、自動生成された年・月・日のフォルダが表示されます（メモがない場合は非表示）。\n順にタップしていくと、指定の日付のメモを一覧表示できます。",
     search_notes_question: "メモの検索",
     search_notes_answer:
       "ホーム画面右上の検索バーから、特定キーワードを含むメモを検索できます。\n日本語ではひらがなとカタカナが区別されます（例:「あ」と検索すると「あ」を含むメモが表示され、「ア」は表示されません）。\n英語では大文字と小文字の区別はありません（例:「A」と検索すると「a」と「A」を含むメモが表示されます）。",
     edit_delete_notes_question: "メモの編集・削除",
     edit_delete_notes_answer:
-      "各メモの右上の三点リーダをタップすると、編集や削除ができます。削除したメモはゴミ箱に7日間保存され、ゴミ箱（タブ内）からいつでも復元できます。7日を過ぎると端末から完全に削除され、復元はできません。\nゴミ箱内のメモを復元するには、同じように三点リーダをタップしてください。",
+      "各メモの右上の三点リーダをタップすると、編集や削除ができます。削除すると復元できませんのでご注意ください。",
     security_info_question: "セキュリティは大丈夫ですか？",
     security_info_answer: "メモは端末内にのみ保存されるので安全です。\nアプリアイコン長押し→FaceIDを必要にする、からアプリにロックをかけることもできます。",
     device_transfer_question: "機種変更",
     device_transfer_answer:
-      "iOSとandroid両対応です。\n設定ページから過去の日記をエクスポートできます（Googleドライブを使用するためGoogleアカウント必須）。\nエクスポート後、Googleドライブにファイルが保存されていることを確認し、新しい端末でインポートします（必ず同じgoogleアカウントを選択してください）。\n何度もログイン認証確認が表示される可能性がありますが、正常な動作です（必ず全て同じアカウントを選択してください）。",
+      "iOS/androidの両方に対応しています。\n設定タブから全てのメモをエクスポートできます（Googleドライブを使用するためGoogleアカウント必須です）。\nエクスポート後、新しい端末でアプリを開き、同様に設定タブからインポートします（必ず同じgoogleアカウントを選択してください）。\n何度もログイン認証確認が表示される可能性がありますが、正常な動作です（必ず全て同じアカウントを選択してください）。",
     language_settings_question: "言語設定",
     language_settings_answer: "日本語と英語に対応しています。\n設定→カスタマイズ→言語から変更できます。",
     remove_ads_question: "広告削除",
     remove_ads_answer:
-      "設定ページからの一度の購入ですべての広告を永久に削除できます。\n購入後は同じApple/Googleアカウントを使用しているすべての端末で広告を非表示にできます（購入復元をする必要がある場合があります）。反映にはアプリの再起動が必要な場合があります。\nまた、iOSとAndroidの間で機種変更を行った場合、購入情報の復元はできません（再度課金する必要があります）。",
+      "設定タブからの一度の購入ですべての広告を永久に削除できます。\n購入後は同じApple/Googleアカウントを使用しているすべての端末で広告を非表示にできます（購入復元をする必要がある場合があります）。反映にはアプリの再起動が必要な場合があります。\nまた、iOSとAndroidの間で機種変更を行った場合、購入情報の復元はできません（再度購入が必要です）。",
     freePlan: "フリープラン",
     manualBackup: "✔︎ 手動バックアップ",
     manualDataTransfer: "✔︎ 手動データ移行",
@@ -310,31 +325,38 @@ const i18n = new I18n({
       ]
       },
       step2: {
-        title: "Step 2: メモを見てみよう",
+        title: "Step 2: サイドバーを見てみよう",
         description: [
           "メモは自動で日付ごとに整理されます。",
           "左上の3本線ボタンを押してみましょう！"
         ]
       },
       step3: {
-        title: "Step 3: 日ごとのメモを確認しよう",
+        title: "Step 3: 今日の日付を開いてみよう",
         description: [
           "年、月、日を順にタップして",
-          "メモを開いてみましょう。",
-          "そして最後に上部の設定アイコンを",
-          "押してみましょう！"
+          "今書いたメモを見てみましょう。",
         ]
       },
       step4: {
+        title: "Step 4: 設定タブをチェックしよう",
+        description: [
+          "良い調子です！",
+          "このように、メモは日毎に分類されます。",
+          "最後に、下部の設定アイコンを",
+          "押してみましょう。",
+        ]
+      },
+      step5: {
         title: "Step 4: 設定を変更しよう",
         description: [
           "テーマ、言語、フォントなどを",
           "変更できます。",
-          "不明な点はよくある質問から",
-          "確認してください。"
+          "その他不明な点はよくある質問を",
+          "ご覧ください！"
         ]
       },
-      step5: {
+      step6: {
         title: "トラッキングについて",
         description: [
           "このアプリでは広告を表示します。",
@@ -346,12 +368,5 @@ const i18n = new I18n({
     },
   },
 });
-
-// i18n.locale = getLocales()[0]?.languageCode ?? "en";
-// webだとgetLocales()[0]がundefinedになってエラー？
-// i18n.enableFallback = true;
-
-// export const isJapanese = getLocales()[0]?.languageCode === "ja";
-// webだとgetLocales()[0]がundefinedになってエラー？
 
 export default i18n;

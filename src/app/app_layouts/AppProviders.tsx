@@ -1,13 +1,13 @@
+import { AdsProvider } from "@/src/contexts/AdsContext";
 import { DataProvider } from "@/src/contexts/DataContext";
-import { SettingsProvider } from "@/src/contexts/SettingsContext";
+import { FontProvider } from "@/src/contexts/FontContext";
 import { LanguageProvider } from "@/src/contexts/LanguageContext";
-import { ThemeProvider, useThemeContext } from "@/src/contexts/ThemeContext";
+import { SettingsProvider } from "@/src/contexts/SettingsContext";
+import { ThemeProvider } from "@/src/contexts/ThemeContext";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { ReactNode } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { AdsProvider } from "@/src/contexts/AdsContext";
-import { FontProvider } from "@/src/contexts/FontContext";
 
 const AppProviders = ({ children }: { children: ReactNode }) => {
   return (
