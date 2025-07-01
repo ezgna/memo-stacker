@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
 
 const AppProviders = ({ children }: { children: ReactNode }) => {
+
   return (
     <FontProvider>
       <AdsProvider>

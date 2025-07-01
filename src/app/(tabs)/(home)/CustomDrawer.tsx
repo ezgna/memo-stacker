@@ -1,6 +1,7 @@
 import CustomText from "@/src/components/CustomText";
 import { DateModal } from "@/src/components/DateModal";
 import { useDataContext } from "@/src/contexts/DataContext";
+import { useFontContext } from "@/src/contexts/FontContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { db } from "@/src/database/db";
 import { Entry } from "@/src/database/types";
@@ -10,7 +11,7 @@ import { themeColors } from "@/src/utils/theme";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useDrawerStatus } from "@react-navigation/drawer";
 import React, { useEffect, useState } from "react";
-import { Alert, Platform, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SectionList, SectionListRenderItem, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Collapsible from "react-native-collapsible";
 
 interface Dates {
@@ -37,6 +38,7 @@ export default function CustomDrawer() {
   const [isTrash, setIsTrash] = useState(false);
   const { theme } = useThemeContext();
   const isDrawerOpen = useDrawerStatus() === "open";
+  const { fontFamilyStyle } = useFontContext();
 
   useEffect(() => {
     (async () => {
@@ -261,7 +263,7 @@ export default function CustomDrawer() {
     <View
       style={{
         paddingHorizontal: 20,
-        marginTop: Platform.OS === "android" ? 40 : 60,
+        marginTop: 50,
         backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
       }}
     >
@@ -280,9 +282,6 @@ export default function CustomDrawer() {
         <Text style={[{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText, fontSize: 18, fontFamily: "ZenMaruGothic", lineHeight: 26 }]}>
           MemoStacker
         </Text>
-        {/* <TouchableOpacity onPress={() => router.navigate("/settings")}>
-          <Ionicons name="settings-outline" size={24} color={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText} />
-        </TouchableOpacity> */}
       </View>
       {fetchedData && fetchedData.length > 0 ? (
         <>
@@ -290,7 +289,6 @@ export default function CustomDrawer() {
         </>
       ) : (
         <>
-          {/* <CustomText style={{ fontSize: 16, textAlign: "right", paddingRight: 4, marginBottom: 10 }}>{i18n.t("go_to_settings")}</CustomText> */}
           <CustomText>{i18n.t("no_memo_yet")}</CustomText>
         </>
       )}
@@ -317,6 +315,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingLeft: 5,
     paddingBottom: 2,
-    fontFamily: "RobotoMono",
+    fontFamily: "MPlus1p",
   },
 });

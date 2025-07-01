@@ -277,11 +277,8 @@ const SettingsScreen = () => {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView
-          style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}
-          showsVerticalScrollIndicator={false}
-        >
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
           <View
             style={[
               styles.optionContainer,

@@ -1,20 +1,21 @@
+import CancelEditButton from "@/src/components/CancelEditButton";
+import { FlashListCompo } from "@/src/components/FlashListCompo";
+import SaveButton from "@/src/components/SaveButton";
+import { useDataContext } from "@/src/contexts/DataContext";
+import { useFontContext } from "@/src/contexts/FontContext";
+import { useSettingsContext } from "@/src/contexts/SettingsContext";
+import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { db, initDatabase } from "@/src/database/db";
+import { runMigrations } from "@/src/database/migrations";
 import { Entry } from "@/src/database/types";
+import i18n from "@/src/utils/i18n";
+import { getStep, setStep } from "@/src/utils/onboarding";
+import { themeColors } from "@/src/utils/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import CancelEditButton from "@/src/components/CancelEditButton";
-import { useDataContext } from "@/src/contexts/DataContext";
-import { useThemeContext } from "@/src/contexts/ThemeContext";
-import { getStep, setStep } from "@/src/utils/onboarding";
-import i18n from "@/src/utils/i18n";
-import { runMigrations } from "@/src/database/migrations";
-import { useSettingsContext } from "@/src/contexts/SettingsContext";
-import { themeColors } from "@/src/utils/theme";
-import SaveButton from "@/src/components/SaveButton";
-import { FlashListCompo } from "@/src/components/FlashListCompo";
 
 export default function index() {
   const [text, setText] = useState<string>("");
@@ -22,6 +23,7 @@ export default function index() {
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
   const { theme } = useThemeContext();
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
+  const { fontFamilyStyle } = useFontContext();
 
   // useEffect(() => {
   //   const debugTables = async () => {
@@ -248,6 +250,7 @@ export default function index() {
           <TextInput
             style={[
               styles.input,
+              fontFamilyStyle,
               {
                 color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
                 borderColor: theme === "dark" ? themeColors.dark.border : themeColors.light.border,

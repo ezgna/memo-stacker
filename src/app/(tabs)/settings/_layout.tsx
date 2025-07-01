@@ -10,21 +10,18 @@ import { Platform, TouchableOpacity } from "react-native";
 
 const SettingsLayout = () => {
   const { theme } = useThemeContext();
-  const { isJapanese } = useLanguageContext();
   const { fontFamilyStyle } = useFontContext();
 
   return (
     <Stack
-      screenOptions={
-        {
-          // headerTitleStyle: {
-          //   color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
-          //   ...(isJapanese ? fontFamilyStyle : {}),
-          // },
-          // headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
-          // headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
-        }
-      }
+      screenOptions={{
+        headerTitleStyle: {
+          color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText,
+          ...fontFamilyStyle,
+        },
+        headerStyle: { backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white" },
+        headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
+      }}
     >
       <Stack.Screen
         name="index"

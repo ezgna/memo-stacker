@@ -2,7 +2,7 @@ import { View, Text, Modal, TouchableWithoutFeedback } from "react-native";
 import React, { FC } from "react";
 import { themeColors } from "../utils/theme";
 import { useThemeContext } from "../contexts/ThemeContext";
-import AppearancePickers from "./AppearancePickers";
+import AppearancePickers from "./ThemePickers";
 import LanguagePickers from "./LanguagePickers";
 import FontPickers from "./FontPickers";
 

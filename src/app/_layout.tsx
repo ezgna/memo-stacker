@@ -19,12 +19,10 @@ SplashScreen.setOptions({
 export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
   const [fontsLoaded] = useFonts({
-    RobotoMono: require("../assets/fonts/RobotoMono-VariableFont_wght.ttf"),
     ZenMaruGothic: require("../assets/fonts/ZenMaruGothic-Medium.ttf"),
     ZenOldMincho: require("../assets/fonts/ZenOldMincho-SemiBold.ttf"),
     RocknRollOne: require("../assets/fonts/RocknRollOne-Regular.ttf"),
-    BIZUDMincho: require("../assets/fonts/BIZUDMincho-Regular.ttf"),
-    Mochiy: require("../assets/fonts/MochiyPopPOne-Regular.ttf"),
+    MPlus1p: require("../assets/fonts/MPLUS1p-Medium.ttf")
   });
   // const { theme } = useThemeContext();
 

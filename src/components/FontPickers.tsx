@@ -4,6 +4,7 @@ import React from "react";
 import { Platform, View } from "react-native";
 import { themeColors } from "../utils/theme";
 import { useFontContext } from "../contexts/FontContext";
+import i18n from "../utils/i18n";
 
 const FontPickers = () => {
   const { theme } = useThemeContext();
@@ -22,11 +23,11 @@ const FontPickers = () => {
         dropdownIconColor={theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText}
         style={{ color: theme === "dark" ? themeColors.dark.primaryText : themeColors.light.primaryText }} // Only affects Android
       >
-        <Picker.Item label="ZEN丸ゴシック" value="zenmaru" color={getPickerTextColor()} />
-        <Picker.Item label="ZENオールド明朝" value="zenold" color={getPickerTextColor()} />
-        <Picker.Item label="ロックンロール" value="rocknroll" color={getPickerTextColor()} />
-        <Picker.Item label="BIZ UD明朝" value="biz" color={getPickerTextColor()} />
-        <Picker.Item label="モッチーポップ" value="mochiy" color={getPickerTextColor()} />
+        <Picker.Item label={i18n.t("default")} value="default" color={getPickerTextColor()} />
+        <Picker.Item label={i18n.t("zenMaru")} value="zenmaru" color={getPickerTextColor()} />
+        <Picker.Item label={i18n.t("zenOld")} value="zenold" color={getPickerTextColor()} />
+        <Picker.Item label={i18n.t("rocknRoll")} value="rocknroll" color={getPickerTextColor()} />
+        <Picker.Item label={i18n.t("mplus1p")} value="mplus1p" color={getPickerTextColor()} />
       </Picker>
     </View>
   );

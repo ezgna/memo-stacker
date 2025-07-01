@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-type FontType = "zenmaru" | "zenold" | "rocknroll" | "biz" | "mochiy";
+type FontType = "default" | "zenmaru" | "zenold" | "rocknroll" | "mplus1p";
 
 interface FontContextType {
   font: FontType;
@@ -12,7 +12,7 @@ interface FontContextType {
 const FontContext = createContext<FontContextType | undefined>(undefined);
 
 export const FontProvider = ({ children }: { children: ReactNode }) => {
-  const [font, setFontState] = useState<FontType>("zenmaru");
+  const [font, setFontState] = useState<FontType>("default");
 
   useEffect(() => {
     const loadFontPreference = async () => {
@@ -29,18 +29,18 @@ export const FontProvider = ({ children }: { children: ReactNode }) => {
     await AsyncStorage.setItem("selectedFont", newFont);
   };
 
-const fontFamilyStyle =
-  font === "zenmaru"
-    ? { fontFamily: "ZenMaruGothic" }
-    : font === "zenold"
-    ? { fontFamily: "ZenOldMincho" }
-    : font === "rocknroll"
-    ? { fontFamily: "RocknRollOne" }
-    : font === "biz"
-    ? { fontFamily: "BIZUDMincho" }
-    : font === "mochiy"
-    ? { fontFamily: "Mochiy" }
-    : { fontFamily: "ZenMaruGothic" };
+  const fontFamilyStyle =
+    font === "default"
+      ? { fontFamily: undefined }
+      : font === "zenmaru"
+      ? { fontFamily: "ZenMaruGothic" }
+      : font === "zenold"
+      ? { fontFamily: "ZenOldMincho" }
+      : font === "rocknroll"
+      ? { fontFamily: "RocknRollOne" }
+      : font === "mplus1p"
+      ? { fontFamily: "MPlus1p" }
+      : { fontFamily: undefined };
 
   return <FontContext.Provider value={{ font, setFont, fontFamilyStyle }}>{children}</FontContext.Provider>;
 };

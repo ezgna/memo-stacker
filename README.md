@@ -1,6 +1,6 @@
-# Memolog - Stackable Notes
+# Memo Stacker
 
-Memolog is a lightweight and user-friendly app designed for quickly jotting down timestamped memos. Whether you’re capturing fleeting thoughts or tracking daily tasks, it helps you record them effortlessly.
+Memo Stacker is a lightweight and user-friendly app designed for quickly jotting down timestamped memos. Whether you’re capturing fleeting thoughts or tracking daily tasks, it helps you record them effortlessly.
 
 ## Download
 

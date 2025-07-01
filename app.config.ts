@@ -5,7 +5,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: "MemoStacker",
   slug: "memologminute",
   version: "1.3",
-  orientation: "portrait",
+  orientation: "default",
   icon: "./src/assets/icons/ios-light.png",
   scheme: "memolog",
   userInterfaceStyle: "automatic",
@@ -30,11 +30,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     package: "com.ezgna.memolog",
     edgeToEdgeEnabled: true,
-  },
-  web: {
-    bundler: "metro",
-    output: "static",
-    favicon: "./src/assets/images/favicon.png",
   },
   locales: {
     ja: "./languages/ja.json",

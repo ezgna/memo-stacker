@@ -1,21 +1,19 @@
 import CustomText from "@/src/components/CustomText";
 import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import SettingsModal from "@/src/components/SettingModal";
-import { useLanguageContext } from "@/src/contexts/LanguageContext";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, Switch, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 const customization = () => {
   const { theme } = useThemeContext();
   const { autoFocus, updateAutoFocus } = useSettingsContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"language" | "theme" | "font" | null>(null);
-  const { isJapanese } = useLanguageContext();
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
 
   useEffect(() => {
@@ -64,7 +62,7 @@ const customization = () => {
             },
           ]}
         >
-          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
+          <CustomText style={styles.customTextStyle}>{i18n.t("change")}</CustomText>
         </Pressable>
       </View>
     );
@@ -87,7 +85,7 @@ const customization = () => {
             },
           ]}
         >
-          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
+          <CustomText style={styles.customTextStyle}>{i18n.t("change")}</CustomText>
         </Pressable>
       </View>
     );
@@ -110,13 +108,18 @@ const customization = () => {
             },
           ]}
         >
-          <CustomText style={{ fontSize: 16 }}>{i18n.t("change")}</CustomText>
+          <CustomText style={styles.customTextStyle}>{i18n.t("change")}</CustomText>
         </Pressable>
       </View>
     );
   };
 
-  const data = [{ id: 1, content: <AutoShowKeyboard /> }, { id: 2, content: <Language /> }, { id: 3, content: <Theme /> }, ...(isJapanese ? [{ id: 4, content: <Font /> }] : [])];
+  const data = [
+    { id: 1, content: <AutoShowKeyboard /> },
+    { id: 2, content: <Language /> },
+    { id: 3, content: <Theme /> },
+    { id: 4, content: <Font /> },
+  ];
 
   return (
     <>
@@ -152,3 +155,10 @@ const customization = () => {
 };
 
 export default customization;
+
+const styles = StyleSheet.create({
+  customTextStyle: {
+    fontSize: 15,
+    lineHeight: 21,
+  },
+});

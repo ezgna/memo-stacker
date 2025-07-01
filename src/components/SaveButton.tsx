@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import i18n from "../utils/i18n";
 import CustomText from "./CustomText";
 
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 16,
     color: "#F4F6F7",
+    lineHeight: 21,
   },
 });
 

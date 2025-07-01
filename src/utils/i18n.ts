@@ -58,8 +58,7 @@ const i18n = new I18n({
     memoLog_overview_answer:
       "Memo Stacker is a note-taking app focused on browsing ease, where you stack notes like building blocks.\nNotes are automatically organized and saved in chronological order.\nYou can use it to jot down sudden ideas or as a diary.",
     view_notes_home_question: "Viewing Notes (Home)",
-    view_notes_home_answer:
-      "On the Home screen, swipe up to scroll through all your notes in reverse chronological order.",
+    view_notes_home_answer: "On the Home screen, swipe up to scroll through all your notes in reverse chronological order.",
     view_notes_tabs_question: "Viewing Notes (Sidebar)",
     view_notes_tabs_answer:
       "Tap the three-line menu icon at the top-left of the Home screen to reveal automatically generated folders by year, month, and day under the app name (hidden if there are no notes).\nTap through each folder in sequence to view the notes for that date.",
@@ -67,8 +66,7 @@ const i18n = new I18n({
     search_notes_answer:
       "Use the search bar at the top-right of the Home screen to find notes containing specific keywords.\nIn English, searches are case-insensitive (e.g., searching for “A” returns notes with both “a” and “A”).",
     edit_delete_notes_question: "Editing & Deleting Notes",
-    edit_delete_notes_answer:
-      "Tap the three-dot menu in the top-right corner of a note to edit or delete it. Deleted notes cannot be restored, so please be careful.",
+    edit_delete_notes_answer: "Tap the three-dot menu in the top-right corner of a note to edit or delete it. Deleted notes cannot be restored, so please be careful.",
     security_info_question: "Is My Data Secure?",
     security_info_answer:
       "All notes are stored locally on your device, so they remain private and secure.\nYou can also lock the app by long-pressing its icon and enabling Face ID.",
@@ -76,8 +74,7 @@ const i18n = new I18n({
     device_transfer_answer:
       "Memo Stacker works on both iOS and Android.\nYou can export all notes from the Settings tab (using Google Drive, which requires a Google account).\nAfter exporting, open the app on your new device and import from the Settings tab (make sure to select the same Google account).\nYou may see multiple login prompts—that’s normal; just choose the same account each time.",
     language_settings_question: "Language Settings",
-    language_settings_answer:
-      "Supports both Japanese and English.\nGo to Settings → Customize → Language to switch.",
+    language_settings_answer: "Supports both Japanese and English.\nGo to Settings → Customize → Language to switch.",
     remove_ads_question: "Removing Ads",
     remove_ads_answer:
       "A one-time purchase in the Settings tab permanently removes all ads.\nAfter purchase, ads are hidden on all devices using the same Apple/Google account (you may need to restore purchases).\nA restart of the app may be required for changes to take effect.\nPlease note: if you switch between iOS and Android, you cannot transfer your purchase—you’ll need to repurchase.",
@@ -135,45 +132,37 @@ const i18n = new I18n({
     purchase_success: "Purchase successful",
     restore_success: "Restore successful",
     restore_false: "No purchases to restore",
-    font: "Font",
     import_file_prompt: "Tap the file you want to import",
+    match_device: "Match Device",
+    light_theme: "Light Theme",
+    dark_theme: "Dark Theme",
+    font: "Font",
+    default: "Default",
+    zenMaru: "ZEN Maru Gothic",
+    zenOld: "ZEN Old Mincho",
+    rocknRoll: "Rock’n’Roll",
+    mplus1p: "MPLUS 1p",
+
     onboarding: {
       step1: {
         title: "Step 1: Save a note",
-        description: [
-          "Thank you for downloading!",
-          "Anything goes—just write a quick note to get started!"
-        ]
+        description: ["Thank you for downloading!", "Anything goes—just write a quick note to get started!"],
       },
       step2: {
         title: "Step 2: Check Out the Sidebar",
-        description: [
-          "Your notes are automatically grouped by date.",
-          "Tap the three-line menu icon in the top-left corner!"
-        ]
+        description: ["Your notes are automatically grouped by date.", "Tap the three-line menu icon in the top-left corner!"],
       },
       step3: {
         title: "Step 3: Open Today’s Date",
-        description: [
-          "Tap the year, then the month, then the day",
-          "to view the note you just wrote."
-        ]
+        description: ["Tap the year, then the month, then the day to view the note you just wrote."],
       },
       step4: {
         title: "Step 4: Check Out the Settings Tab",
-        description: [
-          "Great work!",
-          "This is how your notes are organized by day.",
-          "Finally, tap the settings icon at the bottom."
-        ]
+        description: ["Great work!", "This is how your notes are organized by day.", "Finally, tap the settings icon at the bottom."],
       },
       step5: {
         title: "Step 5: Customize Your Experience",
-        description: [
-          "You can change the theme, language, and font.",
-          "If you have any questions,",
-          "check the FAQ section."
-        ]
+        description: ["You can change the theme, language, and font.", "If you have any questions, check the FAQ section."],
       },
       step6: {
         title: "About Tracking Permissions",
@@ -181,9 +170,9 @@ const i18n = new I18n({
           "This app displays ads.",
           "If you allow tracking on the next screen, you’ll see ads that are more relevant to you.",
           "Even if you allow tracking, no personal data is accessed, so don’t worry.",
-          "And if you choose not to allow tracking, the app will still work just fine."
-        ]
-      }
+          "And if you choose not to allow tracking, the app will still work just fine.",
+        ],
+      },
     },
   },
   ja: {
@@ -248,8 +237,7 @@ const i18n = new I18n({
     search_notes_answer:
       "ホーム画面右上の検索バーから、特定キーワードを含むメモを検索できます。\n日本語ではひらがなとカタカナが区別されます（例:「あ」と検索すると「あ」を含むメモが表示され、「ア」は表示されません）。\n英語では大文字と小文字の区別はありません（例:「A」と検索すると「a」と「A」を含むメモが表示されます）。",
     edit_delete_notes_question: "メモの編集・削除",
-    edit_delete_notes_answer:
-      "各メモの右上の三点リーダをタップすると、編集や削除ができます。削除すると復元できませんのでご注意ください。",
+    edit_delete_notes_answer: "各メモの右上の三点リーダをタップすると、編集や削除ができます。削除すると復元できませんのでご注意ください。",
     security_info_question: "セキュリティは大丈夫ですか？",
     security_info_answer: "メモは端末内にのみ保存されるので安全です。\nアプリアイコン長押し→FaceIDを必要にする、からアプリにロックをかけることもできます。",
     device_transfer_question: "機種変更",
@@ -297,7 +285,7 @@ const i18n = new I18n({
     username_unset: "ユーザーネームを設定すると、ログインに使用できます。",
     username_already_in_use: "このユーザーネームはすでに使用中です！",
     invalid_username: "無効なユーザー名です",
-    confirm_deletion: "削除の確認",
+    confirm_deletion: "警告",
     delete_entry_message: "本当にこのメモを削除しますか？",
     external_link: "外部リンク",
     external_link_message: "アプリを離れ、外部サイトに移動しようとしています。",
@@ -313,58 +301,47 @@ const i18n = new I18n({
     purchase_success: "購入に成功しました",
     restore_success: "復元に成功しました",
     restore_false: "復元できる購入履歴がありません",
-    font: "フォント",
     import_file_prompt: "インポートしたいファイルをタップしてください",
+    match_device: "デバイス設定に合わせる",
+    light_theme: "ライトモード",
+    dark_theme: "ダークモード",
+    font: "フォント",
+    default: "デフォルト",
+    zenMaru: "ZEN丸ゴシック",
+    zenOld: "ZENオールド明朝",
+    rocknRoll: "ロックンロール",
+    mplus1p: "MPlus1p",
+
     onboarding: {
       step1: {
         title: "Step 1: メモを保存しよう",
-      "description": [
-        "ダウンロードありがとうございます！",
-        "内容はなんでもいいので、",
-        "まずは一言書いてみましょう！"
-      ]
+        description: ["ダウンロードありがとうございます！", "内容はなんでもいいので、", "まずは一言書いてみましょう！"],
       },
       step2: {
         title: "Step 2: サイドバーを見てみよう",
-        description: [
-          "メモは自動で日付ごとに整理されます。",
-          "左上の3本線ボタンを押してみましょう！"
-        ]
+        description: ["メモは自動で日付ごとに整理されます。", "左上の3本線ボタンを押してみましょう！"],
       },
       step3: {
         title: "Step 3: 今日の日付を開いてみよう",
-        description: [
-          "年、月、日を順にタップして",
-          "今書いたメモを見てみましょう。",
-        ]
+        description: ["年、月、日を順にタップして", "今書いたメモを見てみましょう！"],
       },
       step4: {
         title: "Step 4: 設定タブをチェックしよう",
-        description: [
-          "良い調子です！",
-          "このように、メモは日毎に分類されます。",
-          "最後に、下部の設定アイコンを",
-          "押してみましょう。",
-        ]
+        description: ["良い調子です！", "このようにメモは日毎に分類されます。", "最後に下部の設定アイコンを", "押してみましょう！"],
       },
       step5: {
         title: "Step 4: 設定を変更しよう",
-        description: [
-          "テーマ、言語、フォントなどを",
-          "変更できます。",
-          "その他不明な点はよくある質問を",
-          "ご覧ください！"
-        ]
+        description: ["テーマ、言語、フォントなどを", "変更できます。", "その他不明な点はよくある質問を", "ご覧ください！"],
       },
       step6: {
         title: "トラッキングについて",
         description: [
-          "このアプリでは広告を表示します。",
+          "このアプリは広告を表示します。",
           "次の画面でトラッキングを許可すると、関連性の高い広告が表示されるようになります。",
           "許可しても個人情報等にはアクセスされませんのでご安心ください。",
-          "また許可しなくてもアプリの機能に影響はありません。"
-        ]
-      }
+          "また許可しなくてもアプリの機能に影響はありません。",
+        ],
+      },
     },
   },
 });
