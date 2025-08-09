@@ -1,14 +1,13 @@
 import { useFonts } from "expo-font";
+import { Slot } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
-import AppContent from "./app_layouts/AppContent";
 import AppProviders from "./app_layouts/AppProviders";
-import { router, Slot } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useThemeContext } from "../contexts/ThemeContext";
-import { useAdsContext } from "../contexts/AdsContext";
+import mobileAds from "react-native-google-mobile-ads";
+import { getTrackingPermissionsAsync, PermissionStatus, requestTrackingPermissionsAsync } from "expo-tracking-transparency";
+import { getStep } from "../utils/onboarding";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -47,6 +46,15 @@ export default function RootLayout() {
         SplashScreen.hideAsync();
         setAppReady(true);
         // router.push("/settings/customization");
+
+        const { status: trackingStatus } = await getTrackingPermissionsAsync();
+        if (trackingStatus === PermissionStatus.UNDETERMINED) {
+          const s = await getStep();
+          if (s < 6) {
+            return;
+          }
+        }
+        await mobileAds().initialize();
       } catch (e) {
         console.warn(e);
       }

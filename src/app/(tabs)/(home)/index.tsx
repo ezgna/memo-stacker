@@ -14,8 +14,9 @@ import { themeColors } from "@/src/utils/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 import Toast from "react-native-root-toast";
+import mobileAds from "react-native-google-mobile-ads";
 
 export default function index() {
   const [text, setText] = useState<string>("");
@@ -242,10 +243,15 @@ export default function index() {
     fetchAllEntries();
   }, [db, dataUpdated, searchQuery]);
 
+  const adInspector = async () => {
+    await mobileAds().openAdInspector();
+  };
+
   return (
     <>
       <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
         {/* <ResetDatabase /> */}
+        <Button title="inspect ads" onPress={adInspector} />
         <View>
           <TextInput
             style={[
