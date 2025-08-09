@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "MemoStacker",
   slug: "memologminute",
-  version: "1.3",
+  version: "1.5",
   orientation: "default",
   icon: "./src/assets/icons/ios-light.png",
   scheme: "memolog",
@@ -13,6 +13,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     bundleIdentifier: "com.ezgna.testthree",
     infoPlist: {
+      CFBundleAllowMixedLocalizations: true,
+      CFBundleLocalizations: ["en", "ja"],
+      CFBundleDevelopmentRegion: "en",
       ITSAppUsesNonExemptEncryption: false,
       NSUserTrackingUsageDescription: "We use this permission to provide personalized ads.",
     },
@@ -72,8 +75,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "react-native-google-mobile-ads",
       {
-        androidAppId: "ca-app-pub-4363360791941587~3324694963",
         iosAppId: "ca-app-pub-4363360791941587~3360620576",
+        androidAppId: "ca-app-pub-4363360791941587~3324694963",
         skAdNetworkItems: [
           "cstr6suwn9.skadnetwork",
           "4fzdc2evr5.skadnetwork",

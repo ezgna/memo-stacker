@@ -1,4 +1,3 @@
-import Constants from "expo-constants";
 import React from "react";
 import { Platform, View } from "react-native";
 import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
@@ -7,34 +6,19 @@ import { useAdsContext } from "../contexts/AdsContext";
 const PlatformBannerAd = () => {
   const { nonPersonalized } = useAdsContext();
 
+  const BANNER_AD_UNIT_ID = __DEV__
+    ? TestIds.ADAPTIVE_BANNER
+    : Platform.select({
+        ios: "ca-app-pub-4363360791941587/3973878294",
+        android: "ca-app-pub-4363360791941587/4098720584",
+      })!;
+
   return (
-    <>
-      {Platform.OS == "ios" ? (
-        <View>
-          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
-            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
-          ) : (
-            <BannerAd
-              unitId="ca-app-pub-4363360791941587/8952562876"
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
-            />
-          )}
-        </View>
-      ) : (
-        <View>
-          {Constants.expoConfig?.extra?.APP_ENV === "development" ? (
-            <BannerAd unitId={TestIds.ADAPTIVE_BANNER} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
-          ) : (
-            <BannerAd
-              unitId="ca-app-pub-4363360791941587/4098720584"
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{ requestNonPersonalizedAdsOnly: nonPersonalized }}
-            />
-          )}
-        </View>
-      )}
-    </>
+    <BannerAd
+      unitId={BANNER_AD_UNIT_ID}
+      size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+      requestOptions={!__DEV__ ? { requestNonPersonalizedAdsOnly: nonPersonalized } : undefined}
+    />
   );
 };
 

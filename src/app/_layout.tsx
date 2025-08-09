@@ -8,6 +8,7 @@ import AppProviders from "./app_layouts/AppProviders";
 import { router, Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { useAdsContext } from "../contexts/AdsContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,8 +23,9 @@ export default function RootLayout() {
     ZenMaruGothic: require("../assets/fonts/ZenMaruGothic-Medium.ttf"),
     ZenOldMincho: require("../assets/fonts/ZenOldMincho-SemiBold.ttf"),
     RocknRollOne: require("../assets/fonts/RocknRollOne-Regular.ttf"),
-    MPlus1p: require("../assets/fonts/MPLUS1p-Medium.ttf")
+    MPlus1p: require("../assets/fonts/MPLUS1p-Medium.ttf"),
   });
+
   // const { theme } = useThemeContext();
 
   const APIKeys = {

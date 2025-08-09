@@ -67,8 +67,8 @@ const SettingsScreen = () => {
                                 text: "OK",
                                 onPress: async () => {
                                   setTimeout(async () => {
-                                    await setStep(6);
                                     await initializeAds();
+                                    await setStep(6);
                                   }, 500);
                                 },
                               },
