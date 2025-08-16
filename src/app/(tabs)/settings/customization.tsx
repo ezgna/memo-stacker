@@ -3,10 +3,12 @@ import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import SettingsModal from "@/src/components/SettingModal";
 import { useSettingsContext } from "@/src/contexts/SettingsContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { useAds } from "@/src/stores/ads";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 const customization = () => {
@@ -16,15 +18,15 @@ const customization = () => {
   const [modalType, setModalType] = useState<"language" | "theme" | "font" | null>(null);
   const [isAdsRemoved, setIsAdsRemoved] = useState(false);
 
-  useEffect(() => {
-    const checkAdsStatus = async () => {
-      const value = await AsyncStorage.getItem("isAdsRemoved");
-      if (value === "true") {
-        setIsAdsRemoved(true);
-      }
-    };
-    checkAdsStatus();
-  }, []);
+  // useEffect(() => {
+  //   const checkAdsStatus = async () => {
+  //     const value = await AsyncStorage.getItem("isAdsRemoved");
+  //     if (value === "true") {
+  //       setIsAdsRemoved(true);
+  //     }
+  //   };
+  //   checkAdsStatus();
+  // }, []);
 
   const handleOpen = (type: "language" | "theme" | "font") => {
     setIsModalVisible(true);
@@ -149,7 +151,7 @@ const customization = () => {
         </View>
         {modalType && <SettingsModal isModalVisible={isModalVisible} onClose={handleClose} type={modalType} />}
       </View>
-      {!isAdsRemoved && <PlatformBannerAd />}
+      {/* {!isAdsRemoved && <PlatformBannerAd />} */}
     </>
   );
 };

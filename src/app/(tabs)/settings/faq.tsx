@@ -1,6 +1,7 @@
 import CustomText from "@/src/components/CustomText";
 import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { useAds } from "@/src/stores/ads";
 import i18n from "@/src/utils/i18n";
 import { themeColors } from "@/src/utils/theme";
 import { AntDesign } from "@expo/vector-icons";
@@ -11,17 +12,6 @@ import Collapsible from "react-native-collapsible";
 
 const faq = () => {
   const { theme } = useThemeContext();
-  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
-
-  useEffect(() => {
-    const checkAdsStatus = async () => {
-      const value = await AsyncStorage.getItem("isAdsRemoved");
-      if (value === "true") {
-        setIsAdsRemoved(true);
-      }
-    };
-    checkAdsStatus();
-  }, []);
 
   const data = [
     { id: 1, question: `${i18n.t("memoLog_overview_question")}`, answer: `${i18n.t("memoLog_overview_answer")}` },
@@ -49,7 +39,9 @@ const faq = () => {
     }));
   };
 
-  const CollapseIndicator = ({ id }: { id: number }) => <AntDesign name={collapsedItems[id] ? "down" : "up"} size={12} color={collapsedItems[id] ? "darkgray" : "#4169E1"} />;
+  const CollapseIndicator = ({ id }: { id: number }) => (
+    <AntDesign name={collapsedItems[id] ? "down" : "up"} size={12} color={collapsedItems[id] ? "darkgray" : "#4169E1"} />
+  );
 
   return (
     <>
@@ -57,7 +49,7 @@ const faq = () => {
         style={{
           flex: 1,
           paddingTop: 10,
-          paddingBottom: 50,
+          // paddingBottom: 50,
           backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background,
         }}
       >
@@ -88,7 +80,6 @@ const faq = () => {
           ))}
         </ScrollView>
       </View>
-      {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
 };

@@ -12,6 +12,7 @@ export default function DrawerLayout() {
     <Drawer
       drawerContent={() => <CustomDrawer />}
       screenOptions={() => ({
+        drawerType: "front",
         headerRight: () => <SearchBox />,
         headerTintColor: Platform.OS === "android" ? "#007AFF" : undefined,
         headerTitle: "",

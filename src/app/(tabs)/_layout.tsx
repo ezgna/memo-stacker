@@ -1,15 +1,30 @@
+import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
+import { useAds } from "@/src/stores/ads";
 import { themeColors } from "@/src/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { BottomTabBar, type BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Pressable } from "react-native";
 
 export default function TabLayout() {
   const { theme } = useThemeContext();
+  const adsRemoved = useAds((s) => s.adsRemoved);
+
+  function TabBarWithBanner(props: BottomTabBarProps) {
+
+    return (
+      <>
+        {!adsRemoved && <PlatformBannerAd />}
+        <BottomTabBar {...props} />
+      </>
+    );
+  }
 
   return (
     <Tabs
+      tabBar={(props) => <TabBarWithBanner {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -17,7 +32,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "#8E8E93",
         tabBarStyle: {
-          backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : 'white',
+          backgroundColor: theme === "dark" ? themeColors.dark.secondaryBackground : "white",
           borderTopWidth: 0,
         },
         tabBarButton: (props) => {

@@ -1,5 +1,5 @@
 import { useThemeContext } from "@/src/contexts/ThemeContext";
-import { Stack } from "expo-router";
+import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 
@@ -8,9 +8,7 @@ const AppContent = () => {
 
   return (
     <>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      <Slot />
       <StatusBar style={theme === "dark" ? "light" : "dark"} />
     </>
   );

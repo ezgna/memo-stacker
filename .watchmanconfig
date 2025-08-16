@@ -1,0 +1,12 @@
+{
+  "fsevents_latency": 0.35,
+  "prefer_split_fsevents_watcher": true,
+  "ignore_dirs": [
+    "ios",
+    "android",
+    ".expo",
+    ".expo-shared",
+    "dist",
+    "coverage"
+  ]
+}

@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "MemoStacker",
   slug: "memologminute",
-  version: "1.5",
+  version: "1.7",
   orientation: "default",
   icon: "./src/assets/icons/ios-light.png",
   scheme: "memolog",

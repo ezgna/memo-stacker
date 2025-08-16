@@ -8,23 +8,24 @@ import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { db, initDatabase } from "@/src/database/db";
 import { runMigrations } from "@/src/database/migrations";
 import { Entry } from "@/src/database/types";
+import { useAds } from "@/src/stores/ads";
 import i18n from "@/src/utils/i18n";
 import { getStep, setStep } from "@/src/utils/onboarding";
 import { themeColors } from "@/src/utils/theme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
-import Toast from "react-native-root-toast";
+import { Alert, StyleSheet, TextInput, View } from "react-native";
 import mobileAds from "react-native-google-mobile-ads";
+import Toast from "react-native-root-toast";
 
 export default function index() {
   const [text, setText] = useState<string>("");
   const { dataUpdated, setDataUpdated, searchQuery } = useDataContext();
   const [fetchedEntries, setFetchedEntries] = useState<Entry[]>([]);
   const { theme } = useThemeContext();
-  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
   const { fontFamilyStyle } = useFontContext();
+  const hide = useAds((s) => s.hide);
+  const show = useAds((s) => s.show);
 
   // useEffect(() => {
   //   const debugTables = async () => {
@@ -38,6 +39,13 @@ export default function index() {
   //   };
   //   debugTables();
   // }, []);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     hide();
+  //     return () => show();
+  //   }, [hide, show])
+  // );
 
   useEffect(() => {
     (async () => {
@@ -63,16 +71,6 @@ export default function index() {
         }, 500);
       }
     })();
-  }, []);
-
-  useEffect(() => {
-    const checkAdsStatus = async () => {
-      const value = await AsyncStorage.getItem("isAdsRemoved");
-      if (value === "true") {
-        setIsAdsRemoved(true);
-      }
-    };
-    checkAdsStatus();
   }, []);
 
   const storeEntry = async (text: string) => {
@@ -251,7 +249,7 @@ export default function index() {
     <>
       <View style={[styles.container, { backgroundColor: theme === "dark" ? themeColors.dark.background : themeColors.light.background }]}>
         {/* <ResetDatabase /> */}
-        <Button title="inspect ads" onPress={adInspector} />
+        {/* <Button title="inspect ads" onPress={adInspector} /> */}
         <View>
           <TextInput
             style={[

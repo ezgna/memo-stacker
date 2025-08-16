@@ -1,10 +1,10 @@
 import CustomText from "@/src/components/CustomText";
-import PlatformBannerAd from "@/src/components/PlatformBannerAd";
 import { useAdsContext } from "@/src/contexts/AdsContext";
 import { useDataContext } from "@/src/contexts/DataContext";
 import { useThemeContext } from "@/src/contexts/ThemeContext";
 import { db } from "@/src/database/db";
 import { Entry } from "@/src/database/types";
+import { useAds } from "@/src/stores/ads";
 import { ExportGDrive, handleFileSelect, ImportGDrive } from "@/src/utils/GDriveUtils";
 import i18n from "@/src/utils/i18n";
 import { getStep, setStep } from "@/src/utils/onboarding";
@@ -14,7 +14,6 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
@@ -30,9 +29,10 @@ const SettingsScreen = () => {
   const [files, setFiles] = useState<Files[] | null>(null);
   const { dataUpdated, setDataUpdated } = useDataContext();
   const { theme } = useThemeContext();
-  const [isAdsRemoved, setIsAdsRemoved] = useState(false);
   const [loading, setLoading] = useState(false);
   const { initializeAds } = useAdsContext();
+  const adsRemoved = useAds((s) => s.adsRemoved);
+  const setAdsRemoved = useAds((s) => s.setAdsRemoved);
 
   useFocusEffect(
     useCallback(() => {
@@ -90,67 +90,6 @@ const SettingsScreen = () => {
       })();
     }, [])
   );
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const s = await getStep();
-  //     if (s === 3) {
-  //       const title = i18n.t("onboarding.step5.title");
-  //       const lines = i18n.t("onboarding.step5.description", { returnObjects: true }) as string[];
-  //       const message = lines.join("\n");
-  //       setTimeout(() => {
-  //         Alert.alert(
-  //           title,
-  //           message,
-  //           [
-  //             {
-  //               text: "OK",
-  //               onPress: async () => {
-  //                 await setStep(4);
-
-  //                 if (Platform.OS !== "android") {
-  //                   setTimeout(() => {
-  //                     const nextTitle = i18n.t("onboarding.step6.title");
-  //                     const nextLines = i18n.t("onboarding.step6.description", { returnObjects: true }) as string[];
-  //                     const nextMessage = nextLines.join("\n");
-
-  //                     Alert.alert(
-  //                       nextTitle,
-  //                       nextMessage,
-  //                       [
-  //                         {
-  //                           text: "OK",
-  //                           onPress: async () => {
-  //                             setTimeout(async () => {
-  //                               await setStep(5);
-  //                               await initializeAds();
-  //                             }, 500);
-  //                           },
-  //                         },
-  //                       ],
-  //                       { cancelable: false }
-  //                     );
-  //                   }, 500);
-  //                 }
-  //               },
-  //             },
-  //           ],
-  //           { cancelable: false }
-  //         );
-  //       }, 1000);
-  //     }
-  //   })();
-  // }, []);
-
-  useEffect(() => {
-    const checkAdsStatus = async () => {
-      const value = await AsyncStorage.getItem("isAdsRemoved");
-      if (value === "true") {
-        setIsAdsRemoved(true);
-      }
-    };
-    checkAdsStatus();
-  }, [isAdsRemoved]);
 
   const restoreDatabase = async (dataList: Entry[]) => {
     try {
@@ -252,11 +191,23 @@ const SettingsScreen = () => {
 
   const handleRemoveAds = async () => {
     setLoading(true);
-    const success = await removeAds();
-    if (success) {
-      setIsAdsRemoved(true);
-      Alert.alert(i18n.t("purchase_success"));
-      console.log("The ads were removed!");
+    const res = await removeAds();
+    switch (res.kind) {
+      case "already_owned":
+        Alert.alert("", i18n.t("purchase_already_owned"));
+        break;
+
+      case "purchased":
+        setAdsRemoved(true);
+        Alert.alert(i18n.t("purchase_success"));
+        break;
+
+      case "cancelled":
+        break;
+
+      case "error":
+        Alert.alert("", i18n.t("purchase_success"));
+        break;
     }
     setLoading(false);
   };
@@ -265,9 +216,8 @@ const SettingsScreen = () => {
     setLoading(true);
     const success = await restorePurchase();
     if (success) {
-      setIsAdsRemoved(true);
+      setAdsRemoved(true);
       Alert.alert(i18n.t("restore_success"));
-      console.log("Restored successfully! Ads will be removed.");
     } else {
       console.log("No active entitlement found for remove_ads_access.");
       Alert.alert(i18n.t("restore_false"));
@@ -294,7 +244,11 @@ const SettingsScreen = () => {
             </Pressable>
 
             <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={openFAQ}>
-              <MaterialCommunityIcons name="frequently-asked-questions" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
+              <MaterialCommunityIcons
+                name="frequently-asked-questions"
+                size={24}
+                color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText}
+              />
               <CustomText style={styles.optionText}>{i18n.t("faq")}</CustomText>
             </Pressable>
 
@@ -315,12 +269,12 @@ const SettingsScreen = () => {
               <CustomText style={styles.optionText}>{i18n.t("export")}</CustomText>
             </Pressable>
 
-            <Pressable style={({ pressed }) => [styles.option, isAdsRemoved && { borderBottomWidth: 0 }, { opacity: pressed ? 0.6 : 1 }]} onPress={handleImport}>
+            <Pressable style={({ pressed }) => [styles.option, adsRemoved && { borderBottomWidth: 0 }, { opacity: pressed ? 0.6 : 1 }]} onPress={handleImport}>
               <Ionicons name="cloud-upload-outline" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
               <CustomText style={styles.optionText}>{i18n.t("import")}</CustomText>
             </Pressable>
 
-            {!isAdsRemoved && (
+            {!adsRemoved && (
               <Pressable style={({ pressed }) => [styles.option, { opacity: pressed ? 0.6 : 1 }]} onPress={handleRemoveAds} disabled={loading}>
                 <MaterialIcons name="highlight-remove" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
                 {loading ? (
@@ -331,7 +285,7 @@ const SettingsScreen = () => {
               </Pressable>
             )}
 
-            {!isAdsRemoved && (
+            {!adsRemoved && (
               <Pressable style={({ pressed }) => [styles.option, { borderBottomWidth: 0, opacity: pressed ? 0.6 : 1 }]} onPress={handleRestoreAds} disabled={loading}>
                 <MaterialCommunityIcons name="refresh" size={24} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
                 {loading ? (
@@ -346,7 +300,11 @@ const SettingsScreen = () => {
             <>
               <CustomText style={{ fontSize: 16, marginTop: 24, marginBottom: 6 }}>{i18n.t("import_file_prompt")}</CustomText>
               {files.map((item) => (
-                <Pressable key={item.id} onPress={() => handleFileSelectWithClear(item.id, item.name)} style={({ pressed }) => [styles.file, { opacity: pressed ? 0.6 : 1 }]}>
+                <Pressable
+                  key={item.id}
+                  onPress={() => handleFileSelectWithClear(item.id, item.name)}
+                  style={({ pressed }) => [styles.file, { opacity: pressed ? 0.6 : 1 }]}
+                >
                   <MaterialCommunityIcons name="file-document" size={20} color={theme === "dark" ? themeColors.dark.secondaryText : themeColors.light.primaryText} />
                   <CustomText style={{ marginLeft: 10, fontSize: 16, lineHeight: 22 }}>{item.name}</CustomText>
                 </Pressable>
@@ -355,7 +313,6 @@ const SettingsScreen = () => {
           )}
         </ScrollView>
       </SafeAreaView>
-      {!isAdsRemoved && <PlatformBannerAd />}
     </>
   );
 };
