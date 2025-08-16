@@ -5,26 +5,39 @@ import { themeColors } from "@/src/utils/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomTabBar, type BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import React, { memo, useCallback } from "react";
 import { Pressable } from "react-native";
+
+const TabBarWithBanner = memo(function TabBarWithBanner(props: BottomTabBarProps) {
+  const adsRemoved = useAds((s) => s.adsRemoved);
+
+  return (
+    <>
+      {!adsRemoved && <PlatformBannerAd />}
+      <BottomTabBar {...props} />
+    </>
+  );
+});
 
 export default function TabLayout() {
   const { theme } = useThemeContext();
-  const adsRemoved = useAds((s) => s.adsRemoved);
+  const renderTabBar = useCallback((p: BottomTabBarProps) => <TabBarWithBanner {...p} />, []);
 
-  function TabBarWithBanner(props: BottomTabBarProps) {
+  // const adsRemoved = useAds((s) => s.adsRemoved);
 
-    return (
-      <>
-        {!adsRemoved && <PlatformBannerAd />}
-        <BottomTabBar {...props} />
-      </>
-    );
-  }
+  // function TabBarWithBanner(props: BottomTabBarProps) {
+
+  //   return (
+  //     <>
+  //       {!adsRemoved && <PlatformBannerAd />}
+  //       <BottomTabBar {...props} />
+  //     </>
+  //   );
+  // }
 
   return (
     <Tabs
-      tabBar={(props) => <TabBarWithBanner {...props} />}
+      tabBar={renderTabBar}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
